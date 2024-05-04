@@ -1,8 +1,6 @@
-#!/usr/bin/swift
-
 import Foundation
 
-struct Moon {
+public struct Moon {
   init(moonPhase: MoonPhase, lunarDay: Double, date: Date) {
     self.moonPhase = moonPhase
     self.name = moonPhase.rawValue
@@ -11,13 +9,13 @@ struct Moon {
     self.date = date
   }
 
-  let moonPhase: MoonPhase
-  let name: String
-  let emoji: String
+  public let moonPhase: MoonPhase
+  public let name: String
+  public let emoji: String
   let lunarDay: Double
   let date: Date
 
-  var daysTillFullMoon: Int {
+  public var daysTillFullMoon: Int {
     let wholeLunarDay = lround(lunarDay)
     if wholeLunarDay > 15 {
       return 29 - wholeLunarDay + 15
@@ -33,7 +31,7 @@ struct Moon {
     }
   }
 
-  var fullMoonName: String? {
+  public var fullMoonName: String? {
     if isFullMoon() {
       let calendar = Calendar.current
       let components = calendar.dateComponents([.month], from: date)
@@ -63,7 +61,7 @@ struct Moon {
   }
 }
 
-enum MoonPhase: String {
+public enum MoonPhase: String {
   case newMoon          = "New Moon"
   case waxingCrescent   = "Waxing Crescent"
   case firstQuarter     = "First Quarter"
@@ -95,8 +93,9 @@ enum MoonPhase: String {
   }
 }
 
-struct TinyMoon {
-  func calculateMoonPhase(_ date: Date = Date()) -> Moon {
+public struct TinyMoon {
+  public init() { }
+  public func calculateMoonPhase(_ date: Date = Date()) -> Moon {
     let synodicMonth = 29.53058770576
     let calendar = Calendar.current
     let components = calendar.dateComponents([.day, .month, .year], from: date)
@@ -119,7 +118,7 @@ struct TinyMoon {
     return moon
   }
 
-  func moonPhase(lunarDay: Int) -> MoonPhase {
+  private func moonPhase(lunarDay: Int) -> MoonPhase {
     if lunarDay < 1  {
       return .newMoon
     } else if lunarDay < 7 {
@@ -144,7 +143,7 @@ struct TinyMoon {
   /// The Julian Day Count is a uniform count of days from a remote epoch in the past and is used for calculating the days between two events.
   /// The Julian day is calculated by combining the contributions from the years, months, and day, taking into account constant offsets and rounding down the result.
   /// https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
-  func julianDay(year: Int, month: Int, day: Int) -> Double {
+  private func julianDay(year: Int, month: Int, day: Int) -> Double {
     var newYear = year
     var newMonth = month
     if month <= 2 {
@@ -163,7 +162,7 @@ struct TinyMoon {
 
 
 // Main
-let tinyMoon = TinyMoon()
-let moon = tinyMoon.calculateMoonPhase()
-print(moon)
-print(moon.daysTillFullMoon)
+//let tinyMoon = TinyMoon()
+//let moon = tinyMoon.calculateMoonPhase()
+//print(moon)
+//print(moon.daysTillFullMoon)
