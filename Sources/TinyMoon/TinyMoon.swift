@@ -158,11 +158,3 @@ public struct TinyMoon {
     return Double(c + day + e + f) - 1524.5
   }
 }
-
-
-
-// Main
-//let tinyMoon = TinyMoon()
-//let moon = tinyMoon.calculateMoonPhase()
-//print(moon)
-//print(moon.daysTillFullMoon)
