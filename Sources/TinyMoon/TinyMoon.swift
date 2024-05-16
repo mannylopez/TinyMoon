@@ -12,8 +12,8 @@ public struct Moon {
   public let moonPhase: MoonPhase
   public let name: String
   public let emoji: String
-  let lunarDay: Double
-  let date: Date
+  public let lunarDay: Double
+  public let date: Date
 
   public var daysTillFullMoon: Int {
     let wholeLunarDay = lround(lunarDay)
@@ -24,7 +24,7 @@ public struct Moon {
     }
   }
 
-  func isFullMoon() -> Bool {
+  public func isFullMoon() -> Bool {
     switch moonPhase {
     case .fullMoon: true
     default: false
