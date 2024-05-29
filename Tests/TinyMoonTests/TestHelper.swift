@@ -37,11 +37,11 @@ struct TestHelper {
   }
 
   /// Helper function to return a full month's moon objects
-  func moonMonth(year: Int, month: Helper.Month) -> [Moon] {
+  func moonMonth(month: Helper.Month) -> [Moon] {
     var moons: [Moon] = []
 
     Helper.months2024[month]?.forEach({ day in
-      moons.append(moonDay(year: year, month: month.rawValue, day: day))
+      moons.append(moonDay(year: 2024, month: month.rawValue, day: day))
     })
 
     return moons
