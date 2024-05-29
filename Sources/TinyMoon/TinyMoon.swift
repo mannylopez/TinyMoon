@@ -1,11 +1,12 @@
 import Foundation
 
-public struct Moon {
-  init(moonPhase: MoonPhase, lunarDay: Double, date: Date) {
+public struct Moon: Hashable {
+  init(moonPhase: MoonPhase, lunarDay: Double, maxLunarDay: Double, date: Date) {
     self.moonPhase = moonPhase
     self.name = moonPhase.rawValue
     self.emoji = moonPhase.emoji
     self.lunarDay = lunarDay
+    self.maxLunarDay = maxLunarDay
     self.date = date
   }
 
@@ -13,14 +14,28 @@ public struct Moon {
   public let name: String
   public let emoji: String
   public let lunarDay: Double
+  public let maxLunarDay: Double
   public let date: Date
+  private var wholeLunarDay: Int {
+    Int(floor(lunarDay))
+  }
 
+  // Returns `0` if the current `date` is a full moon
   public var daysTillFullMoon: Int {
-    let wholeLunarDay = lround(lunarDay)
-    if wholeLunarDay > 15 {
-      return 29 - wholeLunarDay + 15
+    if wholeLunarDay > 14 {
+      return 29 - wholeLunarDay + 14
     } else {
-      return 15 - wholeLunarDay
+      return 14 - wholeLunarDay
+    }
+  }
+
+  // Returns `0` if the current `date` is a new moon
+  public var daysTillNewMoon: Int {
+    if wholeLunarDay == 0 {
+      return 0
+    } else {
+      let daysTillNextNewMoon = Int(ceil(maxLunarDay)) - wholeLunarDay
+      return daysTillNextNewMoon
     }
   }
 
@@ -96,6 +111,14 @@ public enum MoonPhase: String {
 public struct TinyMoon {
   public init() { }
   public func calculateMoonPhase(_ date: Date = Date()) -> Moon {
+    let lunarDay = lunarDay(for: date)
+    let maxLunarDay = maxLunarDayInCycle(starting: date)
+    let moonPhase = moonPhase(lunarDay: Int(floor(lunarDay)))
+    let moon = Moon(moonPhase: moonPhase, lunarDay: lunarDay, maxLunarDay: maxLunarDay, date: date)
+    return moon
+  }
+
+  internal func lunarDay(for date: Date) -> Double {
     let synodicMonth = 29.53058770576
     let calendar = Calendar.current
     let components = calendar.dateComponents([.day, .month, .year], from: date)
@@ -112,28 +135,38 @@ public struct TinyMoon {
     let dateDifference = julianDay(year: year, month: month, day: day) - julianDay(year: 2000, month: 1, day: 6)
     // Divide by synodic month `29.53058770576`
     let lunarDay = (dateDifference / synodicMonth).truncatingRemainder(dividingBy: 1) * synodicMonth
-
-    let moonPhase = moonPhase(lunarDay: lround(lunarDay))
-    let moon = Moon(moonPhase: moonPhase, lunarDay: lunarDay, date: date)
-    return moon
+    return lunarDay
   }
 
-  private func moonPhase(lunarDay: Int) -> MoonPhase {
+  internal func maxLunarDayInCycle(starting date: Date) -> Double {
+    let maxLunarDay = lunarDay(for: date)
+    let calendar = Calendar.current
+    if let tomorrow = calendar.date(byAdding: .day, value: 1, to: date) {
+      if lunarDay(for: tomorrow) < maxLunarDay {
+        return maxLunarDay
+      } else {
+        return maxLunarDayInCycle(starting: tomorrow)
+      }
+    }
+    return maxLunarDay
+  }
+
+  internal func moonPhase(lunarDay: Int) -> MoonPhase {
     if lunarDay < 1  {
       return .newMoon
-    } else if lunarDay < 7 {
+    } else if lunarDay < 6 {
       return .waxingCrescent
-    } else if lunarDay < 8 {
+    } else if lunarDay < 7 {
       return .firstQuarter
-    } else if lunarDay < 15 {
+    } else if lunarDay < 14 {
       return .waxingGibbous
-    } else if lunarDay < 16 {
+    } else if lunarDay < 15 {
       return .fullMoon
-    } else if lunarDay < 22 {
+    } else if lunarDay < 21 {
       return .waningGibbous
-    } else if lunarDay < 23 {
+    } else if lunarDay < 22 {
       return .lastQuarter
-    } else if lunarDay < 29 {
+    } else if lunarDay < 30 {
       return .waningCrescent
     } else {
       return .newMoon
