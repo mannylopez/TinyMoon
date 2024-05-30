@@ -1,13 +1,13 @@
 import Foundation
 
 public struct Moon: Hashable {
-  init(moonPhase: MoonPhase, lunarDay: Double, maxLunarDay: Double, date: Date) {
-    self.moonPhase = moonPhase
+  init(date: Date) {
+    self.date = date
+    self.lunarDay = Moon.lunarDay(for: date)
+    self.maxLunarDay = Moon.maxLunarDayInCycle(starting: date)
+    self.moonPhase = Moon.moonPhase(lunarDay: Int(floor(lunarDay)))
     self.name = moonPhase.rawValue
     self.emoji = moonPhase.emoji
-    self.lunarDay = lunarDay
-    self.maxLunarDay = maxLunarDay
-    self.date = date
   }
 
   public let moonPhase: MoonPhase
@@ -74,6 +74,79 @@ public struct Moon: Hashable {
     default: nil
     }
   }
+
+  internal static func lunarDay(for date: Date) -> Double {
+    let synodicMonth = 29.53058770576
+    let calendar = Calendar.current
+    let components = calendar.dateComponents([.day, .month, .year], from: date)
+    guard
+      let year = components.year,
+      let month = components.month,
+      let day = components.day
+    else {
+      print("Error: Cannot resolve year, month, or day.")
+      FileHandle.standardError.write("Error: Cannot resolve year, month, or day".data(using: .utf8)!)
+      exit(1)
+    }
+    // Days between a known new moon date (January 6th, 2000) and the given day
+    let dateDifference = julianDay(year: year, month: month, day: day) - julianDay(year: 2000, month: 1, day: 6)
+    // Divide by synodic month `29.53058770576`
+    let lunarDay = (dateDifference / synodicMonth).truncatingRemainder(dividingBy: 1) * synodicMonth
+    return lunarDay
+  }
+
+  internal static func maxLunarDayInCycle(starting date: Date) -> Double {
+    let maxLunarDay = lunarDay(for: date)
+    let calendar = Calendar.current
+    if let tomorrow = calendar.date(byAdding: .day, value: 1, to: date) {
+      if lunarDay(for: tomorrow) < maxLunarDay {
+        return maxLunarDay
+      } else {
+        return maxLunarDayInCycle(starting: tomorrow)
+      }
+    }
+    return maxLunarDay
+  }
+
+  internal static func moonPhase(lunarDay: Int) -> MoonPhase {
+    if lunarDay < 1  {
+      return .newMoon
+    } else if lunarDay < 6 {
+      return .waxingCrescent
+    } else if lunarDay < 7 {
+      return .firstQuarter
+    } else if lunarDay < 14 {
+      return .waxingGibbous
+    } else if lunarDay < 15 {
+      return .fullMoon
+    } else if lunarDay < 21 {
+      return .waningGibbous
+    } else if lunarDay < 22 {
+      return .lastQuarter
+    } else if lunarDay < 30 {
+      return .waningCrescent
+    } else {
+      return .newMoon
+    }
+  }
+
+  /// The Julian Day Count is a uniform count of days from a remote epoch in the past and is used for calculating the days between two events.
+  /// The Julian day is calculated by combining the contributions from the years, months, and day, taking into account constant offsets and rounding down the result.
+  /// https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
+  private static func julianDay(year: Int, month: Int, day: Int) -> Double {
+    var newYear = year
+    var newMonth = month
+    if month <= 2 {
+      newYear = year - 1
+      newMonth = month + 12
+    }
+    let a = Int(newYear / 100)
+    let b = Int(a / 4)
+    let c = 2 - a + b
+    let e = Int(365.25 * Double(newYear + 4716))
+    let f = Int(30.6001 * Double(newMonth + 1))
+    return Double(c + day + e + f) - 1524.5
+  }
 }
 
 public enum MoonPhase: String {
@@ -108,86 +181,8 @@ public enum MoonPhase: String {
   }
 }
 
-public struct TinyMoon {
-  public init() { }
-  public func calculateMoonPhase(_ date: Date = Date()) -> Moon {
-    let lunarDay = lunarDay(for: date)
-    let maxLunarDay = maxLunarDayInCycle(starting: date)
-    let moonPhase = moonPhase(lunarDay: Int(floor(lunarDay)))
-    let moon = Moon(moonPhase: moonPhase, lunarDay: lunarDay, maxLunarDay: maxLunarDay, date: date)
-    return moon
-  }
-
-  internal func lunarDay(for date: Date) -> Double {
-    let synodicMonth = 29.53058770576
-    let calendar = Calendar.current
-    let components = calendar.dateComponents([.day, .month, .year], from: date)
-    guard
-      let year = components.year,
-      let month = components.month,
-      let day = components.day
-    else {
-      print("Error: Cannot resolve year, month, or day.")
-      FileHandle.standardError.write("Error: Cannot resolve year, month, or day".data(using: .utf8)!)
-      exit(1)
-    }
-    // Days between a known new moon date (January 6th, 2000) and the given day
-    let dateDifference = julianDay(year: year, month: month, day: day) - julianDay(year: 2000, month: 1, day: 6)
-    // Divide by synodic month `29.53058770576`
-    let lunarDay = (dateDifference / synodicMonth).truncatingRemainder(dividingBy: 1) * synodicMonth
-    return lunarDay
-  }
-
-  internal func maxLunarDayInCycle(starting date: Date) -> Double {
-    let maxLunarDay = lunarDay(for: date)
-    let calendar = Calendar.current
-    if let tomorrow = calendar.date(byAdding: .day, value: 1, to: date) {
-      if lunarDay(for: tomorrow) < maxLunarDay {
-        return maxLunarDay
-      } else {
-        return maxLunarDayInCycle(starting: tomorrow)
-      }
-    }
-    return maxLunarDay
-  }
-
-  internal func moonPhase(lunarDay: Int) -> MoonPhase {
-    if lunarDay < 1  {
-      return .newMoon
-    } else if lunarDay < 6 {
-      return .waxingCrescent
-    } else if lunarDay < 7 {
-      return .firstQuarter
-    } else if lunarDay < 14 {
-      return .waxingGibbous
-    } else if lunarDay < 15 {
-      return .fullMoon
-    } else if lunarDay < 21 {
-      return .waningGibbous
-    } else if lunarDay < 22 {
-      return .lastQuarter
-    } else if lunarDay < 30 {
-      return .waningCrescent
-    } else {
-      return .newMoon
-    }
-  }
-
-  /// The Julian Day Count is a uniform count of days from a remote epoch in the past and is used for calculating the days between two events.
-  /// The Julian day is calculated by combining the contributions from the years, months, and day, taking into account constant offsets and rounding down the result.
-  /// https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
-  private func julianDay(year: Int, month: Int, day: Int) -> Double {
-    var newYear = year
-    var newMonth = month
-    if month <= 2 {
-      newYear = year - 1
-      newMonth = month + 12
-    }
-    let a = Int(newYear / 100)
-    let b = Int(a / 4)
-    let c = 2 - a + b
-    let e = Int(365.25 * Double(newYear + 4716))
-    let f = Int(30.6001 * Double(newMonth + 1))
-    return Double(c + day + e + f) - 1524.5
+public enum TinyMoon {
+  public static func calculateMoonPhase(_ date: Date = Date()) -> Moon {
+    Moon(date: date)
   }
 }
