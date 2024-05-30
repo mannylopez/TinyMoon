@@ -108,9 +108,8 @@ public enum MoonPhase: String {
   }
 }
 
-public struct TinyMoon {
-  public init() { }
-  public func calculateMoonPhase(_ date: Date = Date()) -> Moon {
+public enum TinyMoon {
+  public static func calculateMoonPhase(_ date: Date = Date()) -> Moon {
     let lunarDay = lunarDay(for: date)
     let maxLunarDay = maxLunarDayInCycle(starting: date)
     let moonPhase = moonPhase(lunarDay: Int(floor(lunarDay)))
@@ -118,7 +117,7 @@ public struct TinyMoon {
     return moon
   }
 
-  internal func lunarDay(for date: Date) -> Double {
+  internal static func lunarDay(for date: Date) -> Double {
     let synodicMonth = 29.53058770576
     let calendar = Calendar.current
     let components = calendar.dateComponents([.day, .month, .year], from: date)
@@ -138,7 +137,7 @@ public struct TinyMoon {
     return lunarDay
   }
 
-  internal func maxLunarDayInCycle(starting date: Date) -> Double {
+  internal static func maxLunarDayInCycle(starting date: Date) -> Double {
     let maxLunarDay = lunarDay(for: date)
     let calendar = Calendar.current
     if let tomorrow = calendar.date(byAdding: .day, value: 1, to: date) {
@@ -151,7 +150,7 @@ public struct TinyMoon {
     return maxLunarDay
   }
 
-  internal func moonPhase(lunarDay: Int) -> MoonPhase {
+  internal static func moonPhase(lunarDay: Int) -> MoonPhase {
     if lunarDay < 1  {
       return .newMoon
     } else if lunarDay < 6 {
@@ -176,7 +175,7 @@ public struct TinyMoon {
   /// The Julian Day Count is a uniform count of days from a remote epoch in the past and is used for calculating the days between two events.
   /// The Julian day is calculated by combining the contributions from the years, months, and day, taking into account constant offsets and rounding down the result.
   /// https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
-  private func julianDay(year: Int, month: Int, day: Int) -> Double {
+  private static func julianDay(year: Int, month: Int, day: Int) -> Double {
     var newYear = year
     var newMonth = month
     if month <= 2 {
