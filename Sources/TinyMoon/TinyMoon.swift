@@ -1,13 +1,13 @@
 import Foundation
 
 public struct Moon: Hashable {
-  init(moonPhase: MoonPhase, lunarDay: Double, maxLunarDay: Double, date: Date) {
-    self.moonPhase = moonPhase
+  init(date: Date) {
+    self.date = date
+    self.lunarDay = Moon.lunarDay(for: date)
+    self.maxLunarDay = Moon.maxLunarDayInCycle(starting: date)
+    self.moonPhase = Moon.moonPhase(lunarDay: Int(floor(lunarDay)))
     self.name = moonPhase.rawValue
     self.emoji = moonPhase.emoji
-    self.lunarDay = lunarDay
-    self.maxLunarDay = maxLunarDay
-    self.date = date
   }
 
   public let moonPhase: MoonPhase
@@ -73,48 +73,6 @@ public struct Moon: Hashable {
     case 12: "Cold Moon"
     default: nil
     }
-  }
-}
-
-public enum MoonPhase: String {
-  case newMoon          = "New Moon"
-  case waxingCrescent   = "Waxing Crescent"
-  case firstQuarter     = "First Quarter"
-  case waxingGibbous    = "Waxing Gibbous"
-  case fullMoon         = "Full Moon"
-  case waningGibbous    = "Waning Gibbous"
-  case lastQuarter      = "Last Quarter"
-  case waningCrescent   = "Waning Crescent"
-
-  var emoji: String {
-    switch self {
-    case .newMoon:
-      "\u{1F311}" // 🌑
-    case .waxingCrescent:
-      "\u{1F312}" // 🌒
-    case .firstQuarter:
-      "\u{1F313}" // 🌓
-    case .waxingGibbous:
-      "\u{1F314}" // 🌔
-    case .fullMoon:
-      "\u{1F315}" // 🌕
-    case .waningGibbous:
-      "\u{1F316}" // 🌖
-    case .lastQuarter:
-      "\u{1F317}" // 🌗
-    case .waningCrescent:
-      "\u{1F318}" // 🌘
-    }
-  }
-}
-
-public enum TinyMoon {
-  public static func calculateMoonPhase(_ date: Date = Date()) -> Moon {
-    let lunarDay = lunarDay(for: date)
-    let maxLunarDay = maxLunarDayInCycle(starting: date)
-    let moonPhase = moonPhase(lunarDay: Int(floor(lunarDay)))
-    let moon = Moon(moonPhase: moonPhase, lunarDay: lunarDay, maxLunarDay: maxLunarDay, date: date)
-    return moon
   }
 
   internal static func lunarDay(for date: Date) -> Double {
@@ -188,5 +146,43 @@ public enum TinyMoon {
     let e = Int(365.25 * Double(newYear + 4716))
     let f = Int(30.6001 * Double(newMonth + 1))
     return Double(c + day + e + f) - 1524.5
+  }
+}
+
+public enum MoonPhase: String {
+  case newMoon          = "New Moon"
+  case waxingCrescent   = "Waxing Crescent"
+  case firstQuarter     = "First Quarter"
+  case waxingGibbous    = "Waxing Gibbous"
+  case fullMoon         = "Full Moon"
+  case waningGibbous    = "Waning Gibbous"
+  case lastQuarter      = "Last Quarter"
+  case waningCrescent   = "Waning Crescent"
+
+  var emoji: String {
+    switch self {
+    case .newMoon:
+      "\u{1F311}" // 🌑
+    case .waxingCrescent:
+      "\u{1F312}" // 🌒
+    case .firstQuarter:
+      "\u{1F313}" // 🌓
+    case .waxingGibbous:
+      "\u{1F314}" // 🌔
+    case .fullMoon:
+      "\u{1F315}" // 🌕
+    case .waningGibbous:
+      "\u{1F316}" // 🌖
+    case .lastQuarter:
+      "\u{1F317}" // 🌗
+    case .waningCrescent:
+      "\u{1F318}" // 🌘
+    }
+  }
+}
+
+public enum TinyMoon {
+  public static func calculateMoonPhase(_ date: Date = Date()) -> Moon {
+    Moon(date: date)
   }
 }
