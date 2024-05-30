@@ -10,6 +10,26 @@ struct TestHelper {
     return formatter
   }
 
+  static func prettyPrint(_ moon: TinyMoon.Moon) {
+    var title = ""
+    switch moon.moonPhase {
+    case .newMoon, .firstQuarter, .fullMoon, .lastQuarter:
+      title = "\(moon.emoji) \(moon.moonPhase)"
+    default:
+      title = "\(moon.moonPhase) \(moon.emoji) "
+    }
+    let prettyString = """
+    ...
+    \(moon.date)
+      \(title)
+      - lunarDay: \(moon.lunarDay)
+      - maxLunarDay: \(moon.maxLunarDay)
+      - daysTillFullMoon: \(moon.daysTillFullMoon)
+      - daysTillNewMoon: \(moon.daysTillNewMoon)
+    """
+    print(prettyString)
+  }
+
   static func formatDate(year: Int, month: Int, day: Int) -> Date {
     guard let date = TestHelper.dateFormatter.date(from: "\(year)/\(month)/\(day) 00:00") else {
       fatalError("Invalid date")
