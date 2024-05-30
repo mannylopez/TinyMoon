@@ -18,15 +18,15 @@ struct TestHelper {
   }
 
   /// Helper function to return a moon object for a given Date
-  static func moonDay(year: Int, month: Int, day: Int) -> Moon {
+  static func moonDay(year: Int, month: Int, day: Int) -> TinyMoon.Moon {
     let date = TestHelper.formatDate(year: year, month: month, day: day)
     let moon = TinyMoon.calculateMoonPhase(date)
     return moon
   }
 
   /// Helper function to return an array of moon objects for a given range of Dates
-  static func moonRange(year: Int, month: Int, days: ClosedRange<Int>) -> [Moon] {
-    var moons: [Moon] = []
+  static func moonRange(year: Int, month: Int, days: ClosedRange<Int>) -> [TinyMoon.Moon] {
+    var moons: [TinyMoon.Moon] = []
 
     moons = days.map({ day in
       moonDay(year: year, month: month, day: day)
@@ -36,8 +36,8 @@ struct TestHelper {
   }
 
   /// Helper function to return a full month's moon objects
-  static func moonMonth(month: Helper.Month) -> [Moon] {
-    var moons: [Moon] = []
+  static func moonMonth(month: Helper.Month) -> [TinyMoon.Moon] {
+    var moons: [TinyMoon.Moon] = []
 
     Helper.months2024[month]?.forEach({ day in
       moons.append(moonDay(year: 2024, month: month.rawValue, day: day))
