@@ -48,10 +48,10 @@ enum MoonTestHelper {
 
 }
 
-// MARK: - TestHelper + Pretty Print Helpers
+// MARK: - MoonTestHelper + Pretty print for debugging convenience methods
 
 extension MoonTestHelper {
-  static func printMoonCalendar(month: MonthTestHelper.Month, year: Int) {
+  static func prettyPrintMoonCalendar(month: MonthTestHelper.Month, year: Int) {
     let calendar = Calendar.current
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -137,5 +137,62 @@ extension MoonTestHelper {
       - daysTillNewMoon: \(moon.daysTillNewMoon)
     """
     print(prettyString)
+  }
+
+  /// Prints the 4 major phases for each month in a given year
+  /// Example output for 2024
+  /// ```
+  /// // January
+  /// 🌗 2024-01-03 08:00:00 +0000 lastQuarter
+  /// 🌑 2024-01-11 08:00:00 +0000 newMoon
+  /// 🌓 2024-01-17 08:00:00 +0000 firstQuarter
+  /// 🌕 2024-01-25 08:00:00 +0000 fullMoon
+  /// ...
+  /// // December
+  /// 🌑 2024-12-01 08:00:00 +0000 newMoon
+  /// 🌓 2024-12-07 08:00:00 +0000 firstQuarter
+  /// 🌗 2024-12-22 08:00:00 +0000 lastQuarter
+  /// 🌑 2024-12-30 08:00:00 +0000 newMoon
+  /// ```
+  static func prettyPrintMoonPhasesForYear(_ year: Int) {
+    let moonsInYear = MonthTestHelper.Month.allCases.map { month in
+      MoonTestHelper.moonMonth(month: month, year: year)
+    }
+
+    for month in moonsInYear {
+      for moon in month {
+        switch moon.moonPhase {
+        case .newMoon, .firstQuarter, .fullMoon, .lastQuarter:
+          print(moon.emoji, moon.date, moon.moonPhase)
+        default:
+          continue
+        }
+      }
+    }
+  }
+
+  /// Prints a calendar view for each month in a given year
+  /// Example output for 2024
+  /// ```
+  /// january 2024
+  /// S    M     T      W     T     F     S
+  ///       01🌖 |02🌖 | *🌗 |04🌘 |05🌘 |06🌘 |
+  /// 07🌘 |08🌘 |09🌘 |10🌘 | *🌑 |12🌒 |13🌒 |
+  /// 14🌒 |15🌒 |16🌒 | *🌓 |18🌔 |19🌔 |20🌔 |
+  /// 21🌔 |22🌔 |23🌔 |24🌔 | *🌕 |26🌖 |27🌖 |
+  /// 28🌖 |29🌖 |30🌖 |31🌖 |
+  /// ...
+  /// december 2024
+  /// S    M     T      W     T     F     S
+  /// *🌑 |02🌒 |03🌒 |04🌒 |05🌒 |06🌒 | *🌓 |
+  /// 08🌔 |09🌔 |10🌔 |11🌔 |12🌔 |13🌔 |14🌔 |
+  /// *🌕 |16🌖 |17🌖 |18🌖 |19🌖 |20🌖 |21🌖 |
+  /// *🌗 |23🌘 |24🌘 |25🌘 |26🌘 |27🌘 |28🌘 |
+  /// 29🌘 | *🌑 |31🌒 |
+  /// ```
+  static func prettyPrintCalendarForYear(_ year: Int) {
+    MonthTestHelper.Month.allCases.forEach { month in
+      MoonTestHelper.prettyPrintMoonCalendar(month: month, year: year)
+    }
   }
 }
