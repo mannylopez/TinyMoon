@@ -10,8 +10,8 @@ enum MoonTestHelper {
     return formatter
   }
 
-  static func formatDate(year: Int, month: Int, day: Int) -> Date {
-    guard let date = MoonTestHelper.dateFormatter.date(from: "\(year)/\(month)/\(day) 00:00") else {
+  static func formatDate(year: Int, month: Int, day: Int, hour: Int = 00, minute: Int = 00) -> Date {
+    guard let date = MoonTestHelper.dateFormatter.date(from: "\(year)/\(month)/\(day) \(hour):\(minute)") else {
       fatalError("Invalid date")
     }
     return date

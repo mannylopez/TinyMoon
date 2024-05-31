@@ -61,5 +61,27 @@ final class TinyMoonTests: XCTestCase {
       }
     }
   }
-}
 
+  func test_moon_julianDay() {
+    // January 6, 2000 @ 00:00:00.0
+    var date = MoonTestHelper.formatDate(year: 2000, month: 01, day: 06)
+    var julianDay = TinyMoon.Moon.julianDay(date)
+    print("newJulianDay: ", julianDay)
+    XCTAssertEqual(julianDay, 2451549.5000)
+
+    // January 6, 2000 @ 20:00:00.0
+    date = MoonTestHelper.formatDate(year: 2000, month: 01, day: 06, hour: 20, minute: 00)
+    julianDay = TinyMoon.Moon.julianDay(date)
+    XCTAssertEqual(julianDay, 2451550.3333)
+
+    // August 22, 2022 @ 00:00:00.0
+    date = MoonTestHelper.formatDate(year: 2022, month: 08, day: 22, hour: 00, minute: 00)
+    julianDay = TinyMoon.Moon.julianDay(date)
+    XCTAssertEqual(julianDay, 2459813.5000)
+
+    // August 22, 2022 @ 04:05:00.0
+    date = MoonTestHelper.formatDate(year: 2022, month: 08, day: 22, hour: 04, minute: 05)
+    julianDay = TinyMoon.Moon.julianDay(date)
+    XCTAssertEqual(julianDay, 2459813.6701)
+  }
+}

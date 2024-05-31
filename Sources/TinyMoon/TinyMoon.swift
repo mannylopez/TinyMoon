@@ -83,7 +83,7 @@ public enum TinyMoon {
     internal static func lunarDay(for date: Date) -> Double {
       let synodicMonth = 29.53058770576
       let calendar = Calendar.current
-      let components = calendar.dateComponents([.day, .month, .year], from: date)
+      let components = calendar.dateComponents([.year, .month, .day], from: date)
       guard
         let year = components.year,
         let month = components.month,
@@ -138,7 +138,7 @@ public enum TinyMoon {
     /// The Julian Day Count is a uniform count of days from a remote epoch in the past and is used for calculating the days between two events.
     /// The Julian day is calculated by combining the contributions from the years, months, and day, taking into account constant offsets and rounding down the result.
     /// https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
-    private static func julianDay(year: Int, month: Int, day: Int) -> Double {
+    internal static func julianDay(year: Int, month: Int, day: Int) -> Double {
       var newYear = year
       var newMonth = month
       if month <= 2 {
@@ -151,6 +151,35 @@ public enum TinyMoon {
       let e = Int(365.25 * Double(newYear + 4716))
       let f = Int(30.6001 * Double(newMonth + 1))
       return Double(c + day + e + f) - 1524.5
+    }
+
+    /// The Julian Day Count is a uniform count of days from a remote epoch in the past and is used for calculating the days between two events.
+    /// The Julian day is calculated by combining the contributions from the years, months, and day, taking into account constant offsets and rounding down the result.
+    /// https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
+    internal static func julianDay(_ date: Date) -> Double {
+      let calendar = Calendar(identifier: .gregorian)
+      let components = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
+      
+      guard let year = components.year, let month = components.month, let day = components.day, let hour = components.hour, let minute = components.minute, let second = components.second else {
+        fatalError("Could not extract date components")
+      }
+
+      let a = (14 - month) / 12
+      let y = year + 4800 - a
+      let m = month + 12 * a - 3
+
+      // Calculate Julian Day Number for the date
+      let jdn = Double(day) + Double((153 * m + 2) / 5) + Double(y) * 365 + Double(y / 4) - Double(y / 100) + Double(y / 400) - 32045
+
+      // Calculate the fraction of the day
+      let dayFraction = (Double(hour) - 12) / 24 + Double(minute) / 1440 + Double(second) / 86400
+
+      // Add the day fraction to the Julian Day Number
+      let julianDayWithTime = jdn + dayFraction
+
+      let roundedJulianDay = (julianDayWithTime * 10000).rounded() / 10000
+
+      return roundedJulianDay
     }
   }
 
