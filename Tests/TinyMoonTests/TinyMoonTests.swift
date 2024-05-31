@@ -35,10 +35,10 @@ final class TinyMoonTests: XCTestCase {
   }
 
   func test_moon_uniquePhases() {
-    var months: [Helper.Month] = [.january, .february, .april, .may, .june, .july, .august, .september, .october, .november]
+    var emojisByMonth = [Helper.Month: Int]()
 
-    months.forEach { month in
-      let moons = TestHelper.moonMonth(month: month)
+    Helper.Month.allCases.forEach { month in
+      let moons = TestHelper.moonMonth(month: month, year: 2024)
       let emojis = moons.compactMap { moon in
         switch moon.moonPhase {
         case .newMoon, .firstQuarter, .fullMoon, .lastQuarter:
@@ -49,23 +49,16 @@ final class TinyMoonTests: XCTestCase {
         return nil
       }
 
-      XCTAssertEqual(emojis.count, 4)
+      emojisByMonth[month] = emojis.count
     }
 
-    months = [.march, .december]
-    months.forEach { month in
-      let moons = TestHelper.moonMonth(month: month)
-      let emojis = moons.compactMap { moon in
-        switch moon.moonPhase {
-        case .newMoon, .firstQuarter, .fullMoon, .lastQuarter:
-          return moon.emoji
-        default:
-          break
-        }
-        return nil
+    Helper.Month.allCases.forEach { month in
+      switch month {
+      case .march, .december:
+        XCTAssertEqual(emojisByMonth[month], 5)
+      default:
+        XCTAssertEqual(emojisByMonth[month], 4)
       }
-
-      XCTAssertEqual(emojis.count, 5)
     }
   }
 }

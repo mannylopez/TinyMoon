@@ -56,11 +56,11 @@ struct TestHelper {
   }
 
   /// Helper function to return a full month's moon objects
-  static func moonMonth(month: Helper.Month) -> [TinyMoon.Moon] {
+  static func moonMonth(month: Helper.Month, year: Int) -> [TinyMoon.Moon] {
     var moons: [TinyMoon.Moon] = []
 
-    Helper.months2024[month]?.forEach({ day in
-      moons.append(moonDay(year: 2024, month: month.rawValue, day: day))
+    Helper.daysInMonth(month, year: year)?.forEach({ day in
+      moons.append(moonDay(year: year, month: month.rawValue, day: day))
     })
 
     return moons
@@ -69,7 +69,7 @@ struct TestHelper {
 }
 
 enum Helper {
-  enum Month: Int {
+  enum Month: Int, CaseIterable {
     case january = 1
     case february
     case march
@@ -84,18 +84,26 @@ enum Helper {
     case december
   }
 
-  static let months2024: [Month: ClosedRange<Int>] = [
-    .january: 1...31,
-    .february: 1...29, // Leap year in 2024
-    .march: 1...31,
-    .april: 1...30,
-    .may: 1...31,
-    .june: 1...30,
-    .july: 1...31,
-    .august: 1...30,
-    .september: 1...30,
-    .october: 1...31,
-    .november: 1...30,
-    .december: 1...31,
-  ]
+  static func calendarYear(_ year: Int) -> [Month: Range<Int>] {
+    var yearDict = [Month: Range<Int>]()
+    Month.allCases.forEach { month in
+      if let days = daysInMonth(month, year: year) {
+        yearDict[month] = days
+      }
+    }
+    return yearDict
+  }
+
+  static func daysInMonth(_ month: Month, year: Int) -> Range<Int>? {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM"
+
+    if let date = dateFormatter.date(from: "\(year)-\(month.rawValue)") {
+      let calendar = Calendar.current
+      if let range = calendar.range(of: .day, in: .month, for: date) {
+        return range
+      }
+    }
+    return nil
+  }
 }
