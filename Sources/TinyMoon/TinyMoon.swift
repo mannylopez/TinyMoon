@@ -82,8 +82,11 @@ public enum TinyMoon {
 
     internal static func lunarDay(for date: Date) -> Double {
       let synodicMonth = 29.53058770576
-      let calendar = Calendar.current
+
+      var calendar = Calendar.current
+      calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? calendar.timeZone
       let components = calendar.dateComponents([.year, .month, .day], from: date)
+
       guard
         let year = components.year,
         let month = components.month,
@@ -157,9 +160,10 @@ public enum TinyMoon {
     /// The Julian day is calculated by combining the contributions from the years, months, and day, taking into account constant offsets and rounding down the result.
     /// https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
     internal static func julianDay(_ date: Date) -> Double {
-      let calendar = Calendar(identifier: .gregorian)
+      var calendar = Calendar.current
+      calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? calendar.timeZone
       let components = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
-      
+
       guard let year = components.year, let month = components.month, let day = components.day, let hour = components.hour, let minute = components.minute, let second = components.second else {
         fatalError("Could not extract date components")
       }
@@ -213,5 +217,25 @@ public enum TinyMoon {
         "\u{1F318}" // 🌘
       }
     }
+  }
+
+  private static var dateFormatter: DateFormatter {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy/MM/dd HH:mm"
+    formatter.timeZone = TimeZone(identifier: "UTC")
+    return formatter
+  }
+
+  static func formatDate(
+    year: Int,
+    month: Int,
+    day: Int,
+    hour: Int = 00,
+    minute: Int = 00) -> Date
+  {
+    guard let date = TinyMoon.dateFormatter.date(from: "\(year)/\(month)/\(day) \(hour):\(minute)") else {
+      fatalError("Invalid date")
+    }
+    return date
   }
 }

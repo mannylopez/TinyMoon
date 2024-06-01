@@ -3,7 +3,7 @@ import XCTest
 
 final class TinyMoonTests: XCTestCase {
   func test_tinyMoon_calculateMoonPhase_returnsFullMoon() throws {
-    let date = MoonTestHelper.formatDate(year: 2024, month: 04, day: 23)
+    let date = TinyMoon.formatDate(year: 2024, month: 04, day: 23)
     let moon = TinyMoon.calculateMoonPhase(date)
 
     XCTAssertTrue(moon.isFullMoon())
@@ -13,7 +13,7 @@ final class TinyMoonTests: XCTestCase {
   }
 
   func test_moon_daysTillFullMoon_returnsCorrectDays() throws {
-    let date = MoonTestHelper.formatDate(year: 2024, month: 04, day: 22)
+    let date = TinyMoon.formatDate(year: 2024, month: 04, day: 22)
     let moon = TinyMoon.calculateMoonPhase(date)
 
     XCTAssertFalse(moon.isFullMoon())
@@ -23,12 +23,12 @@ final class TinyMoonTests: XCTestCase {
   }
 
   func test_tinyMoon_calculateMoonPhase_returnsNewMoon() throws {
-    var date = MoonTestHelper.formatDate(year: 2024, month: 11, day: 01)
+    var date = TinyMoon.formatDate(year: 2024, month: 11, day: 01)
     var moon = TinyMoon.calculateMoonPhase(date)
     XCTAssertEqual(moon.emoji, "\u{1F311}") // 🌑
     XCTAssertEqual(moon.daysTillNewMoon, 0)
 
-    date = MoonTestHelper.formatDate(year: 2024, month: 12, day: 1)
+    date = TinyMoon.formatDate(year: 2024, month: 12, day: 1)
     moon = TinyMoon.calculateMoonPhase(date)
     XCTAssertEqual(moon.emoji, "\u{1F311}") // 🌑
     XCTAssertEqual(moon.daysTillNewMoon, 0)
@@ -64,24 +64,41 @@ final class TinyMoonTests: XCTestCase {
 
   func test_moon_julianDay() {
     // January 6, 2000 @ 00:00:00.0
-    var date = MoonTestHelper.formatDate(year: 2000, month: 01, day: 06)
+    var date = TinyMoon.formatDate(year: 2000, month: 01, day: 06)
     var julianDay = TinyMoon.Moon.julianDay(date)
-    print("newJulianDay: ", julianDay)
     XCTAssertEqual(julianDay, 2451549.5000)
 
     // January 6, 2000 @ 20:00:00.0
-    date = MoonTestHelper.formatDate(year: 2000, month: 01, day: 06, hour: 20, minute: 00)
+    date = TinyMoon.formatDate(year: 2000, month: 01, day: 06, hour: 20, minute: 00)
     julianDay = TinyMoon.Moon.julianDay(date)
     XCTAssertEqual(julianDay, 2451550.3333)
 
     // August 22, 2022 @ 00:00:00.0
-    date = MoonTestHelper.formatDate(year: 2022, month: 08, day: 22, hour: 00, minute: 00)
+    date = TinyMoon.formatDate(year: 2022, month: 08, day: 22, hour: 00, minute: 00)
     julianDay = TinyMoon.Moon.julianDay(date)
     XCTAssertEqual(julianDay, 2459813.5000)
 
     // August 22, 2022 @ 04:05:00.0
-    date = MoonTestHelper.formatDate(year: 2022, month: 08, day: 22, hour: 04, minute: 05)
+    date = TinyMoon.formatDate(year: 2022, month: 08, day: 22, hour: 04, minute: 05)
     julianDay = TinyMoon.Moon.julianDay(date)
     XCTAssertEqual(julianDay, 2459813.6701)
+  }
+
+  func test_moon_notPrecise_julianDay() {
+    // January 6, 2000 @ 00:00:00.0
+    var julianDay = TinyMoon.Moon.julianDay(year: 2000, month: 01, day: 06)
+    XCTAssertEqual(julianDay, 2451549.5)
+
+    // January 6, 2000 @ 20:00:00.0
+    julianDay = TinyMoon.Moon.julianDay(year: 2008, month: 12, day: 06)
+    XCTAssertEqual(julianDay, 2454806.5)
+//
+    // August 22, 2022 @ 00:00:00.0
+    julianDay = TinyMoon.Moon.julianDay(year: 2022, month: 08, day: 22)
+    XCTAssertEqual(julianDay, 2459813.5)
+
+    // August 22, 2022 @ 04:05:00.0
+    julianDay = TinyMoon.Moon.julianDay(year: 2022, month: 08, day: 22)
+    XCTAssertEqual(julianDay, 2459813.5)
   }
 }
