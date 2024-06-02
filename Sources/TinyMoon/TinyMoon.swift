@@ -80,10 +80,13 @@ public enum TinyMoon {
       }
     }
 
-    internal static func lunarDay(for date: Date) -> Double {
+    internal static func lunarDay(for date: Date, usePreciseJulianDay: Bool = false) -> Double {
       let synodicMonth = 29.53058770576
-      let calendar = Calendar.current
-      let components = calendar.dateComponents([.day, .month, .year], from: date)
+
+      var calendar = Calendar.current
+      calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? calendar.timeZone
+      let components = calendar.dateComponents([.year, .month, .day], from: date)
+
       guard
         let year = components.year,
         let month = components.month,
@@ -93,8 +96,16 @@ public enum TinyMoon {
         FileHandle.standardError.write("Error: Cannot resolve year, month, or day".data(using: .utf8)!)
         exit(1)
       }
-      // Days between a known new moon date (January 6th, 2000) and the given day
-      let dateDifference = julianDay(year: year, month: month, day: day) - julianDay(year: 2000, month: 1, day: 6)
+
+      var dateDifference: Double
+      if usePreciseJulianDay {
+        // Days between the given day and a known new moon date (January 6th, 2000)
+        let knownNewMoonDate = TinyMoon.formatDate(year: 2000, month: 01, day: 06, hour: 18, minute: 13)
+        dateDifference = julianDay(date) - julianDay(knownNewMoonDate)
+      } else {
+        // Days between a known new moon date (January 6th, 2000) and the given day
+        dateDifference = lessPreciseJulianDay(year: year, month: month, day: day) - lessPreciseJulianDay(year: 2000, month: 1, day: 6)
+      }
       // Divide by synodic month `29.53058770576`
       let lunarDay = (dateDifference / synodicMonth).truncatingRemainder(dividingBy: 1) * synodicMonth
       return lunarDay
@@ -138,7 +149,8 @@ public enum TinyMoon {
     /// The Julian Day Count is a uniform count of days from a remote epoch in the past and is used for calculating the days between two events.
     /// The Julian day is calculated by combining the contributions from the years, months, and day, taking into account constant offsets and rounding down the result.
     /// https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
-    private static func julianDay(year: Int, month: Int, day: Int) -> Double {
+    /// - Note: This version does not use hours or minutes to compute the Julian Day, so it will only return up to one decimal point of accuracy.
+    internal static func lessPreciseJulianDay(year: Int, month: Int, day: Int) -> Double {
       var newYear = year
       var newMonth = month
       if month <= 2 {
@@ -151,6 +163,58 @@ public enum TinyMoon {
       let e = Int(365.25 * Double(newYear + 4716))
       let f = Int(30.6001 * Double(newMonth + 1))
       return Double(c + day + e + f) - 1524.5
+    }
+
+    /// Calculates the Julian Day (JD) for a given Date
+    ///
+    /// - Parameters:
+    ///   - date: Any Swift Date to calculate the Julian Day for
+    ///
+    /// - Returns: The Julian Day number, rounded down to four decimal points
+    ///
+    /// The Julian Day Count is a uniform count of days from a remote epoch in the past and is used for calculating the days between two events.
+    ///
+    /// The Julian day is calculated by combining the contributions from the years, months, and day, taking into account constant offsets and rounding down the result.
+    /// https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
+    /// - Note: Uses hour, minute, and seconds to calculate a precise Julian Day
+    internal static func julianDay(_ date: Date) -> Double {
+      var calendar = Calendar.current
+      calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? calendar.timeZone
+      let components = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
+
+      guard 
+        let year = components.year,
+        let month = components.month,
+        let day = components.day,
+        let hour = components.hour,
+        let minute = components.minute,
+        let second = components.second
+      else {
+        fatalError("Could not extract date components")
+      }
+
+      /// Used to adjust January and February to be part of the previous year.
+      /// `14` is used to adjust the start of the year to March. Will either be `0` or `1`.
+      let a = (14 - month) / 12
+      /// The Julian Day calculation sets year 0 as 4713 BC. 
+      /// To avoid working with negative numbers, `4800` is used as an offset.
+      let y = year + 4800 - a
+      /// Adjusts the month for the Julian Day calculation, where March is considered the first month of the year.
+      let m = month + 12 * a - 3
+
+      /// Calculate Julian Day Number for the date
+      /// - `153`: A magic number used for month length adjustments.
+      /// - `365`, `4`, `100`, and `400`: These relate to the number of days in a year and the correction for leap years in the Julian and Gregorian calendars.
+      /// `32045` is the correction factor to align the result with the Julian Day Number.
+      let jdn = Double(day) + Double((153 * m + 2) / 5) + Double(y) * 365 + Double(y / 4) - Double(y / 100) + Double(y / 400) - 32045
+
+      /// Calculate the fraction of the day past since midnight
+      ///  `1440` is the number of minutes in a day, and `86400` is the number of seconds in a day
+      let dayFraction = (Double(hour) - 12) / 24 + Double(minute) / 1440 + Double(second) / 86400
+      let julianDayWithTime = jdn + dayFraction
+      let roundedJulianDay = (julianDayWithTime * 10000).rounded() / 10000
+
+      return roundedJulianDay
     }
   }
 
@@ -184,5 +248,25 @@ public enum TinyMoon {
         "\u{1F318}" // 🌘
       }
     }
+  }
+
+  private static var dateFormatter: DateFormatter {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy/MM/dd HH:mm"
+    formatter.timeZone = TimeZone(identifier: "UTC")
+    return formatter
+  }
+
+  static func formatDate(
+    year: Int,
+    month: Int,
+    day: Int,
+    hour: Int = 00,
+    minute: Int = 00) -> Date
+  {
+    guard let date = TinyMoon.dateFormatter.date(from: "\(year)/\(month)/\(day) \(hour):\(minute)") else {
+      fatalError("Invalid date")
+    }
+    return date
   }
 }

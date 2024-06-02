@@ -4,22 +4,9 @@ import Foundation
 @testable import TinyMoon
 
 enum MoonTestHelper {
-  private static var dateFormatter: DateFormatter {
-    let formatter = DateFormatter()
-    formatter.dateFormat = "yyyy/MM/dd HH:mm"
-    return formatter
-  }
-
-  static func formatDate(year: Int, month: Int, day: Int) -> Date {
-    guard let date = MoonTestHelper.dateFormatter.date(from: "\(year)/\(month)/\(day) 00:00") else {
-      fatalError("Invalid date")
-    }
-    return date
-  }
-
   /// Helper function to return a moon object for a given Date
   static func moonDay(year: Int, month: Int, day: Int) -> TinyMoon.Moon {
-    let date = MoonTestHelper.formatDate(year: year, month: month, day: day)
+    let date = TinyMoon.formatDate(year: year, month: month, day: day)
     let moon = TinyMoon.calculateMoonPhase(date)
     return moon
   }
