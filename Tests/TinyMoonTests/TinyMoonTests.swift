@@ -96,9 +96,5 @@ final class TinyMoonTests: XCTestCase {
     // August 22, 2022 @ 00:00:00.0
     julianDay = TinyMoon.Moon.lessPreciseJulianDay(year: 2022, month: 08, day: 22)
     XCTAssertEqual(julianDay, 2459813.5)
-
-    // August 22, 2022 @ 00:00:00.0
-    julianDay = TinyMoon.Moon.lessPreciseJulianDay(year: 2022, month: 08, day: 22)
-    XCTAssertEqual(julianDay, 2459813.5)
   }
 }
