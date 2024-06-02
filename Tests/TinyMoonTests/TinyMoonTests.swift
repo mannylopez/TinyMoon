@@ -84,21 +84,21 @@ final class TinyMoonTests: XCTestCase {
     XCTAssertEqual(julianDay, 2459813.6701)
   }
 
-  func test_moon_notPrecise_julianDay() {
+  func test_moon_lessPreciseJulianDay() {
     // January 6, 2000 @ 00:00:00.0
-    var julianDay = TinyMoon.Moon.julianDay(year: 2000, month: 01, day: 06)
+    var julianDay = TinyMoon.Moon.lessPreciseJulianDay(year: 2000, month: 01, day: 06)
     XCTAssertEqual(julianDay, 2451549.5)
 
-    // January 6, 2000 @ 20:00:00.0
-    julianDay = TinyMoon.Moon.julianDay(year: 2008, month: 12, day: 06)
+    // December 6, 2008 @ @ 00:00:00.0
+    julianDay = TinyMoon.Moon.lessPreciseJulianDay(year: 2008, month: 12, day: 06)
     XCTAssertEqual(julianDay, 2454806.5)
 //
     // August 22, 2022 @ 00:00:00.0
-    julianDay = TinyMoon.Moon.julianDay(year: 2022, month: 08, day: 22)
+    julianDay = TinyMoon.Moon.lessPreciseJulianDay(year: 2022, month: 08, day: 22)
     XCTAssertEqual(julianDay, 2459813.5)
 
-    // August 22, 2022 @ 04:05:00.0
-    julianDay = TinyMoon.Moon.julianDay(year: 2022, month: 08, day: 22)
+    // August 22, 2022 @ 00:00:00.0
+    julianDay = TinyMoon.Moon.lessPreciseJulianDay(year: 2022, month: 08, day: 22)
     XCTAssertEqual(julianDay, 2459813.5)
   }
 }
