@@ -217,6 +217,25 @@ public enum TinyMoon {
       return roundedJulianDay
     }
 
+    /// Get the position of the Moon on a given Julian Day
+    ///
+    /// Formula from https://aa.quae.nl/en/reken/hemelpositie.html#4
+    ///
+    /// - Returns: Latitude (in degrees), longitude (in degrees), and distance (in kilometers)
+    internal static func moonPosition(julianDay: Double) -> (Double, Double, Double) {
+      let radians = Double.pi / 180
+      let daysSinceJ2000 = daysSinceJ2000(from: julianDay)
+      let L = (218.316 + 13.176396 * daysSinceJ2000).truncatingRemainder(dividingBy: 360) // Geocentric ecliptic longitude, in degrees
+      let M = (134.963 + 13.064993 * daysSinceJ2000).truncatingRemainder(dividingBy: 360) // Mean anomaly, in degrees
+      let F = (93.272 + 13.229350 * daysSinceJ2000).truncatingRemainder(dividingBy: 360) // Mean distance of the Moon from its ascending node, in degrees
+
+      let latitude = L + 6.289 * sin(radians * M)                   // Geocentric ecliptic latitude, in degrees
+      let longitude = 5.128 * sin(radians * F)                      // Geocentric ecliptic longitude, in degrees
+      let distance = (385001 - 20905 * cos(radians * M)).rounded()  // Distance to the Moon, in kilometers
+
+      return (latitude, longitude, distance)
+    }
+
     /// The number of days since 1 January 2000, 12:00 UTC
     ///
     /// `2451545.0` is the Julian date on 1 January 2000, 12:00 UTC, aka J2000.0

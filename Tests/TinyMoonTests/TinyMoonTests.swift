@@ -100,10 +100,25 @@ final class TinyMoonTests: XCTestCase {
 
   func test_moon_daysSinceJ2000() {
     let date = TinyMoon.formatDate(year: 2004, month: 01, day: 1)
-    let julianDate = TinyMoon.Moon.julianDay(date)
-    XCTAssertEqual(julianDate, 2453005.5000)
+    let julianDay = TinyMoon.Moon.julianDay(date)
+    XCTAssertEqual(julianDay, 2453005.5000)
 
-    let daysSinceJ2000 = TinyMoon.Moon.daysSinceJ2000(from: julianDate)
+    let daysSinceJ2000 = TinyMoon.Moon.daysSinceJ2000(from: julianDay)
     XCTAssertEqual(daysSinceJ2000, 1460.5)
+  }
+
+  func test_moon_moonPosition() {
+    let date = TinyMoon.formatDate(year: 2004, month: 01, day: 1)
+    let julianDay = TinyMoon.Moon.julianDay(date)
+    let (longitude, latitude, distance) = TinyMoon.Moon.moonPosition(julianDay: julianDay)
+
+//    XCTAssertEqual(L, 22.44235800000024)  // 22.44 degrees
+//    XCTAssertEqual(M, 136.38527649999742) // 136.39 degrees
+//    XCTAssertEqual(F, 334.7376750000003)  // 334.74 degrees
+
+    // Test values taken from https://aa.quae.nl/en/reken/hemelpositie.html#4
+    XCTAssertEqual(longitude, 26.78054550631917)
+    XCTAssertEqual(latitude, -2.188442146158122)
+    XCTAssertEqual(distance, 400136)
   }
 }
