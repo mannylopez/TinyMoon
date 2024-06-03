@@ -130,9 +130,19 @@ final class TinyMoonTests: XCTestCase {
     let latitude = TinyMoon.AstronomicalConstant.degreesToRadians(1.208)
     let declination = TinyMoon.AstronomicalConstant.declination(longitude: longitude, latitude: latitude)
 
-    let tolerance = 1e-5
-    XCTAssertTrue(abs(declination - TinyMoon.AstronomicalConstant.degreesToRadians(5.567)) < tolerance)
+    XCTAssertEqual(declination, TinyMoon.AstronomicalConstant.degreesToRadians(5.567), accuracy: 1e-5)
 
-    XCTAssertEqual(declination, 0.09717015472346271)
+    XCTAssertEqual(declination, 0.09717015472346271, accuracy: 1e-5)
+  }
+
+  func test_astronomicalConstant_rightAscension() {
+    // Test values taken from https://aa.quae.nl/en/reken/hemelpositie.html#1_7
+    let longitude = TinyMoon.AstronomicalConstant.degreesToRadians(168.737)
+    let latitude = TinyMoon.AstronomicalConstant.degreesToRadians(1.208)
+    let rightAscension = TinyMoon.AstronomicalConstant.rightAscension(longitude: longitude, latitude: latitude)
+
+    XCTAssertEqual(rightAscension, TinyMoon.AstronomicalConstant.degreesToRadians(170.20), accuracy: 0.0015)
+
+    XCTAssertEqual(rightAscension, 2.969160475404514)
   }
 }

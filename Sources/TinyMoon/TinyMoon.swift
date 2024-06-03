@@ -21,7 +21,7 @@ public enum TinyMoon {
     }
     return date
   }
-  
+
   public static func calculateMoonPhase(_ date: Date = Date()) -> Moon {
     Moon(date: date)
   }
@@ -225,11 +225,27 @@ public enum TinyMoon {
     /// - Returns: Declination, in radians
     ///
     /// Formula based on https://aa.quae.nl/en/reken/hemelpositie.html#1_7
-    /// and https://github.com/mourner/suncalc/blob/master/suncalc.js#L38
+    /// and https://github.com/mourner/suncalc/blob/master/suncalc.js#L39
     /// and https://github.com/microsoft/AirSim/blob/main/AirLib/include/common/EarthCelestial.hpp#L125
     internal static func declination(longitude: Double, latitude: Double) -> Double {
       let e = AstronomicalConstant.degreesToRadians(AstronomicalConstant.e)
       return asin(sin(latitude) * cos(e) + cos(latitude) * sin(e) * sin(longitude))
+    }
+
+    /// α The right ascension shows how far the body is from the vernal equinox, as measured along the celestial equator
+    ///
+    /// - Parameters:
+    ///   - longitude: in radians
+    ///   - latitude: in radians
+    ///
+    /// - Returns: Right ascension, in radians
+    ///
+    /// Formula based on https://aa.quae.nl/en/reken/hemelpositie.html#1_7
+    /// and https://github.com/mourner/suncalc/blob/master/suncalc.js#L38
+    /// and https://github.com/microsoft/AirSim/blob/main/AirLib/include/common/EarthCelestial.hpp#L120
+    internal static func rightAscension(longitude: Double, latitude: Double) -> Double {
+      let e = AstronomicalConstant.degreesToRadians(AstronomicalConstant.e)
+      return atan2(sin(longitude) * cos(e) - tan(latitude) * sin(e), cos(longitude))
     }
 
     /// Get the position of the Moon on a given Julian Day
@@ -250,7 +266,7 @@ public enum TinyMoon {
       return (longitude, latitude, distance)
     }
 
-    /// The number of days since 1 January 2000, 12:00 UTC
+    /// The number of Julian days since 1 January 2000, 12:00 UTC
     ///
     /// `2451545.0` is the Julian date on 1 January 2000, 12:00 UTC, aka J2000.0
     internal static func daysSinceJ2000(from jd: Double) -> Double {
