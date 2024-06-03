@@ -216,6 +216,13 @@ public enum TinyMoon {
 
       return roundedJulianDay
     }
+
+    /// The number of days since 1 January 2000, 12:00 UTC
+    ///
+    /// `2451545.0` is the Julian date on 1 January 2000, 12:00 UTC, aka J2000.0
+    internal static func daysSinceJ2000(from jd: Double) -> Double {
+      jd - 2451545.0
+    }
   }
 
   public enum MoonPhase: String {

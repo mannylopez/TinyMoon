@@ -97,4 +97,13 @@ final class TinyMoonTests: XCTestCase {
     julianDay = TinyMoon.Moon.lessPreciseJulianDay(year: 2022, month: 08, day: 22)
     XCTAssertEqual(julianDay, 2459813.5)
   }
+
+  func test_moon_daysSinceJ2000() {
+    let date = TinyMoon.formatDate(year: 2004, month: 01, day: 1)
+    let julianDate = TinyMoon.Moon.julianDay(date)
+    XCTAssertEqual(julianDate, 2453005.5000)
+
+    let daysSinceJ2000 = TinyMoon.Moon.daysSinceJ2000(from: julianDate)
+    XCTAssertEqual(daysSinceJ2000, 1460.5)
+  }
 }
