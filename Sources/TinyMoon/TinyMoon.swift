@@ -250,10 +250,15 @@ public enum TinyMoon {
 
     /// Get the position of the Moon on a given Julian Day
     ///
-    /// Formula from https://aa.quae.nl/en/reken/hemelpositie.html#4
+    /// - Parameters:
+    ///   - julianDay: The date in Julian Days
     ///
     /// - Returns: λ longitude (in degrees), φ latitude (in degrees),  and distance (in kilometers)
-    internal static func moonPosition(julianDay: Double) -> (longitude: Double, latitude: Double, distance: Double) {
+    ///
+    /// Formula based on  https://aa.quae.nl/en/reken/hemelpositie.html#4
+    /// and https://github.com/microsoft/AirSim/blob/main/AirLib/include/common/EarthCelestial.hpp#L180
+    /// and https://github.com/mourner/suncalc/blob/master/suncalc.js#L186
+    internal static func moonCoordinates(julianDay: Double) -> (longitude: Double, latitude: Double, distance: Double) {
       let daysSinceJ2000 = daysSinceJ2000(from: julianDay)
       let L = (218.316 + 13.176396 * daysSinceJ2000).truncatingRemainder(dividingBy: 360) // Geocentric ecliptic longitude, in degrees
       let M = (134.963 + 13.064993 * daysSinceJ2000).truncatingRemainder(dividingBy: 360) // Mean anomaly, in degrees
@@ -265,6 +270,22 @@ public enum TinyMoon {
 
       return (longitude, latitude, distance)
     }
+
+    /// The mean anomaly for the sun
+    ///
+    /// - Parameters:
+    ///   - julianDay: The date in Julian Days
+    ///
+    /// - Returns: Mean anomaly for the sun, in radians
+    ///
+    /// Formula from https://aa.quae.nl/en/reken/hemelpositie.html#1_1
+    /// https://github.com/microsoft/AirSim/blob/main/AirLib/include/common/EarthCelestial.hpp#L155
+    /// and https://github.com/mourner/suncalc/blob/master/suncalc.js#L57
+    internal static func solarMeanAnomaly(julianDay: Double) -> Double {
+      let daysSinceJ2000 = daysSinceJ2000(from: julianDay)
+      return AstronomicalConstant.degreesToRadians((357.5291 + 0.9856002 * daysSinceJ2000))
+    }
+
 
     /// The number of Julian days since 1 January 2000, 12:00 UTC
     ///
