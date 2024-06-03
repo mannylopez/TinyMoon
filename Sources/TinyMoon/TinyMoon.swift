@@ -1,6 +1,27 @@
 import Foundation
 
 public enum TinyMoon {
+
+  private static var dateFormatter: DateFormatter {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy/MM/dd HH:mm"
+    formatter.timeZone = TimeZone(identifier: "UTC")
+    return formatter
+  }
+
+  static func formatDate(
+    year: Int,
+    month: Int,
+    day: Int,
+    hour: Int = 00,
+    minute: Int = 00) -> Date
+  {
+    guard let date = TinyMoon.dateFormatter.date(from: "\(year)/\(month)/\(day) \(hour):\(minute)") else {
+      fatalError("Invalid date")
+    }
+    return date
+  }
+  
   public static func calculateMoonPhase(_ date: Date = Date()) -> Moon {
     Moon(date: date)
   }
@@ -101,10 +122,10 @@ public enum TinyMoon {
       if usePreciseJulianDay {
         // Days between the given day and a known new moon date (January 6th, 2000)
         let knownNewMoonDate = TinyMoon.formatDate(year: 2000, month: 01, day: 06, hour: 18, minute: 13)
-        dateDifference = julianDay(date) - julianDay(knownNewMoonDate)
+        dateDifference = AstronomicalConstant.julianDay(date) - AstronomicalConstant.julianDay(knownNewMoonDate)
       } else {
         // Days between a known new moon date (January 6th, 2000) and the given day
-        dateDifference = lessPreciseJulianDay(year: year, month: month, day: day) - lessPreciseJulianDay(year: 2000, month: 1, day: 6)
+        dateDifference = AstronomicalConstant.lessPreciseJulianDay(year: year, month: month, day: day) - AstronomicalConstant.lessPreciseJulianDay(year: 2000, month: 1, day: 6)
       }
       // Divide by synodic month `29.53058770576`
       let lunarDay = (dateDifference / synodicMonth).truncatingRemainder(dividingBy: 1) * synodicMonth
@@ -145,6 +166,96 @@ public enum TinyMoon {
         return .newMoon
       }
     }
+  }
+
+  public enum MoonPhase: String {
+    case newMoon          = "New Moon"
+    case waxingCrescent   = "Waxing Crescent"
+    case firstQuarter     = "First Quarter"
+    case waxingGibbous    = "Waxing Gibbous"
+    case fullMoon         = "Full Moon"
+    case waningGibbous    = "Waning Gibbous"
+    case lastQuarter      = "Last Quarter"
+    case waningCrescent   = "Waning Crescent"
+
+    var emoji: String {
+      switch self {
+      case .newMoon:
+        "\u{1F311}" // 🌑
+      case .waxingCrescent:
+        "\u{1F312}" // 🌒
+      case .firstQuarter:
+        "\u{1F313}" // 🌓
+      case .waxingGibbous:
+        "\u{1F314}" // 🌔
+      case .fullMoon:
+        "\u{1F315}" // 🌕
+      case .waningGibbous:
+        "\u{1F316}" // 🌖
+      case .lastQuarter:
+        "\u{1F317}" // 🌗
+      case .waningCrescent:
+        "\u{1F318}" // 🌘
+      }
+    }
+  }
+
+  enum AstronomicalConstant {
+    static let radians = Double.pi / 180
+
+    // ε Epsilon
+    // The obliquity of the ecliptic. Value at the beginning of 2000:
+    static let e = 23.4397
+
+    static func degreesToRadians(_ degrees: Double) -> Double {
+      degrees * radians
+    }
+
+    static func radiansToDegrees(_ radians: Double) -> Double {
+      radians * (180 / Double.pi)
+    }
+
+    /// δ The declination shows how far the body is from the celestial equator and
+    /// determines from which parts of the Earth the object can be visible.
+    ///
+    /// - Parameters:
+    ///   - longitude: in radians
+    ///   - latitude: in radians
+    ///
+    /// - Returns: Declination, in radians
+    ///
+    /// Formula based on https://aa.quae.nl/en/reken/hemelpositie.html#1_7
+    /// and https://github.com/mourner/suncalc/blob/master/suncalc.js#L38
+    /// and https://github.com/microsoft/AirSim/blob/main/AirLib/include/common/EarthCelestial.hpp#L125
+    internal static func declination(longitude: Double, latitude: Double) -> Double {
+      let e = AstronomicalConstant.degreesToRadians(AstronomicalConstant.e)
+      return asin(sin(latitude) * cos(e) + cos(latitude) * sin(e) * sin(longitude))
+    }
+
+    /// Get the position of the Moon on a given Julian Day
+    ///
+    /// Formula from https://aa.quae.nl/en/reken/hemelpositie.html#4
+    ///
+    /// - Returns: λ longitude (in degrees), φ latitude (in degrees),  and distance (in kilometers)
+    internal static func moonPosition(julianDay: Double) -> (longitude: Double, latitude: Double, distance: Double) {
+      let daysSinceJ2000 = daysSinceJ2000(from: julianDay)
+      let L = (218.316 + 13.176396 * daysSinceJ2000).truncatingRemainder(dividingBy: 360) // Geocentric ecliptic longitude, in degrees
+      let M = (134.963 + 13.064993 * daysSinceJ2000).truncatingRemainder(dividingBy: 360) // Mean anomaly, in degrees
+      let F = (93.272 + 13.229350 * daysSinceJ2000).truncatingRemainder(dividingBy: 360) // Mean distance of the Moon from its ascending node, in degrees
+
+      let longitude = L + 6.289 * sin(AstronomicalConstant.degreesToRadians(M))                  // λ Geocentric ecliptic longitude, in degrees
+      let latitude = 5.128 * sin(AstronomicalConstant.degreesToRadians(F))                       // φ Geocentric ecliptic latitude, in degrees
+      let distance = (385001 - 20905 * cos(AstronomicalConstant.degreesToRadians(M))).rounded()  // Distance to the Moon, in kilometers
+
+      return (longitude, latitude, distance)
+    }
+
+    /// The number of days since 1 January 2000, 12:00 UTC
+    ///
+    /// `2451545.0` is the Julian date on 1 January 2000, 12:00 UTC, aka J2000.0
+    internal static func daysSinceJ2000(from jd: Double) -> Double {
+      jd - 2451545.0
+    }
 
     /// The Julian Day Count is a uniform count of days from a remote epoch in the past and is used for calculating the days between two events.
     /// The Julian day is calculated by combining the contributions from the years, months, and day, taking into account constant offsets and rounding down the result.
@@ -182,7 +293,7 @@ public enum TinyMoon {
       calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? calendar.timeZone
       let components = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
 
-      guard 
+      guard
         let year = components.year,
         let month = components.month,
         let day = components.day,
@@ -196,7 +307,7 @@ public enum TinyMoon {
       /// Used to adjust January and February to be part of the previous year.
       /// `14` is used to adjust the start of the year to March. Will either be `0` or `1`.
       let a = (14 - month) / 12
-      /// The Julian Day calculation sets year 0 as 4713 BC. 
+      /// The Julian Day calculation sets year 0 as 4713 BC.
       /// To avoid working with negative numbers, `4800` is used as an offset.
       let y = year + 4800 - a
       /// Adjusts the month for the Julian Day calculation, where March is considered the first month of the year.
@@ -216,83 +327,5 @@ public enum TinyMoon {
 
       return roundedJulianDay
     }
-
-    /// Get the position of the Moon on a given Julian Day
-    ///
-    /// Formula from https://aa.quae.nl/en/reken/hemelpositie.html#4
-    ///
-    /// - Returns: Latitude (in degrees), longitude (in degrees), and distance (in kilometers)
-    internal static func moonPosition(julianDay: Double) -> (Double, Double, Double) {
-      let radians = Double.pi / 180
-      let daysSinceJ2000 = daysSinceJ2000(from: julianDay)
-      let L = (218.316 + 13.176396 * daysSinceJ2000).truncatingRemainder(dividingBy: 360) // Geocentric ecliptic longitude, in degrees
-      let M = (134.963 + 13.064993 * daysSinceJ2000).truncatingRemainder(dividingBy: 360) // Mean anomaly, in degrees
-      let F = (93.272 + 13.229350 * daysSinceJ2000).truncatingRemainder(dividingBy: 360) // Mean distance of the Moon from its ascending node, in degrees
-
-      let latitude = L + 6.289 * sin(radians * M)                   // Geocentric ecliptic latitude, in degrees
-      let longitude = 5.128 * sin(radians * F)                      // Geocentric ecliptic longitude, in degrees
-      let distance = (385001 - 20905 * cos(radians * M)).rounded()  // Distance to the Moon, in kilometers
-
-      return (latitude, longitude, distance)
-    }
-
-    /// The number of days since 1 January 2000, 12:00 UTC
-    ///
-    /// `2451545.0` is the Julian date on 1 January 2000, 12:00 UTC, aka J2000.0
-    internal static func daysSinceJ2000(from jd: Double) -> Double {
-      jd - 2451545.0
-    }
-  }
-
-  public enum MoonPhase: String {
-    case newMoon          = "New Moon"
-    case waxingCrescent   = "Waxing Crescent"
-    case firstQuarter     = "First Quarter"
-    case waxingGibbous    = "Waxing Gibbous"
-    case fullMoon         = "Full Moon"
-    case waningGibbous    = "Waning Gibbous"
-    case lastQuarter      = "Last Quarter"
-    case waningCrescent   = "Waning Crescent"
-
-    var emoji: String {
-      switch self {
-      case .newMoon:
-        "\u{1F311}" // 🌑
-      case .waxingCrescent:
-        "\u{1F312}" // 🌒
-      case .firstQuarter:
-        "\u{1F313}" // 🌓
-      case .waxingGibbous:
-        "\u{1F314}" // 🌔
-      case .fullMoon:
-        "\u{1F315}" // 🌕
-      case .waningGibbous:
-        "\u{1F316}" // 🌖
-      case .lastQuarter:
-        "\u{1F317}" // 🌗
-      case .waningCrescent:
-        "\u{1F318}" // 🌘
-      }
-    }
-  }
-
-  private static var dateFormatter: DateFormatter {
-    let formatter = DateFormatter()
-    formatter.dateFormat = "yyyy/MM/dd HH:mm"
-    formatter.timeZone = TimeZone(identifier: "UTC")
-    return formatter
-  }
-
-  static func formatDate(
-    year: Int,
-    month: Int,
-    day: Int,
-    hour: Int = 00,
-    minute: Int = 00) -> Date
-  {
-    guard let date = TinyMoon.dateFormatter.date(from: "\(year)/\(month)/\(day) \(hour):\(minute)") else {
-      fatalError("Invalid date")
-    }
-    return date
   }
 }

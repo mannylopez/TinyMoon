@@ -62,63 +62,77 @@ final class TinyMoonTests: XCTestCase {
     }
   }
 
+  // MARK: - AstronomicalConstant tests
+
   func test_moon_julianDay() {
     // January 6, 2000 @ 00:00:00.0
     var date = TinyMoon.formatDate(year: 2000, month: 01, day: 06)
-    var julianDay = TinyMoon.Moon.julianDay(date)
+    var julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     XCTAssertEqual(julianDay, 2451549.5000)
 
     // January 6, 2000 @ 20:00:00.0
     date = TinyMoon.formatDate(year: 2000, month: 01, day: 06, hour: 20, minute: 00)
-    julianDay = TinyMoon.Moon.julianDay(date)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     XCTAssertEqual(julianDay, 2451550.3333)
 
     // August 22, 2022 @ 00:00:00.0
     date = TinyMoon.formatDate(year: 2022, month: 08, day: 22, hour: 00, minute: 00)
-    julianDay = TinyMoon.Moon.julianDay(date)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     XCTAssertEqual(julianDay, 2459813.5000)
 
     // August 22, 2022 @ 04:05:00.0
     date = TinyMoon.formatDate(year: 2022, month: 08, day: 22, hour: 04, minute: 05)
-    julianDay = TinyMoon.Moon.julianDay(date)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     XCTAssertEqual(julianDay, 2459813.6701)
   }
 
   func test_moon_lessPreciseJulianDay() {
     // January 6, 2000 @ 00:00:00.0
-    var julianDay = TinyMoon.Moon.lessPreciseJulianDay(year: 2000, month: 01, day: 06)
+    var julianDay = TinyMoon.AstronomicalConstant.lessPreciseJulianDay(year: 2000, month: 01, day: 06)
     XCTAssertEqual(julianDay, 2451549.5)
 
     // December 6, 2008 @ @ 00:00:00.0
-    julianDay = TinyMoon.Moon.lessPreciseJulianDay(year: 2008, month: 12, day: 06)
+    julianDay = TinyMoon.AstronomicalConstant.lessPreciseJulianDay(year: 2008, month: 12, day: 06)
     XCTAssertEqual(julianDay, 2454806.5)
 
     // August 22, 2022 @ 00:00:00.0
-    julianDay = TinyMoon.Moon.lessPreciseJulianDay(year: 2022, month: 08, day: 22)
+    julianDay = TinyMoon.AstronomicalConstant.lessPreciseJulianDay(year: 2022, month: 08, day: 22)
     XCTAssertEqual(julianDay, 2459813.5)
   }
 
-  func test_moon_daysSinceJ2000() {
+  func test_astronomicalConstant_daysSinceJ2000() {
     let date = TinyMoon.formatDate(year: 2004, month: 01, day: 1)
-    let julianDay = TinyMoon.Moon.julianDay(date)
+    let julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     XCTAssertEqual(julianDay, 2453005.5000)
 
-    let daysSinceJ2000 = TinyMoon.Moon.daysSinceJ2000(from: julianDay)
+    let daysSinceJ2000 = TinyMoon.AstronomicalConstant.daysSinceJ2000(from: julianDay)
     XCTAssertEqual(daysSinceJ2000, 1460.5)
   }
 
-  func test_moon_moonPosition() {
+  func test_astronomicalConstant_moonPosition() {
     let date = TinyMoon.formatDate(year: 2004, month: 01, day: 1)
-    let julianDay = TinyMoon.Moon.julianDay(date)
-    let (longitude, latitude, distance) = TinyMoon.Moon.moonPosition(julianDay: julianDay)
+    let julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    let moonPosition = TinyMoon.AstronomicalConstant.moonPosition(julianDay: julianDay)
 
 //    XCTAssertEqual(L, 22.44235800000024)  // 22.44 degrees
 //    XCTAssertEqual(M, 136.38527649999742) // 136.39 degrees
 //    XCTAssertEqual(F, 334.7376750000003)  // 334.74 degrees
 
     // Test values taken from https://aa.quae.nl/en/reken/hemelpositie.html#4
-    XCTAssertEqual(longitude, 26.78054550631917)
-    XCTAssertEqual(latitude, -2.188442146158122)
-    XCTAssertEqual(distance, 400136)
+    XCTAssertEqual(moonPosition.longitude, 26.78054550631917)
+    XCTAssertEqual(moonPosition.latitude, -2.188442146158122)
+    XCTAssertEqual(moonPosition.distance, 400136)
+  }
+
+  func test_astronomicalConstant_declination() {
+    // Test values taken from https://aa.quae.nl/en/reken/hemelpositie.html#1_7
+    let longitude = TinyMoon.AstronomicalConstant.degreesToRadians(168.737)
+    let latitude = TinyMoon.AstronomicalConstant.degreesToRadians(1.208)
+    let declination = TinyMoon.AstronomicalConstant.declination(longitude: longitude, latitude: latitude)
+
+    let tolerance = 1e-5
+    XCTAssertTrue(abs(declination - TinyMoon.AstronomicalConstant.degreesToRadians(5.567)) < tolerance)
+
+    XCTAssertEqual(declination, 0.09717015472346271)
   }
 }
