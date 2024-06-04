@@ -152,4 +152,12 @@ final class TinyMoonTests: XCTestCase {
     let solarMeanAnomaly = TinyMoon.AstronomicalConstant.solarMeanAnomaly(julianDay: julianDay)
     XCTAssertEqual(solarMeanAnomaly, 31.363535104530555)
   }
+
+  func test_astronomicalConstant_eclipticLongitude() {
+    let date = TinyMoon.formatDate(year: 2004, month: 01, day: 1)
+    let julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    let solarMeanAnomaly = TinyMoon.AstronomicalConstant.solarMeanAnomaly(julianDay: julianDay)
+    let eclipticLongitude = TinyMoon.AstronomicalConstant.eclipticLongitude(solarMeanAnomaly: solarMeanAnomaly)
+    XCTAssertEqual(eclipticLongitude, 36.29993339416619)
+  }
 }

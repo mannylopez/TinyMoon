@@ -207,6 +207,8 @@ public enum TinyMoon {
     // The obliquity of the ecliptic. Value at the beginning of 2000:
     static let e = 23.4397
 
+    static let perihelion = 102.9372
+
     static func degreesToRadians(_ degrees: Double) -> Double {
       degrees * radians
     }
@@ -248,6 +250,8 @@ public enum TinyMoon {
       return atan2(sin(longitude) * cos(e) - tan(latitude) * sin(e), cos(longitude))
     }
 
+    // MARK: Moon methods
+
     /// Get the position of the Moon on a given Julian Day
     ///
     /// - Parameters:
@@ -271,6 +275,8 @@ public enum TinyMoon {
       return (longitude, latitude, distance)
     }
 
+    // MARK: Solar methods
+
     /// The mean anomaly for the sun
     ///
     /// - Parameters:
@@ -278,7 +284,7 @@ public enum TinyMoon {
     ///
     /// - Returns: Mean anomaly for the sun, in radians
     ///
-    /// Formula from https://aa.quae.nl/en/reken/hemelpositie.html#1_1
+    /// Formula based https://aa.quae.nl/en/reken/hemelpositie.html#1_1
     /// https://github.com/microsoft/AirSim/blob/main/AirLib/include/common/EarthCelestial.hpp#L155
     /// and https://github.com/mourner/suncalc/blob/master/suncalc.js#L57
     internal static func solarMeanAnomaly(julianDay: Double) -> Double {
@@ -286,6 +292,23 @@ public enum TinyMoon {
       return AstronomicalConstant.degreesToRadians((357.5291 + 0.9856002 * daysSinceJ2000))
     }
 
+    /// The ecliptic longitude λ [lambda] shows how far the celestial body is from the vernal equinox, measured along the ecliptic
+    ///
+    /// - Parameters:
+    ///   - solarMeanAnomaly: in radians
+    ///
+    /// - Returns: Ecliptic longitude, in radians
+    ///
+    /// Formula based on https://aa.quae.nl/en/reken/hemelpositie.html#1_1
+    /// and https://github.com/microsoft/AirSim/blob/main/AirLib/include/common/EarthCelestial.hpp#L160
+    /// and https://github.com/mourner/suncalc/blob/master/suncalc.js#L59
+    internal static func eclipticLongitude(solarMeanAnomaly: Double) -> Double {
+      let center = degreesToRadians((1.9148 * sin(solarMeanAnomaly) + 0.02 * sin(2 * solarMeanAnomaly) + 0.0003 * sin(3 * solarMeanAnomaly))) // Equation of center
+      let perihelionInRadians = degreesToRadians(perihelion)
+      return solarMeanAnomaly + center + perihelionInRadians + Double.pi
+    }
+
+    // MARK: Julian day methods
 
     /// The number of Julian days since 1 January 2000, 12:00 UTC
     ///
