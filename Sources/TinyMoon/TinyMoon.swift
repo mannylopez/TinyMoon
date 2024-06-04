@@ -257,22 +257,25 @@ public enum TinyMoon {
     /// - Parameters:
     ///   - julianDay: The date in Julian Days
     ///
-    /// - Returns: λ longitude (in degrees), φ latitude (in degrees), and distance (in kilometers)
+    /// - Returns: Tuple with δ declination (in radians), α rightAscension (in radians), and distance (in kilometers)
     ///
     /// Formula based on  https://aa.quae.nl/en/reken/hemelpositie.html#4
     /// and https://github.com/microsoft/AirSim/blob/main/AirLib/include/common/EarthCelestial.hpp#L180
     /// and https://github.com/mourner/suncalc/blob/master/suncalc.js#L186
-    internal static func moonCoordinates(julianDay: Double) -> (longitude: Double, latitude: Double, distance: Double) {
+    internal static func moonCoordinates(julianDay: Double) -> (declination: Double, rightAscension: Double, distance: Double) {
       let daysSinceJ2000 = daysSinceJ2000(from: julianDay)
-      let L = (218.316 + 13.176396 * daysSinceJ2000).truncatingRemainder(dividingBy: 360) // Geocentric ecliptic longitude, in degrees
-      let M = (134.963 + 13.064993 * daysSinceJ2000).truncatingRemainder(dividingBy: 360) // Mean anomaly, in degrees
-      let F = (93.272 + 13.229350 * daysSinceJ2000).truncatingRemainder(dividingBy: 360) // Mean distance of the Moon from its ascending node, in degrees
+      let L = AstronomicalConstant.degreesToRadians(218.316 + 13.176396 * daysSinceJ2000) // Geocentric ecliptic longitude, in radians
+      let M = AstronomicalConstant.degreesToRadians(134.963 + 13.064993 * daysSinceJ2000) // Mean anomaly, in radians
+      let F = AstronomicalConstant.degreesToRadians(93.272 + 13.229350 * daysSinceJ2000) // Mean distance of the Moon from its ascending node, in radians
 
-      let longitude = L + 6.289 * sin(AstronomicalConstant.degreesToRadians(M))                  // λ Geocentric ecliptic longitude, in degrees
-      let latitude = 5.128 * sin(AstronomicalConstant.degreesToRadians(F))                       // φ Geocentric ecliptic latitude, in degrees
-      let distance = (385001 - 20905 * cos(AstronomicalConstant.degreesToRadians(M))).rounded()  // Distance to the Moon, in kilometers
+      let longitude = L + AstronomicalConstant.degreesToRadians(6.289 * sin(M))                  // λ Geocentric ecliptic longitude, in radians
+      let latitude = AstronomicalConstant.degreesToRadians(5.128 * sin(F))                       // φ Geocentric ecliptic latitude, in radians
+      let distance = 385001 - 20905 * cos(M)  // Distance to the Moon, in kilometers
 
-      return (longitude, latitude, distance)
+      let declination = declination(longitude: longitude, latitude: latitude)
+      let rightAscension = rightAscension(longitude: longitude, latitude: latitude)
+
+      return (declination, rightAscension, distance)
     }
 
     // MARK: Solar methods

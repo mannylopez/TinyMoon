@@ -114,14 +114,17 @@ final class TinyMoonTests: XCTestCase {
     let julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     let moonCoordinates = TinyMoon.AstronomicalConstant.moonCoordinates(julianDay: julianDay)
 
-//    XCTAssertEqual(L, 22.44235800000024)  // 22.44 degrees
-//    XCTAssertEqual(M, 136.38527649999742) // 136.39 degrees
-//    XCTAssertEqual(F, 334.7376750000003)  // 334.74 degrees
-
     // Test values taken from https://aa.quae.nl/en/reken/hemelpositie.html#4
-    XCTAssertEqual(moonCoordinates.longitude, 26.78054550631917)
-    XCTAssertEqual(moonCoordinates.latitude, -2.188442146158122)
-    XCTAssertEqual(moonCoordinates.distance, 400136)
+//    XCTAssertEqual(moonCoordinates.L, 339.683699626709)  // 22.44 degrees
+//    XCTAssertEqual(moonCoordinates.M, 335.3891934066859) // 136.39 degrees
+//    XCTAssertEqual(moonCoordinates.F, 338.8510958397388)  // 334.74 degrees
+//
+//    XCTAssertEqual(moonCoordinates.longitude, 339.7594152822631) // 0.46740869456428196793
+//    XCTAssertEqual(moonCoordinates.latitude, -0.038195520939872045) // -0.038195520939775448599
+
+    XCTAssertEqual(moonCoordinates.declination, 0.14456842408751425)
+    XCTAssertEqual(moonCoordinates.rightAscension, 0.4475918797699177)
+    XCTAssertEqual(moonCoordinates.distance, 400136.10760520655)
   }
 
   func test_astronomicalConstant_declination() {
