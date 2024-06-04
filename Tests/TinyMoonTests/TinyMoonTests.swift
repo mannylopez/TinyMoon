@@ -64,7 +64,21 @@ final class TinyMoonTests: XCTestCase {
 
   // MARK: - AstronomicalConstant tests
 
-  func test_moon_julianDay() {
+  func test_astronomicalConstant_degreesToRadians() {
+    let degrees = 5729.58
+    let radians = 100.00003575641671
+    let convertedUnit = TinyMoon.AstronomicalConstant.degreesToRadians(degrees)
+    XCTAssertEqual(convertedUnit, radians)
+  }
+
+  func test_astronomicalConstant_radiansToDegrees() {
+    let degrees = 5729.58
+    let radians = 100.00003575641671
+    let convertedUnit = TinyMoon.AstronomicalConstant.radiansToDegrees(radians)
+    XCTAssertEqual(convertedUnit, degrees)
+  }
+
+  func test_astronomicalConstant_julianDay() {
     // January 6, 2000 @ 00:00:00.0
     var date = TinyMoon.formatDate(year: 2000, month: 01, day: 06)
     var julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
@@ -86,7 +100,7 @@ final class TinyMoonTests: XCTestCase {
     XCTAssertEqual(julianDay, 2459813.6701)
   }
 
-  func test_moon_lessPreciseJulianDay() {
+  func test_astronomicalConstant_lessPreciseJulianDay() {
     // January 6, 2000 @ 00:00:00.0
     var julianDay = TinyMoon.AstronomicalConstant.lessPreciseJulianDay(year: 2000, month: 01, day: 06)
     XCTAssertEqual(julianDay, 2451549.5)
