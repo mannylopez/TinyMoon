@@ -209,6 +209,8 @@ public enum TinyMoon {
 
     static let perihelion = 102.9372
 
+    static let astronomicalUnit = 149598000.0
+
     static func degreesToRadians(_ degrees: Double) -> Double {
       degrees * radians
     }
@@ -276,6 +278,34 @@ public enum TinyMoon {
       let rightAscension = rightAscension(longitude: longitude, latitude: latitude)
 
       return (declination, rightAscension, distance)
+    }
+
+    /// Get Moon phase
+    ///
+    /// - Parameters:
+    ///   - julianDay: The date in Julian Days
+    ///
+    /// - Returns: Tuple containing illuminatedFraction, phase, and angle
+    ///
+    /// - illuminatedFraction: Varies between `0.0` new moon and `1.0` full moon
+    /// - phase: Varies between `0.0` to `0.99`. `0.0` new moon, `0.25` first quarter, `0.5` full moon, `0.75` last quarter
+    ///
+    /// Formula based on https://github.com/microsoft/AirSim/blob/main/AirLib/include/common/EarthCelestial.hpp#L89
+    /// and https://github.com/mourner/suncalc/blob/master/suncalc.js#L230
+    internal static func getMoonPhase(julianDay: Double) -> (illuminatedFraction: Double, phase: Double, angle: Double) {
+      let s = sunCoordinates(julianDay: julianDay)
+      let m = moonCoordinates(julianDay: julianDay)
+
+      // Geocentric Ecliptic Longitude
+      let phi = acos(sin(s.declination) * sin(m.declination) + cos(s.declination) * cos(m.declination) * cos(s.rightAscension - m.rightAscension))
+      //  Inclination of Orbit
+      let inc = atan2(astronomicalUnit * sin(phi), m.distance - astronomicalUnit * cos(phi))
+      let angle = atan2(cos(s.declination) * sin(s.rightAscension - m.rightAscension), sin(s.declination) * cos(m.declination) - cos(s.declination) * sin(m.declination) * cos(s.rightAscension - m.rightAscension))
+
+      let illuminatedFraction = (1 + cos(inc)) / 2
+      let phase = 0.5 + 0.5 * inc * (angle < 0 ? -1 : 1) / Double.pi
+
+      return (illuminatedFraction, phase, angle)
     }
 
     // MARK: Solar methods

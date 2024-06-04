@@ -172,4 +172,42 @@ final class TinyMoonTests: XCTestCase {
     XCTAssertEqual(moonCoordinates.declination, -0.4027395448243531)
     XCTAssertEqual(moonCoordinates.rightAscension, -1.3840846794023092)
   }
+
+  func test_astronomicalConstant_getMoonPhase() {
+    // Full moon
+    var date = TinyMoon.formatDate(year: 2024, month: 06, day: 22)
+    var julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    var moonPhase = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
+
+    XCTAssertEqual(moonPhase.illuminatedFraction, 0.9978874952116796)
+    XCTAssertEqual(moonPhase.phase, 0.4853646873327652)
+    XCTAssertEqual(moonPhase.angle, -2.87048004074093)
+
+    // New moon
+    date = TinyMoon.formatDate(year: 2024, month: 07, day: 06, hour: 12, minute: 37)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    moonPhase = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
+
+    XCTAssertEqual(moonPhase.illuminatedFraction, 0.0074256887778501035)
+    XCTAssertEqual(moonPhase.phase, 0.027463599533906702)
+    XCTAssertEqual(moonPhase.angle, -1.9356269936608987)
+
+    // First quarter
+    date = TinyMoon.formatDate(year: 2024, month: 08, day: 12, hour: 15, minute: 18)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    moonPhase = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
+
+    XCTAssertEqual(moonPhase.illuminatedFraction, 0.5105142058965426)
+    XCTAssertEqual(moonPhase.phase, 0.25334702238541357)
+    XCTAssertEqual(moonPhase.angle, -1.2995626391218953)
+
+    // Last quarter
+    date = TinyMoon.formatDate(year: 2024, month: 08, day: 26, hour: 09, minute: 25)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    moonPhase = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
+
+    XCTAssertEqual(moonPhase.illuminatedFraction, 0.5115277719739029)
+    XCTAssertEqual(moonPhase.phase, 0.7463302710536945)
+    XCTAssertEqual(moonPhase.angle, 1.3632143802303285)
+  }
 }
