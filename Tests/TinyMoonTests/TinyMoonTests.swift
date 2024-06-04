@@ -109,7 +109,7 @@ final class TinyMoonTests: XCTestCase {
     XCTAssertEqual(daysSinceJ2000, 1460.5)
   }
 
-  func test_astronomicalConstant_moonPosition() {
+  func test_astronomicalConstant_moonCoordinates() {
     let date = TinyMoon.formatDate(year: 2004, month: 01, day: 1)
     let julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     let moonCoordinates = TinyMoon.AstronomicalConstant.moonCoordinates(julianDay: julianDay)
@@ -159,5 +159,14 @@ final class TinyMoonTests: XCTestCase {
     let solarMeanAnomaly = TinyMoon.AstronomicalConstant.solarMeanAnomaly(julianDay: julianDay)
     let eclipticLongitude = TinyMoon.AstronomicalConstant.eclipticLongitude(solarMeanAnomaly: solarMeanAnomaly)
     XCTAssertEqual(eclipticLongitude, 36.29993339416619)
+  }
+
+  func test_astronomicalConstant_sunCoordinates() {
+    let date = TinyMoon.formatDate(year: 2004, month: 01, day: 1)
+    let julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    let moonCoordinates = TinyMoon.AstronomicalConstant.sunCoordinates(julianDay: julianDay)
+
+    XCTAssertEqual(moonCoordinates.declination, -0.4027395448243531)
+    XCTAssertEqual(moonCoordinates.rightAscension, -1.3840846794023092)
   }
 }

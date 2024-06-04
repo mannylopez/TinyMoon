@@ -257,7 +257,7 @@ public enum TinyMoon {
     /// - Parameters:
     ///   - julianDay: The date in Julian Days
     ///
-    /// - Returns: λ longitude (in degrees), φ latitude (in degrees),  and distance (in kilometers)
+    /// - Returns: λ longitude (in degrees), φ latitude (in degrees), and distance (in kilometers)
     ///
     /// Formula based on  https://aa.quae.nl/en/reken/hemelpositie.html#4
     /// and https://github.com/microsoft/AirSim/blob/main/AirLib/include/common/EarthCelestial.hpp#L180
@@ -306,6 +306,26 @@ public enum TinyMoon {
       let center = degreesToRadians((1.9148 * sin(solarMeanAnomaly) + 0.02 * sin(2 * solarMeanAnomaly) + 0.0003 * sin(3 * solarMeanAnomaly))) // Equation of center
       let perihelionInRadians = degreesToRadians(perihelion)
       return solarMeanAnomaly + center + perihelionInRadians + Double.pi
+    }
+
+    /// Get the position of the Sun on a given Julian Day
+    ///
+    /// - Parameters:
+    ///   - julianDay: The date in Julian Days
+    ///
+    /// - Returns: Tuple with δ declination (in radians) and α rightAscension (in radians)
+    ///
+    /// Formula from https://aa.quae.nl/en/reken/hemelpositie.html#1
+    /// https://github.com/microsoft/AirSim/blob/main/AirLib/include/common/EarthCelestial.hpp#L167
+    /// and https://github.com/mourner/suncalc/blob/master/suncalc.js#L67
+    internal static func sunCoordinates(julianDay: Double) -> (declination: Double, rightAscension: Double) {
+      let solarMeanAnomaly = solarMeanAnomaly(julianDay: julianDay)
+      let eclipticLongitude = eclipticLongitude(solarMeanAnomaly: solarMeanAnomaly)
+
+      let declination = declination(longitude: eclipticLongitude, latitude: 0)
+      let rightAscension = rightAscension(longitude: eclipticLongitude, latitude: 0)
+
+      return (declination, rightAscension)
     }
 
     // MARK: Julian day methods
