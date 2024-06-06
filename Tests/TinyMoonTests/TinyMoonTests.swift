@@ -2,36 +2,51 @@ import XCTest
 @testable import TinyMoon
 
 final class TinyMoonTests: XCTestCase {
-  func test_tinyMoon_calculateMoonPhase_returnsFullMoon() throws {
-    let date = TinyMoon.formatDate(year: 2024, month: 04, day: 23)
-    let moon = TinyMoon.calculateMoonPhase(date)
 
-    XCTAssertTrue(moon.isFullMoon())
-    XCTAssertEqual(moon.fullMoonName, "Pink Moon")
-    XCTAssertEqual(moon.daysTillFullMoon, 0)
-    XCTAssertEqual(moon.emoji, "\u{1F315}") // 🌕
+  func test_moon_daysUntilFullMoon() {
+    // Jun 22
+    var date = TinyMoon.formatDate(year: 2024, month: 06, day: 20)
+    var julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    var daysTill = TinyMoon.Moon.daysUntilFullMoon(julianDay: julianDay)
+    XCTAssertEqual(daysTill, 2)
+
+    // Apr 23  23:48
+    date = TinyMoon.formatDate(year: 2024, month: 04, day: 20)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilFullMoon(julianDay: julianDay)
+    XCTAssertEqual(daysTill, 3)
+
+    // Sep 18  02:34
+    date = TinyMoon.formatDate(year: 2024, month: 09, day: 12)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilFullMoon(julianDay: julianDay)
+    XCTAssertEqual(daysTill, 6)
+
+    // Nov 15  21:28
+    date = TinyMoon.formatDate(year: 2024, month: 11, day: 13)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilFullMoon(julianDay: julianDay)
+    XCTAssertEqual(daysTill, 2)
   }
 
-  func test_moon_daysTillFullMoon_returnsCorrectDays() throws {
-    let date = TinyMoon.formatDate(year: 2024, month: 04, day: 22)
-    let moon = TinyMoon.calculateMoonPhase(date)
+  func test_moon_daysUntilNewMoon() {
+    // May 8  03:21
+    var date = TinyMoon.formatDate(year: 2024, month: 05, day: 06)
+    var julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    var daysTill = TinyMoon.Moon.daysUntilNewMoon(julianDay: julianDay)
+    XCTAssertEqual(daysTill, 2)
 
-    XCTAssertFalse(moon.isFullMoon())
-    XCTAssertNil(moon.fullMoonName)
-    XCTAssertEqual(moon.daysTillFullMoon, 1)
-    XCTAssertEqual(moon.emoji, "\u{1F314}") // 🌔
-  }
+    // Jul 5  22:57
+    date = TinyMoon.formatDate(year: 2024, month: 07, day: 02)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilNewMoon(julianDay: julianDay)
+    XCTAssertEqual(daysTill, 3)
 
-  func test_tinyMoon_calculateMoonPhase_returnsNewMoon() throws {
-    var date = TinyMoon.formatDate(year: 2024, month: 11, day: 01)
-    var moon = TinyMoon.calculateMoonPhase(date)
-    XCTAssertEqual(moon.emoji, "\u{1F311}") // 🌑
-    XCTAssertEqual(moon.daysTillNewMoon, 0)
-
-    date = TinyMoon.formatDate(year: 2024, month: 12, day: 1)
-    moon = TinyMoon.calculateMoonPhase(date)
-    XCTAssertEqual(moon.emoji, "\u{1F311}") // 🌑
-    XCTAssertEqual(moon.daysTillNewMoon, 0)
+    // Sep 3  01:55
+    date = TinyMoon.formatDate(year: 2024, month: 08, day: 30)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilNewMoon(julianDay: julianDay)
+    XCTAssertEqual(daysTill, 4)
   }
 
   func test_moon_uniquePhases() {

@@ -34,11 +34,16 @@ public enum TinyMoon {
       self.phaseFraction = moonPhaseData.phase
       self.illuminatedFraction = moonPhaseData.illuminatedFraction
       self.date = date
-      self.lunarDay = Moon.lunarDay(for: date)
-      self.maxLunarDay = Moon.maxLunarDayInCycle(starting: date)
-      self.moonPhase = Moon.moonPhase(lunarDay: Int(floor(lunarDay)))
+      self.daysTillFullMoon = Moon.daysUntilFullMoon(julianDay: julianDay)
+      self.daysTillNewMoon = Moon.daysUntilNewMoon(julianDay: julianDay)
+      self.moonPhase = Moon.moonPhase(phaseFraction: phaseFraction)
       self.name = moonPhase.rawValue
       self.emoji = moonPhase.emoji
+
+      // TODO: Remove `lunarDay` and `maxLunarDay`
+      self.lunarDay = Moon.lunarDay(for: date)
+      self.maxLunarDay = Moon.maxLunarDayInCycle(starting: date)
+
     }
 
     /// Represents where the phase is in the current synodic cycle. Varies between `0.0` to `0.99`.
@@ -52,31 +57,21 @@ public enum TinyMoon {
     public let moonPhase: MoonPhase
     public let name: String
     public let emoji: String
+    public let date: Date
+
+    // TODO: Remove `lunarDay`,  `maxLunarDay`, wholeLunarDay
     public let lunarDay: Double
     public let maxLunarDay: Double
-    public let date: Date
     private var wholeLunarDay: Int {
       Int(floor(lunarDay))
     }
 
-    // Returns `0` if the current `date` is a full moon
-    public var daysTillFullMoon: Int {
-      if wholeLunarDay > 14 {
-        return 29 - wholeLunarDay + 14
-      } else {
-        return 14 - wholeLunarDay
-      }
-    }
+    /// Returns `0` if the current `date` is a full moon
+    public var daysTillFullMoon: Int
 
-    // Returns `0` if the current `date` is a new moon
-    public var daysTillNewMoon: Int {
-      if wholeLunarDay == 0 {
-        return 0
-      } else {
-        let daysTillNextNewMoon = Int(ceil(maxLunarDay)) - wholeLunarDay
-        return daysTillNextNewMoon
-      }
-    }
+    // TODO: Refactor daysTillNewMoon
+    /// Returns `0` if the current `date` is a new moon
+    public var daysTillNewMoon: Int
 
     public func isFullMoon() -> Bool {
       switch moonPhase {
@@ -114,6 +109,7 @@ public enum TinyMoon {
       }
     }
 
+    // TODO: Remove
     internal static func lunarDay(for date: Date, usePreciseJulianDay: Bool = false) -> Double {
       let synodicMonth = 29.53058770576
 
@@ -145,6 +141,7 @@ public enum TinyMoon {
       return lunarDay
     }
 
+    // TODO: Remove
     internal static func maxLunarDayInCycle(starting date: Date) -> Double {
       let maxLunarDay = lunarDay(for: date)
       let calendar = Calendar.current
@@ -158,22 +155,43 @@ public enum TinyMoon {
       return maxLunarDay
     }
 
-    internal static func moonPhase(lunarDay: Int) -> MoonPhase {
-      if lunarDay < 1  {
+    internal static func daysUntilFullMoon(julianDay: Double) -> Int {
+      let moonPhaseFraction = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay).phase
+      let moonPhase = TinyMoon.Moon.moonPhase(phaseFraction: moonPhaseFraction)
+      if moonPhase == .fullMoon {
+        return 0
+      } else {
+        return 1
+      }
+    }
+
+    internal static func daysUntilNewMoon(julianDay: Double) -> Int {
+      let moonPhaseFraction = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay).phase
+      let moonPhase = TinyMoon.Moon.moonPhase(phaseFraction: moonPhaseFraction)
+      if moonPhase == .newMoon {
+        return 0
+      } else {
+        return 1
+      }
+    }
+
+    internal static func moonPhase(phaseFraction: Double) -> MoonPhase {
+      let localPhase = Int(floor(phaseFraction * 100))
+      if localPhase < 2  {
         return .newMoon
-      } else if lunarDay < 6 {
+      } else if localPhase < 23 {
         return .waxingCrescent
-      } else if lunarDay < 7 {
+      } else if localPhase < 27 {
         return .firstQuarter
-      } else if lunarDay < 14 {
+      } else if localPhase < 48 {
         return .waxingGibbous
-      } else if lunarDay < 15 {
+      } else if localPhase < 52 {
         return .fullMoon
-      } else if lunarDay < 21 {
+      } else if localPhase < 73 {
         return .waningGibbous
-      } else if lunarDay < 22 {
+      } else if localPhase < 77 {
         return .lastQuarter
-      } else if lunarDay < 30 {
+      } else if localPhase < 98 {
         return .waningCrescent
       } else {
         return .newMoon

@@ -118,8 +118,8 @@ extension MoonTestHelper {
     ...
     \(moon.date)
       \(title)
-      - lunarDay: \(moon.lunarDay)
-      - maxLunarDay: \(moon.maxLunarDay)
+      - phaseFraction: \(moon.phaseFraction)
+      - illuminatedFraction: \(moon.illuminatedFraction)
       - daysTillFullMoon: \(moon.daysTillFullMoon)
       - daysTillNewMoon: \(moon.daysTillNewMoon)
     """
