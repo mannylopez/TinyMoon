@@ -28,6 +28,11 @@ public enum TinyMoon {
 
   public struct Moon: Hashable {
     init(date: Date) {
+      let julianDay = AstronomicalConstant.julianDay(date)
+      let moonPhaseData = AstronomicalConstant.getMoonPhase(julianDay: julianDay)
+
+      self.phaseFraction = moonPhaseData.phase
+      self.illuminatedFraction = moonPhaseData.illuminatedFraction
       self.date = date
       self.lunarDay = Moon.lunarDay(for: date)
       self.maxLunarDay = Moon.maxLunarDayInCycle(starting: date)
@@ -36,6 +41,14 @@ public enum TinyMoon {
       self.emoji = moonPhase.emoji
     }
 
+    /// Represents where the phase is in the current synodic cycle. Varies between `0.0` to `0.99`.
+    ///
+    /// `0.0` new moon, `0.25` first quarter, `0.5` full moon, `0.75` last
+    public let phaseFraction: Double
+    /// Illuminated fraction of Moon's disk, between `0.0` and `1.0`.
+    ///
+    /// `0` indicates a new moon and `1.0` indicates a full moon.
+    public let illuminatedFraction: Double
     public let moonPhase: MoonPhase
     public let name: String
     public let emoji: String

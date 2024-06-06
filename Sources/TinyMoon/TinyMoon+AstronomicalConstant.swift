@@ -98,13 +98,14 @@ extension TinyMoon {
     ///
     /// Formula based on https://github.com/microsoft/AirSim/blob/main/AirLib/include/common/EarthCelestial.hpp#L89
     /// and https://github.com/mourner/suncalc/blob/master/suncalc.js#L230
+    /// and https://github.com/wlandsman/IDLAstro/blob/master/pro/mphase.pro
     internal static func getMoonPhase(julianDay: Double) -> (illuminatedFraction: Double, phase: Double, angle: Double) {
       let s = sunCoordinates(julianDay: julianDay)
       let m = moonCoordinates(julianDay: julianDay)
 
-      // Geocentric Ecliptic Longitude
+      // Geocentric elongation of the Moon from the Sun
       let phi = acos(sin(s.declination) * sin(m.declination) + cos(s.declination) * cos(m.declination) * cos(s.rightAscension - m.rightAscension))
-      //  Inclination of Orbit
+      //  Selenocentric (Moon centered) elongation of the Earth from the Sun
       let inc = atan2(astronomicalUnit * sin(phi), m.distance - astronomicalUnit * cos(phi))
       let angle = atan2(cos(s.declination) * sin(s.rightAscension - m.rightAscension), sin(s.declination) * cos(m.declination) - cos(s.declination) * sin(m.declination) * cos(s.rightAscension - m.rightAscension))
 
