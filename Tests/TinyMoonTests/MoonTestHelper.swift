@@ -5,8 +5,8 @@ import Foundation
 
 enum MoonTestHelper {
   /// Helper function to return a moon object for a given Date
-  static func moonDay(year: Int, month: Int, day: Int) -> TinyMoon.Moon {
-    let date = TinyMoon.formatDate(year: year, month: month, day: day)
+  static func moonDay(year: Int, month: Int, day: Int, hour: Int = 0, minute: Int = 0) -> TinyMoon.Moon {
+    let date = TinyMoon.formatDate(year: year, month: month, day: day, hour: hour, minute: minute)
     let moon = TinyMoon.calculateMoonPhase(date)
     return moon
   }
@@ -107,7 +107,7 @@ extension MoonTestHelper {
   ///     - daysTillNewMoon: 0
   /// ```
   static func prettyPrintMoonObject(_ moon: TinyMoon.Moon) {
-    var title = ""
+    var title: String
     switch moon.moonPhase {
     case .newMoon, .firstQuarter, .fullMoon, .lastQuarter:
       title = "\(moon.emoji) \(moon.moonPhase)"
@@ -118,8 +118,8 @@ extension MoonTestHelper {
     ...
     \(moon.date)
       \(title)
-      - lunarDay: \(moon.lunarDay)
-      - maxLunarDay: \(moon.maxLunarDay)
+      - moonPhaseFraction: \(moon.moonPhaseFraction * 100)
+      - percentIlluminated: \(moon.percentIlluminated)
       - daysTillFullMoon: \(moon.daysTillFullMoon)
       - daysTillNewMoon: \(moon.daysTillNewMoon)
     """
