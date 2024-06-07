@@ -114,6 +114,24 @@ public enum TinyMoon {
       }
     }
 
+    internal static func julianDaysFor24HourPeriod(julianDay: Double) -> [Double] {
+      let wholePart = floor(julianDay)
+      let fractionalPart = julianDay.truncatingRemainder(dividingBy: 1)
+      var julianDays: [Double] = []
+      if fractionalPart >= 0.5 {
+        julianDays.append(wholePart + 0.5)
+        julianDays.append(wholePart + 0.75)
+        julianDays.append(wholePart + 1.0)
+        julianDays.append(wholePart + 1.25)
+      } else {
+        julianDays.append((wholePart - 1) + 0.5)
+        julianDays.append((wholePart - 1) + 0.75)
+        julianDays.append(wholePart + 0.0)
+        julianDays.append(wholePart + 0.25)
+      }
+      return julianDays
+    }
+
     internal static func moonPhase(phaseFraction: Double) -> MoonPhase {
       if phaseFraction < 0.2  {
         return .newMoon
