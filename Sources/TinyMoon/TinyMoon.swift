@@ -39,11 +39,6 @@ public enum TinyMoon {
       self.moonPhase = Moon.moonPhase(phaseFraction: phaseFraction)
       self.name = moonPhase.rawValue
       self.emoji = moonPhase.emoji
-
-      // TODO: Remove `lunarDay` and `maxLunarDay`
-      self.lunarDay = Moon.lunarDay(for: date)
-      self.maxLunarDay = Moon.maxLunarDayInCycle(starting: date)
-
     }
 
     /// Represents where the phase is in the current synodic cycle. Varies between `0.0` to `0.99`.
@@ -58,18 +53,8 @@ public enum TinyMoon {
     public let name: String
     public let emoji: String
     public let date: Date
-
-    // TODO: Remove `lunarDay`,  `maxLunarDay`, wholeLunarDay
-    public let lunarDay: Double
-    public let maxLunarDay: Double
-    private var wholeLunarDay: Int {
-      Int(floor(lunarDay))
-    }
-
     /// Returns `0` if the current `date` is a full moon
     public var daysTillFullMoon: Int
-
-    // TODO: Refactor daysTillNewMoon
     /// Returns `0` if the current `date` is a new moon
     public var daysTillNewMoon: Int
 
@@ -107,52 +92,6 @@ public enum TinyMoon {
       case 12: "Cold Moon"
       default: nil
       }
-    }
-
-    // TODO: Remove
-    internal static func lunarDay(for date: Date, usePreciseJulianDay: Bool = false) -> Double {
-      let synodicMonth = 29.53058770576
-
-      var calendar = Calendar.current
-      calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? calendar.timeZone
-      let components = calendar.dateComponents([.year, .month, .day], from: date)
-
-      guard
-        let year = components.year,
-        let month = components.month,
-        let day = components.day
-      else {
-        print("Error: Cannot resolve year, month, or day.")
-        FileHandle.standardError.write("Error: Cannot resolve year, month, or day".data(using: .utf8)!)
-        exit(1)
-      }
-
-      var dateDifference: Double
-      if usePreciseJulianDay {
-        // Days between the given day and a known new moon date (January 6th, 2000)
-        let knownNewMoonDate = TinyMoon.formatDate(year: 2000, month: 01, day: 06, hour: 18, minute: 13)
-        dateDifference = AstronomicalConstant.julianDay(date) - AstronomicalConstant.julianDay(knownNewMoonDate)
-      } else {
-        // Days between a known new moon date (January 6th, 2000) and the given day
-        dateDifference = AstronomicalConstant.lessPreciseJulianDay(year: year, month: month, day: day) - AstronomicalConstant.lessPreciseJulianDay(year: 2000, month: 1, day: 6)
-      }
-      // Divide by synodic month `29.53058770576`
-      let lunarDay = (dateDifference / synodicMonth).truncatingRemainder(dividingBy: 1) * synodicMonth
-      return lunarDay
-    }
-
-    // TODO: Remove
-    internal static func maxLunarDayInCycle(starting date: Date) -> Double {
-      let maxLunarDay = lunarDay(for: date)
-      let calendar = Calendar.current
-      if let tomorrow = calendar.date(byAdding: .day, value: 1, to: date) {
-        if lunarDay(for: tomorrow) < maxLunarDay {
-          return maxLunarDay
-        } else {
-          return maxLunarDayInCycle(starting: tomorrow)
-        }
-      }
-      return maxLunarDay
     }
 
     internal static func daysUntilFullMoon(julianDay: Double) -> Int {
