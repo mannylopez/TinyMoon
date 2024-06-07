@@ -115,22 +115,21 @@ public enum TinyMoon {
     }
 
     internal static func moonPhase(phaseFraction: Double) -> MoonPhase {
-      let localPhase = Int(floor(phaseFraction * 100))
-      if localPhase < 2  {
+      if phaseFraction < 0.2  {
         return .newMoon
-      } else if localPhase < 23 {
+      } else if phaseFraction < 0.23 {
         return .waxingCrescent
-      } else if localPhase < 27 {
+      } else if phaseFraction < 0.27 {
         return .firstQuarter
-      } else if localPhase < 48 {
+      } else if phaseFraction < 0.48 {
         return .waxingGibbous
-      } else if localPhase < 52 {
+      } else if phaseFraction < 0.52 {
         return .fullMoon
-      } else if localPhase < 73 {
+      } else if phaseFraction < 0.73 {
         return .waningGibbous
-      } else if localPhase < 77 {
+      } else if phaseFraction < 0.77 {
         return .lastQuarter
-      } else if localPhase < 98 {
+      } else if phaseFraction < 0.98 {
         return .waningCrescent
       } else {
         return .newMoon

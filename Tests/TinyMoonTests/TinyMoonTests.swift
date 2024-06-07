@@ -10,17 +10,17 @@ final class TinyMoonTests: XCTestCase {
     var daysTill = TinyMoon.Moon.daysUntilFullMoon(julianDay: julianDay)
     XCTAssertEqual(daysTill, 2)
 
-    // Apr 23  23:48
-    date = TinyMoon.formatDate(year: 2024, month: 04, day: 20)
-    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    daysTill = TinyMoon.Moon.daysUntilFullMoon(julianDay: julianDay)
-    XCTAssertEqual(daysTill, 3)
-
     // Sep 18  02:34
     date = TinyMoon.formatDate(year: 2024, month: 09, day: 12)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     daysTill = TinyMoon.Moon.daysUntilFullMoon(julianDay: julianDay)
     XCTAssertEqual(daysTill, 6)
+
+    // Apr 23  23:48
+    date = TinyMoon.formatDate(year: 2024, month: 04, day: 20)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilFullMoon(julianDay: julianDay)
+    XCTAssertEqual(daysTill, 3)
 
     // Nov 15  21:28
     date = TinyMoon.formatDate(year: 2024, month: 11, day: 13)
