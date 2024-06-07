@@ -114,22 +114,32 @@ public enum TinyMoon {
       }
     }
 
+    /// Calculates Julian days for a 24-hour period centered around the given Julian day.
+    ///
+    /// This function generates an array of Julian days covering a 24-hour period. 
+    /// The period is centered around the noon of the given Julian day if its fractional part is equal to or greater than 0.5,
+    /// otherwise around the previous day's noon. The returned array includes Julian days for the times 00:00, 06:00, 12:00, and 18:00 UT.
+    ///
+    /// - Parameter julianDay: The Julian day around which to calculate the 24-hour period. The fractional part of this parameter determines the starting point of the period.
+    ///
+    /// - Returns: An array of four Julian days representing the start of the 24-hour period at 00:00 UT, and the subsequent points at 06:00 UT, 12:00 UT, and 18:00 UT.
+    ///
+    /// Example Usage:
+    ///
+    /// ```swift
+    /// let jd = 2460320.5 // Represents January 11, 2024 at 00:00 UT
+    /// let julianDays = julianDaysFor24HourPeriod(julianDay: jd)
+    /// print(julianDays)
+    /// // Output: [2460320.5, 2460320.75, 2460321.0, 2460321.25]
+    /// // Where:
+    /// // 2460320.5  = January 11, 2024 at 00:00 UT
+    /// // 2460320.75 = January 11, 2024 at 06:00 UT
+    /// // 2460321.0  = January 11, 2024 at 12:00 UT
+    /// // 2460321.25 = January 11, 2024 at 18:00 UT
+    /// ```
     internal static func julianDaysFor24HourPeriod(julianDay: Double) -> [Double] {
-      let wholePart = floor(julianDay)
-      let fractionalPart = julianDay.truncatingRemainder(dividingBy: 1)
-      var julianDays: [Double] = []
-      if fractionalPart >= 0.5 {
-        julianDays.append(wholePart + 0.5)
-        julianDays.append(wholePart + 0.75)
-        julianDays.append(wholePart + 1.0)
-        julianDays.append(wholePart + 1.25)
-      } else {
-        julianDays.append((wholePart - 1) + 0.5)
-        julianDays.append((wholePart - 1) + 0.75)
-        julianDays.append(wholePart + 0.0)
-        julianDays.append(wholePart + 0.25)
-      }
-      return julianDays
+      let base = floor(julianDay) + (julianDay.truncatingRemainder(dividingBy: 1) < 0.5 ? -1 : 0)
+      return [0.5, 0.75, 1.0, 1.25].map { base + $0 }
     }
 
     internal static func moonPhase(phaseFraction: Double) -> MoonPhase {
