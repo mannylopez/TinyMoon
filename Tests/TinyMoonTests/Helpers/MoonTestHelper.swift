@@ -5,29 +5,29 @@ import Foundation
 
 enum MoonTestHelper {
   /// Helper function to return a moon object for a given Date
-  static func moonDay(year: Int, month: Int, day: Int, hour: Int = 0, minute: Int = 0) -> TinyMoon.Moon {
+  static func moonObjectForDay(year: Int, month: Int, day: Int, hour: Int = 0, minute: Int = 0) -> TinyMoon.Moon {
     let date = TinyMoon.formatDate(year: year, month: month, day: day, hour: hour, minute: minute)
     let moon = TinyMoon.calculateMoonPhase(date)
     return moon
   }
 
   /// Helper function to return an array of moon objects for a given range of Dates
-  static func moonRange(year: Int, month: Int, days: ClosedRange<Int>) -> [TinyMoon.Moon] {
+  static func moonObjectsForRange(year: Int, month: Int, days: ClosedRange<Int>) -> [TinyMoon.Moon] {
     var moons: [TinyMoon.Moon] = []
 
     moons = days.map({ day in
-      moonDay(year: year, month: month, day: day)
+      moonObjectForDay(year: year, month: month, day: day)
     })
 
     return moons
   }
 
   /// Helper function to return a full month's moon objects
-  static func moonMonth(month: MonthTestHelper.Month, year: Int) -> [TinyMoon.Moon] {
+  static func moonObjectsForMonth(month: MonthTestHelper.Month, year: Int) -> [TinyMoon.Moon] {
     var moons: [TinyMoon.Moon] = []
 
     MonthTestHelper.dayRangeInMonth(month, year: year)?.forEach({ day in
-      moons.append(moonDay(year: year, month: month.rawValue, day: day))
+      moons.append(moonObjectForDay(year: year, month: month.rawValue, day: day))
     })
 
     return moons
@@ -57,7 +57,7 @@ extension MoonTestHelper {
     }
 
     // Prepare an array to hold all moon objects for the month
-    let moonObjects = moonMonth(month: month, year: year)
+    let moonObjects = moonObjectsForMonth(month: month, year: year)
 
     // Calculate padding for the start of the month
     let padding = weekday - 1  // Calendar component weekday starts at 1 for Sunday
@@ -143,7 +143,7 @@ extension MoonTestHelper {
   /// ```
   static func prettyPrintMoonPhasesForYear(_ year: Int) {
     let moonsInYear = MonthTestHelper.Month.allCases.map { month in
-      MoonTestHelper.moonMonth(month: month, year: year)
+      MoonTestHelper.moonObjectsForMonth(month: month, year: year)
     }
 
     for month in moonsInYear {
@@ -180,6 +180,32 @@ extension MoonTestHelper {
   static func prettyPrintCalendarForYear(_ year: Int) {
     MonthTestHelper.Month.allCases.forEach { month in
       MoonTestHelper.prettyPrintMoonCalendar(month: month, year: year)
+    }
+  }
+
+  /// Prints the moon object for the month in a given year
+  ///
+  /// Example output for January 2024
+  /// ```
+  /// 2024-01-01 00:00:00 +0000
+  ///   waningGibbous 🌖
+  ///   - phaseFraction: 0.6576253724545426
+  ///   - illuminatedFraction: 0.7741821250997368
+  ///   - daysTillFullMoon: 24
+  ///   - daysTillNewMoon: 10
+  ///
+  /// ... Days 2 through 28
+  ///
+  /// 2024-01-29 00:00:00 +0000
+  ///   waningGibbous 🌖
+  ///   - phaseFraction: 0.6016526631224938
+  ///   - illuminatedFraction: 0.9014349660199269
+  ///   - daysTillFullMoon: 26
+  ///   - daysTillNewMoon: 11
+  static func prettyPrintMoonObjectsForMonth(month: MonthTestHelper.Month, year: Int) {
+    let moons = moonObjectsForMonth(month: month, year: year)
+    for moon in moons {
+      MoonTestHelper.prettyPrintMoonObject(moon)
     }
   }
 }

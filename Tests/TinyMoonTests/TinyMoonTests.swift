@@ -3,57 +3,69 @@ import XCTest
 
 final class TinyMoonTests: XCTestCase {
 
-  func moon_daysUntilFullMoon() {
+  func test_moon_daysUntilFullMoon() {
     // Full Moon at Jun 22  01:07
     var date = TinyMoon.formatDate(year: 2024, month: 06, day: 20)
     var julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    var daysTill = TinyMoon.Moon.daysUntilFullMoon(julianDay: julianDay)
+    var daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay)
     XCTAssertEqual(daysTill, 2)
 
     // Full Moon at Sep 18  02:34
     date = TinyMoon.formatDate(year: 2024, month: 09, day: 12)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    daysTill = TinyMoon.Moon.daysUntilFullMoon(julianDay: julianDay)
+    daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay)
     XCTAssertEqual(daysTill, 6)
 
     // Full Moon at Apr 23  23:48
-    date = TinyMoon.formatDate(year: 2024, month: 04, day: 20)
+    date = TinyMoon.formatDate(year: 2024, month: 01, day: 20)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    daysTill = TinyMoon.Moon.daysUntilFullMoon(julianDay: julianDay)
-    XCTAssertEqual(daysTill, 3)
+    daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay)
+    XCTAssertEqual(daysTill, 5)
 
     // Full Moon at Nov 15  21:28
     date = TinyMoon.formatDate(year: 2024, month: 11, day: 13)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    daysTill = TinyMoon.Moon.daysUntilFullMoon(julianDay: julianDay)
+    daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay)
     XCTAssertEqual(daysTill, 2)
+
+    // Full Moon at Feb 24  12:30
+    date = TinyMoon.formatDate(year: 2024, month: 01, day: 26)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay)
+    XCTAssertEqual(daysTill, 29)
   }
 
-  func moon_daysUntilNewMoon() {
-    // Full Moon at May 8  03:21
+  func test_moon_daysUntilNewMoon() {
+    // New Moon at May 8  03:21
     var date = TinyMoon.formatDate(year: 2024, month: 05, day: 06)
     var julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    var daysTill = TinyMoon.Moon.daysUntilNewMoon(julianDay: julianDay)
+    var daysTill = TinyMoon.Moon.daysUntilNewMoon(moonPhase: .waningGibbous, julianDay: julianDay)
     XCTAssertEqual(daysTill, 2)
 
-    // Full Moon at Jul 5  22:57
+    // New Moon at Jul 5  22:57
     date = TinyMoon.formatDate(year: 2024, month: 07, day: 02)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    daysTill = TinyMoon.Moon.daysUntilNewMoon(julianDay: julianDay)
+    daysTill = TinyMoon.Moon.daysUntilNewMoon(moonPhase: .waningGibbous, julianDay: julianDay)
     XCTAssertEqual(daysTill, 3)
 
-    // Full Moon at Sep 3  01:55
-    date = TinyMoon.formatDate(year: 2024, month: 08, day: 30)
+    // New Moon at Dec 1  06:21
+    date = TinyMoon.formatDate(year: 2024, month: 11, day: 24)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    daysTill = TinyMoon.Moon.daysUntilNewMoon(julianDay: julianDay)
-    XCTAssertEqual(daysTill, 4)
+    daysTill = TinyMoon.Moon.daysUntilNewMoon(moonPhase: .waningGibbous, julianDay: julianDay)
+    XCTAssertEqual(daysTill, 7)
+
+    // New Moon at Nov 1  12:47
+    date = TinyMoon.formatDate(year: 2024, month: 10, day: 03)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilNewMoon(moonPhase: .waningGibbous, julianDay: julianDay)
+    XCTAssertEqual(daysTill, 29)
   }
 
   func test_moon_uniquePhases() {
     var emojisByMonth = [MonthTestHelper.Month: Int]()
 
     MonthTestHelper.Month.allCases.forEach { month in
-      let moons = MoonTestHelper.moonMonth(month: month, year: 2024)
+      let moons = MoonTestHelper.moonObjectsForMonth(month: month, year: 2024)
       let emojis = moons.compactMap { moon in
         switch moon.moonPhase {
         case .newMoon, .firstQuarter, .fullMoon, .lastQuarter:
