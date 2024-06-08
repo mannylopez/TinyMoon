@@ -232,7 +232,7 @@ final class UTCTests: XCTestCase {
 
     // At this exact time, the phase is Waxing Gibbous
     var date = TinyMoon.formatDate(year: 2024, month: 08, day: 19, hour: 00, minute: 00)
-    var exactMoon = TinyMoon.calculateExactMoonPhase(date)
+    let exactMoon = TinyMoon.calculateExactMoonPhase(date)
     XCTAssertEqual(exactMoon.exactMoonPhase, .waxingGibbous)
     XCTAssertEqual(exactMoon.exactEmoji, waxingGibbousEmoji)
     if exactMoon.exactEmoji == waxingGibbousEmoji { correct += 1 } else { incorrect += 1 }
