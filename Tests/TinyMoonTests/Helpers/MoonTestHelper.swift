@@ -5,8 +5,8 @@ import Foundation
 
 enum MoonTestHelper {
   /// Helper function to return a moon object for a given Date
-  static func moonDay(year: Int, month: Int, day: Int) -> TinyMoon.Moon {
-    let date = TinyMoon.formatDate(year: year, month: month, day: day)
+  static func moonDay(year: Int, month: Int, day: Int, hour: Int = 0, minute: Int = 0) -> TinyMoon.Moon {
+    let date = TinyMoon.formatDate(year: year, month: month, day: day, hour: hour, minute: minute)
     let moon = TinyMoon.calculateMoonPhase(date)
     return moon
   }
