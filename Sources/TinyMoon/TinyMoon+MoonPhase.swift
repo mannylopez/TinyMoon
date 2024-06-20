@@ -6,23 +6,14 @@ import Foundation
 
 extension TinyMoon {
   public enum MoonPhase: String {
-    case newMoon = "New Moon"
-    case waxingCrescent = "Waxing Crescent"
-    case firstQuarter = "First Quarter"
-    case waxingGibbous = "Waxing Gibbous"
-    case fullMoon = "Full Moon"
-    case waningGibbous = "Waning Gibbous"
-    case lastQuarter = "Last Quarter"
-    case waningCrescent = "Waning Crescent"
-
-    // MARK: Internal
-
-    static let moonPhaseFractions: [MoonPhase: Double] = [
-      .newMoon: 0.0,
-      .firstQuarter: 0.25,
-      .fullMoon: 0.5,
-      .lastQuarter: 0.75,
-    ]
+    case newMoon          = "New Moon"
+    case waxingCrescent   = "Waxing Crescent"
+    case firstQuarter     = "First Quarter"
+    case waxingGibbous    = "Waxing Gibbous"
+    case fullMoon         = "Full Moon"
+    case waningGibbous    = "Waning Gibbous"
+    case lastQuarter      = "Last Quarter"
+    case waningCrescent   = "Waning Crescent"
 
     var emoji: String {
       switch self {
@@ -44,6 +35,5 @@ extension TinyMoon {
         "\u{1F318}" // 🌘
       }
     }
-
   }
 }
