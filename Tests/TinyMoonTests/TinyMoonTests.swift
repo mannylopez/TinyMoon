@@ -214,4 +214,79 @@ final class TinyMoonTests: XCTestCase {
     moonPhase = TinyMoon.Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction)
     XCTAssertEqual(moonPhase, .waningGibbous)
   }
+
+  func test_moon_timezone_support() {
+    // First Quarter - 1 day
+    var date = TinyMoon.formatDate(year: 2024, month: 06, day: 13)
+    var julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    var phaseFraction = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay).phase
+    // Jun 13  22:18 pm
+    var moonPhase = TinyMoon.Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction, useLocalTimeZone: true, manualOffset: -7.0)
+    XCTAssertEqual(moonPhase, .firstQuarter)
+    // Jun 14  05:18, which is +7000 from Los Angeles, California
+    moonPhase = TinyMoon.Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction, useLocalTimeZone: false)
+    XCTAssertEqual(moonPhase, .waxingCrescent)
+
+    date = TinyMoon.formatDate(year: 2024, month: 09, day: 10)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    phaseFraction = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay).phase
+    moonPhase = TinyMoon.Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction, useLocalTimeZone: true, manualOffset: -7.0)
+    XCTAssertEqual(moonPhase, .firstQuarter)
+    moonPhase = TinyMoon.Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction, useLocalTimeZone: false)
+    XCTAssertEqual(moonPhase, .waxingCrescent)
+
+    // Full Moon
+    date = TinyMoon.formatDate(year: 2024, month: 09, day: 17)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    phaseFraction = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay).phase
+    moonPhase = TinyMoon.Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction, useLocalTimeZone: true, manualOffset: -7.0)
+    XCTAssertEqual(moonPhase, .fullMoon)
+    moonPhase = TinyMoon.Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction, useLocalTimeZone: true, manualOffset: -4.0)
+    XCTAssertEqual(moonPhase, .fullMoon)
+    moonPhase = TinyMoon.Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction, useLocalTimeZone: false)
+    XCTAssertEqual(moonPhase, .waxingGibbous)
+
+  }
+
+  func test_debug1() {
+
+    // First Quarter + 1 day
+    var date = TinyMoon.formatDate(year: 2024, month: 02, day: 03)
+    var julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+//    var phaseFraction = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay).phase
+//    var moonPhase = TinyMoon.Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction, useLocalTimeZone: true, manualOffset: 3.0)
+//    XCTAssertEqual(moonPhase, .lastQuarter)
+//
+//    moonPhase = TinyMoon.Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction, useLocalTimeZone: false)
+//    XCTAssertEqual(moonPhase, .waningCrescent)
+
+//    let phase = TinyMoon.Moon.nextDayIncludesMajorMoonPhase(julianDay: julianDay)
+//    print(phase)
+
+    let moon = TinyMoon.Moon(date: date)
+    MoonTestHelper.prettyPrintMoonObject(moon)
+  }
+
+  func test_debug() {
+    // Full Moon
+    let date = TinyMoon.formatDate(year: 2024, month: 11, day: 15)
+    let julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    let phaseFraction = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay).phase
+    var moonPhase = TinyMoon.Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction, useLocalTimeZone: true, manualOffset: 8.0)
+    XCTAssertEqual(moonPhase, .fullMoon)
+
+    moonPhase = TinyMoon.Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction, useLocalTimeZone: false)
+    XCTAssertEqual(moonPhase, .fullMoon)
+
+
+//    let date = TinyMoon.formatDate(year: 2024, month: 11, day: 15)
+//    let julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+//    let phaseFraction = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay).phase
+//    var moonPhase = TinyMoon.Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction)
+////    MoonTestHelper.prettyPrintMoonObject(moon)
+//    print(moonPhase)
+//
+//    moonPhase = TinyMoon.Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction, useLocalTimeZone: true, manualOffset: -7.0)
+//    print(moonPhase)
+  }
 }
