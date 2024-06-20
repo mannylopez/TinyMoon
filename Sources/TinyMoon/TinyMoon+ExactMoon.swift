@@ -17,37 +17,43 @@ extension TinyMoon {
   /// For example, given that the full moon occurs on `August 19, 2024 at 13:25 UTC` and the date we query for is `August 19, 2024 at 00:00 UTC`, this object will return `.waxingGibbous` because that is a more accurate representation of the moon phase at `00:00 UTC` time.
   public struct ExactMoon: Hashable {
 
+    // MARK: Lifecycle
+
     init(date: Date, phaseFraction: Double) {
       self.date = date
-      self.exactMoonPhase = ExactMoon.exactMoonPhase(phaseFraction: phaseFraction)
-      self.exactName = exactMoonPhase.rawValue
-      self.exactEmoji = exactMoonPhase.emoji
+      exactMoonPhase = ExactMoon.exactMoonPhase(phaseFraction: phaseFraction)
+      exactName = exactMoonPhase.rawValue
+      exactEmoji = exactMoonPhase.emoji
     }
+
+    // MARK: Public
 
     public let exactMoonPhase: MoonPhase
     public let exactName: String
     public let exactEmoji: String
     public let date: Date
 
-    internal static func exactMoonPhase(phaseFraction: Double) -> MoonPhase {
-      if phaseFraction < 0.02  {
-        return .newMoon
+    // MARK: Internal
+
+    static func exactMoonPhase(phaseFraction: Double) -> MoonPhase {
+      if phaseFraction < 0.02 {
+        .newMoon
       } else if phaseFraction < 0.23 {
-        return .waxingCrescent
+        .waxingCrescent
       } else if phaseFraction < 0.27 {
-        return .firstQuarter
+        .firstQuarter
       } else if phaseFraction < 0.48 {
-        return .waxingGibbous
+        .waxingGibbous
       } else if phaseFraction < 0.52 {
-        return .fullMoon
+        .fullMoon
       } else if phaseFraction < 0.73 {
-        return .waningGibbous
+        .waningGibbous
       } else if phaseFraction < 0.77 {
-        return .lastQuarter
+        .lastQuarter
       } else if phaseFraction < 0.98 {
-        return .waningCrescent
+        .waningCrescent
       } else {
-        return .newMoon
+        .newMoon
       }
     }
   }

@@ -2,25 +2,7 @@ import Foundation
 
 public enum TinyMoon {
 
-  private static var dateFormatter: DateFormatter {
-    let formatter = DateFormatter()
-    formatter.dateFormat = "yyyy/MM/dd HH:mm"
-    formatter.timeZone = TimeZone(identifier: "UTC")
-    return formatter
-  }
-
-  static func formatDate(
-    year: Int,
-    month: Int,
-    day: Int,
-    hour: Int = 00,
-    minute: Int = 00) -> Date
-  {
-    guard let date = TinyMoon.dateFormatter.date(from: "\(year)/\(month)/\(day) \(hour):\(minute)") else {
-      fatalError("Invalid date")
-    }
-    return date
-  }
+  // MARK: Public
 
   /// The `Moon` object for a specific date, prioritizing major phases (new moon, first quarter, full moon, last quarter) .
   ///
@@ -48,4 +30,30 @@ public enum TinyMoon {
     let moon = Moon(date: date)
     return ExactMoon(date: date, phaseFraction: moon.phaseFraction)
   }
+
+  // MARK: Internal
+
+  static func formatDate(
+    year: Int,
+    month: Int,
+    day: Int,
+    hour: Int = 00,
+    minute: Int = 00)
+    -> Date
+  {
+    guard let date = TinyMoon.dateFormatter.date(from: "\(year)/\(month)/\(day) \(hour):\(minute)") else {
+      fatalError("Invalid date")
+    }
+    return date
+  }
+
+  // MARK: Private
+
+  private static var dateFormatter: DateFormatter {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy/MM/dd HH:mm"
+    formatter.timeZone = TimeZone(identifier: "UTC")
+    return formatter
+  }
+
 }
