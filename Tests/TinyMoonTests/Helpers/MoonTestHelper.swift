@@ -3,6 +3,8 @@
 import Foundation
 @testable import TinyMoon
 
+// MARK: - MoonTestHelper
+
 enum MoonTestHelper {
   /// Helper function to return a moon object for a given Date
   static func moonObjectForDay(year: Int, month: Int, day: Int, hour: Int = 0, minute: Int = 0) -> TinyMoon.Moon {
@@ -15,9 +17,9 @@ enum MoonTestHelper {
   static func moonObjectsForRange(year: Int, month: Int, days: ClosedRange<Int>) -> [TinyMoon.Moon] {
     var moons: [TinyMoon.Moon] = []
 
-    moons = days.map({ day in
+    moons = days.map { day in
       moonObjectForDay(year: year, month: month, day: day)
-    })
+    }
 
     return moons
   }
@@ -26,9 +28,9 @@ enum MoonTestHelper {
   static func moonObjectsForMonth(month: MonthTestHelper.Month, year: Int) -> [TinyMoon.Moon] {
     var moons: [TinyMoon.Moon] = []
 
-    MonthTestHelper.dayRangeInMonth(month, year: year)?.forEach({ day in
+    MonthTestHelper.dayRangeInMonth(month, year: year)?.forEach { day in
       moons.append(moonObjectForDay(year: year, month: month.rawValue, day: day))
-    })
+    }
 
     return moons
   }
@@ -60,7 +62,7 @@ extension MoonTestHelper {
     let moonObjects = moonObjectsForMonth(month: month, year: year)
 
     // Calculate padding for the start of the month
-    let padding = weekday - 1  // Calendar component weekday starts at 1 for Sunday
+    let padding = weekday - 1 // Calendar component weekday starts at 1 for Sunday
 
     // Adjust each row to accommodate spacing for padding
     var dayCounter = 0 - padding + 1 // Start counter to correctly place the first day of the month
@@ -115,14 +117,14 @@ extension MoonTestHelper {
       title = "\(moon.moonPhase) \(moon.emoji) "
     }
     let prettyString = """
-    ...
-    \(moon.date)
-      \(title)
-      - phaseFraction: \(moon.phaseFraction)
-      - illuminatedFraction: \(moon.illuminatedFraction)
-      - daysTillFullMoon: \(moon.daysTillFullMoon)
-      - daysTillNewMoon: \(moon.daysTillNewMoon)
-    """
+      ...
+      \(moon.date)
+        \(title)
+        - phaseFraction: \(moon.phaseFraction)
+        - illuminatedFraction: \(moon.illuminatedFraction)
+        - daysTillFullMoon: \(moon.daysTillFullMoon)
+        - daysTillNewMoon: \(moon.daysTillNewMoon)
+      """
     print(prettyString)
   }
 
@@ -178,7 +180,7 @@ extension MoonTestHelper {
   /// 29🌘 | *🌑 |31🌒 |
   /// ```
   static func prettyPrintCalendarForYear(_ year: Int) {
-    MonthTestHelper.Month.allCases.forEach { month in
+    for month in MonthTestHelper.Month.allCases {
       MoonTestHelper.prettyPrintMoonCalendar(month: month, year: year)
     }
   }

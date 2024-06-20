@@ -16,18 +16,23 @@ extension TinyMoon {
   ///
   /// - Note: Unlike `ExactMoon`, this object will prioritize major moon phases occurring at any point within a 24-hour period.
   public struct Moon: Hashable {
+
+    // MARK: Lifecycle
+
     init(date: Date) {
       self.date = date
       let julianDay = AstronomicalConstant.julianDay(date)
       let moonPhaseData = AstronomicalConstant.getMoonPhase(julianDay: julianDay)
-      self.phaseFraction = moonPhaseData.phase
-      self.illuminatedFraction = moonPhaseData.illuminatedFraction
-      self.moonPhase = Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction)
-      self.name = moonPhase.rawValue
-      self.emoji = moonPhase.emoji
-      self.daysTillFullMoon = Moon.daysUntilFullMoon(moonPhase: moonPhase, julianDay: julianDay)
-      self.daysTillNewMoon = Moon.daysUntilNewMoon(moonPhase: moonPhase, julianDay: julianDay)
+      phaseFraction = moonPhaseData.phase
+      illuminatedFraction = moonPhaseData.illuminatedFraction
+      moonPhase = Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction)
+      name = moonPhase.rawValue
+      emoji = moonPhase.emoji
+      daysTillFullMoon = Moon.daysUntilFullMoon(moonPhase: moonPhase, julianDay: julianDay)
+      daysTillNewMoon = Moon.daysUntilNewMoon(moonPhase: moonPhase, julianDay: julianDay)
     }
+
+    // MARK: Public
 
     /// Represents where the phase is in the current synodic cycle. Varies between `0.0` to `0.99`.
     ///
@@ -46,13 +51,6 @@ extension TinyMoon {
     /// Returns `0` if the current `date` is a new moon
     public var daysTillNewMoon: Int
 
-    public func isFullMoon() -> Bool {
-      switch moonPhase {
-      case .fullMoon: true
-      default: false
-      }
-    }
-
     public var fullMoonName: String? {
       if isFullMoon() {
         let calendar = Calendar.current
@@ -64,25 +62,16 @@ extension TinyMoon {
       return nil
     }
 
-    private func fullMoonName(month: Int) -> String? {
-      switch month {
-      case 1: "Wolf Moon"
-      case 2: "Snow Moon"
-      case 3: "Worm Moon"
-      case 4: "Pink Moon"
-      case 5: "Flower Moon"
-      case 6: "Strawberry Moon"
-      case 7: "Buck Moon"
-      case 8: "Sturgeon Moon"
-      case 9: "Harvest Moon"
-      case 10: "Hunter's Moon"
-      case 11: "Beaver Moon"
-      case 12: "Cold Moon"
-      default: nil
+    public func isFullMoon() -> Bool {
+      switch moonPhase {
+      case .fullMoon: true
+      default: false
       }
     }
 
-    internal static func daysUntilFullMoon(moonPhase: MoonPhase, julianDay: Double) -> Int {
+    // MARK: Internal
+
+    static func daysUntilFullMoon(moonPhase: MoonPhase, julianDay: Double) -> Int {
       if moonPhase == .fullMoon {
         return 0
       }
@@ -104,7 +93,7 @@ extension TinyMoon {
       return daysUntilFullMoon - 1
     }
 
-    internal static func daysUntilNewMoon(moonPhase: MoonPhase, julianDay: Double) -> Int {
+    static func daysUntilNewMoon(moonPhase: MoonPhase, julianDay: Double) -> Int {
       if moonPhase == .newMoon {
         return 0
       }
@@ -146,11 +135,11 @@ extension TinyMoon {
     /// let moonPhase = moonPhase(julianDay: julianDay, phaseFraction: phaseFraction)
     /// print(moonPhase) // Output depends on the calculated or determined moon phase
     /// ```
-    internal static func moonPhase(julianDay: Double, phaseFraction: Double) -> MoonPhase {
+    static func moonPhase(julianDay: Double, phaseFraction: Double) -> MoonPhase {
       if let moonPhase = Moon.dayIncludesMajorMoonPhase(julianDay: julianDay) {
-        return moonPhase
+        moonPhase
       } else {
-        return Moon.minorMoonPhase(phaseFraction: phaseFraction)
+        Moon.minorMoonPhase(phaseFraction: phaseFraction)
       }
     }
 
@@ -164,7 +153,7 @@ extension TinyMoon {
     /// - Returns: An optional `MoonPhase` representing the major moon phase occurring on the specified day, if any. Returns `nil` if no major moon phase occurs on that day.
     ///
     /// - Note: The determination of major moon phases is based on predefined thresholds for phase fractions that correspond to the significant points in a lunar cycle
-    internal static func dayIncludesMajorMoonPhase(julianDay: Double) -> MoonPhase? {
+    static func dayIncludesMajorMoonPhase(julianDay: Double) -> MoonPhase? {
       let startAndEndOfJulianDay = startAndEndOfJulianDay(julianDay: julianDay)
       let moonPhaseFractionAtStart = AstronomicalConstant.getMoonPhase(julianDay: startAndEndOfJulianDay.start).phase
       let moonPhaseFractionAtEnd = AstronomicalConstant.getMoonPhase(julianDay: startAndEndOfJulianDay.end).phase
@@ -188,7 +177,7 @@ extension TinyMoon {
     /// // 2460320.5  = January 11, 2024 at 00:00 UT
     /// // 2460321.25 = January 11, 2024 at 23:59 UT
     /// ```
-    internal static func startAndEndOfJulianDay(julianDay: Double) -> (start: Double, end: Double) {
+    static func startAndEndOfJulianDay(julianDay: Double) -> (start: Double, end: Double) {
       let base = floor(julianDay) + (julianDay.truncatingRemainder(dividingBy: 1) < 0.5 ? -1 : 0)
       let arr = [0.5, 1.4993].map { base + $0 }
       return (start: arr[0], end: arr[1])
@@ -231,29 +220,50 @@ extension TinyMoon {
 
       if (start <= newMoon && end >= newMoon) || (isCyclicalRange && (start <= 0.99 || end >= newMoon)) {
         return .newMoon
-      } else if (firstQuarter >= start && firstQuarter <= end) {
+      } else if firstQuarter >= start, firstQuarter <= end {
         return .firstQuarter
-      } else if (fullMoon >= start && fullMoon <= end) {
+      } else if fullMoon >= start, fullMoon <= end {
         return .fullMoon
-      } else if (lastQuarter >= start && lastQuarter <= end) {
+      } else if lastQuarter >= start, lastQuarter <= end {
         return .lastQuarter
       } else {
         return nil
       }
     }
 
-    internal static func minorMoonPhase(phaseFraction: Double) -> MoonPhase {
+    static func minorMoonPhase(phaseFraction: Double) -> MoonPhase {
       if phaseFraction < 0.23 {
-        return .waxingCrescent
+        .waxingCrescent
       } else if phaseFraction < 0.48 {
-        return .waxingGibbous
+        .waxingGibbous
       } else if phaseFraction < 0.73 {
-        return .waningGibbous
+        .waningGibbous
       } else if phaseFraction < 0.98 {
-        return .waningCrescent
+        .waningCrescent
       } else {
-        return .newMoon
+        .newMoon
       }
     }
+
+    // MARK: Private
+
+    private func fullMoonName(month: Int) -> String? {
+      switch month {
+      case 1: "Wolf Moon"
+      case 2: "Snow Moon"
+      case 3: "Worm Moon"
+      case 4: "Pink Moon"
+      case 5: "Flower Moon"
+      case 6: "Strawberry Moon"
+      case 7: "Buck Moon"
+      case 8: "Sturgeon Moon"
+      case 9: "Harvest Moon"
+      case 10: "Hunter's Moon"
+      case 11: "Beaver Moon"
+      case 12: "Cold Moon"
+      default: nil
+      }
+    }
+
   }
 }

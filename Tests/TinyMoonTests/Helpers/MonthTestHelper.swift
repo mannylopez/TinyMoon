@@ -21,7 +21,7 @@ enum MonthTestHelper {
   /// Returns the number of calendar days in every month for the given year
   static func dayRangeInMonthForCalendarYear(_ year: Int) -> [Month: Range<Int>] {
     var yearDict = [Month: Range<Int>]()
-    Month.allCases.forEach { month in
+    for month in Month.allCases {
       if let days = dayRangeInMonth(month, year: year) {
         yearDict[month] = days
       }

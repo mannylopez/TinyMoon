@@ -5,6 +5,8 @@ import XCTest
 
 final class UTCTests: XCTestCase {
 
+  // MARK: Internal
+
   // MARK: - UTC Tests
   // https://www.timeanddate.com/moon/phases/timezone/utc
   // The following moon phases are the exact times for the four moon phases
@@ -17,7 +19,7 @@ final class UTCTests: XCTestCase {
     var incorrect = 0.0
 
     let newMoonEmoji = TinyMoon.MoonPhase.newMoon.emoji
-    let waningCrescentEmoji  = TinyMoon.MoonPhase.waningCrescent.emoji
+    let waningCrescentEmoji = TinyMoon.MoonPhase.waningCrescent.emoji
 
     // Returns a New Moon because it falls within this day's 24 hours
     var date = TinyMoon.formatDate(year: 2024, month: 09, day: 02, hour: 00, minute: 00)
@@ -431,14 +433,16 @@ final class UTCTests: XCTestCase {
     printResults(.lastQuarter, correct: correct, incorrect: incorrect)
   }
 
+  // MARK: Private
+
   private func printResults(_ moonPhase: TinyMoon.MoonPhase, correct: Double, incorrect: Double) {
     let results = """
 
-    \(moonPhase)
-      "correct: \(correct)"
-      "incorrect: \(incorrect)"
-      % correct: \((correct / (correct + incorrect) * 100).rounded())%
-    """
+      \(moonPhase)
+        "correct: \(correct)"
+        "incorrect: \(incorrect)"
+        % correct: \((correct / (correct + incorrect) * 100).rounded())%
+      """
     print(results)
   }
 

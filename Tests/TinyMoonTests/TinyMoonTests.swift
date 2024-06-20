@@ -64,7 +64,7 @@ final class TinyMoonTests: XCTestCase {
   func test_moon_uniquePhases() {
     var emojisByMonth = [MonthTestHelper.Month: Int]()
 
-    MonthTestHelper.Month.allCases.forEach { month in
+    for month in MonthTestHelper.Month.allCases {
       let moons = MoonTestHelper.moonObjectsForMonth(month: month, year: 2024)
       let emojis = moons.compactMap { moon in
         switch moon.moonPhase {
@@ -79,7 +79,7 @@ final class TinyMoonTests: XCTestCase {
       emojisByMonth[month] = emojis.count
     }
 
-    MonthTestHelper.Month.allCases.forEach { month in
+    for month in MonthTestHelper.Month.allCases {
       switch month {
       case .may, .december:
         XCTAssertEqual(emojisByMonth[month], 5)
