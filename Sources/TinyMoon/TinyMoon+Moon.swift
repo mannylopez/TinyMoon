@@ -19,17 +19,19 @@ extension TinyMoon {
 
     // MARK: Lifecycle
 
-    init(date: Date) {
+    init(date: Date, timeZone: TimeZone = TimeZone.current) {
       self.date = date
       let julianDay = AstronomicalConstant.julianDay(date)
       let moonPhaseData = AstronomicalConstant.getMoonPhase(julianDay: julianDay)
       phaseFraction = moonPhaseData.phase
       illuminatedFraction = moonPhaseData.illuminatedFraction
-      moonPhase = Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction)
+
+      moonPhase = Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction, date: date, timeZone: timeZone)
+
       name = moonPhase.rawValue
       emoji = moonPhase.emoji
-      daysTillFullMoon = Moon.daysUntilFullMoon(moonPhase: moonPhase, julianDay: julianDay)
-      daysTillNewMoon = Moon.daysUntilNewMoon(moonPhase: moonPhase, julianDay: julianDay)
+      daysTillFullMoon = Moon.daysUntilFullMoon(moonPhase: moonPhase, julianDay: julianDay, date: date, timeZone: timeZone)
+      daysTillNewMoon = Moon.daysUntilNewMoon(moonPhase: moonPhase, julianDay: julianDay, date: date, timeZone: timeZone)
     }
 
     // MARK: Public
@@ -71,44 +73,66 @@ extension TinyMoon {
 
     // MARK: Internal
 
-    static func daysUntilFullMoon(moonPhase: MoonPhase, julianDay: Double) -> Int {
+    static func daysUntilFullMoon(
+      moonPhase: MoonPhase,
+      julianDay: Double,
+      date: Date? = nil,
+      timeZone: TimeZone = TimeZone.current)
+      -> Int
+    {
       if moonPhase == .fullMoon {
         return 0
       }
       var phase: MoonPhase = moonPhase
       var currentJulianDay = julianDay
+      var currentDate = date
       var daysUntilFullMoon = 0
+      var calendar = Calendar.current
+      calendar.timeZone = timeZone
 
       while phase != .fullMoon {
-        if let majorMoonPhase = dayIncludesMajorMoonPhase(julianDay: currentJulianDay) {
+        if let majorMoonPhase = dayIncludesMajorMoonPhase(julianDay: currentJulianDay, date: currentDate, timeZone: timeZone) {
           phase = majorMoonPhase
           currentJulianDay += 1
           daysUntilFullMoon += 1
+          currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate!)
         } else {
           currentJulianDay += 1
           daysUntilFullMoon += 1
+          currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate!)
         }
       }
 
       return daysUntilFullMoon - 1
     }
 
-    static func daysUntilNewMoon(moonPhase: MoonPhase, julianDay: Double) -> Int {
+    static func daysUntilNewMoon(
+      moonPhase: MoonPhase,
+      julianDay: Double,
+      date: Date? = nil,
+      timeZone: TimeZone = TimeZone.current)
+      -> Int
+    {
       if moonPhase == .newMoon {
         return 0
       }
       var phase: MoonPhase = moonPhase
       var currentJulianDay = julianDay
+      var currentDate = date
       var daysUntilNewMoon = 0
+      var calendar = Calendar.current
+      calendar.timeZone = timeZone
 
       while phase != .newMoon {
-        if let majorMoonPhase = dayIncludesMajorMoonPhase(julianDay: currentJulianDay) {
+        if let majorMoonPhase = dayIncludesMajorMoonPhase(julianDay: currentJulianDay, date: currentDate, timeZone: timeZone) {
           phase = majorMoonPhase
           currentJulianDay += 1
           daysUntilNewMoon += 1
+          currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate!)
         } else {
           currentJulianDay += 1
           daysUntilNewMoon += 1
+          currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate!)
         }
       }
 
@@ -135,8 +159,14 @@ extension TinyMoon {
     /// let moonPhase = moonPhase(julianDay: julianDay, phaseFraction: phaseFraction)
     /// print(moonPhase) // Output depends on the calculated or determined moon phase
     /// ```
-    static func moonPhase(julianDay: Double, phaseFraction: Double) -> MoonPhase {
-      if let moonPhase = Moon.dayIncludesMajorMoonPhase(julianDay: julianDay) {
+    static func moonPhase(
+      julianDay: Double,
+      phaseFraction: Double,
+      date: Date? = nil,
+      timeZone: TimeZone = TimeZone.current)
+      -> MoonPhase
+    {
+      if let moonPhase = Moon.dayIncludesMajorMoonPhase(julianDay: julianDay, date: date, timeZone: timeZone) {
         moonPhase
       } else {
         Moon.minorMoonPhase(phaseFraction: phaseFraction)
@@ -153,7 +183,25 @@ extension TinyMoon {
     /// - Returns: An optional `MoonPhase` representing the major moon phase occurring on the specified day, if any. Returns `nil` if no major moon phase occurs on that day.
     ///
     /// - Note: The determination of major moon phases is based on predefined thresholds for phase fractions that correspond to the significant points in a lunar cycle
-    static func dayIncludesMajorMoonPhase(julianDay: Double) -> MoonPhase? {
+    static func dayIncludesMajorMoonPhase(
+      julianDay: Double,
+      date: Date? = nil,
+      timeZone: TimeZone = TimeZone.current)
+      -> MoonPhase?
+    {
+      if let date {
+        var calendar = Calendar.current
+        calendar.timeZone = timeZone
+        let startOfDay = calendar.startOfDay(for: date)
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)
+        let startJulianDay = AstronomicalConstant.julianDay(startOfDay)
+        let endJulianDay = AstronomicalConstant.julianDay(endOfDay!)
+
+        let moonPhaseFractionAtStart = AstronomicalConstant.getMoonPhase(julianDay: startJulianDay).phase
+        let moonPhaseFractionAtEnd = AstronomicalConstant.getMoonPhase(julianDay: endJulianDay).phase
+        return majorMoonPhaseInRange(start: moonPhaseFractionAtStart, end: moonPhaseFractionAtEnd)
+      }
+
       let startAndEndOfJulianDay = startAndEndOfJulianDay(julianDay: julianDay)
       let moonPhaseFractionAtStart = AstronomicalConstant.getMoonPhase(julianDay: startAndEndOfJulianDay.start).phase
       let moonPhaseFractionAtEnd = AstronomicalConstant.getMoonPhase(julianDay: startAndEndOfJulianDay.end).phase
