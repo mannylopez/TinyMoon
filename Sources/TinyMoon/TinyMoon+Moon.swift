@@ -281,13 +281,13 @@ extension TinyMoon {
 
     static func minorMoonPhase(phaseFraction: Double) -> MoonPhase {
       if phaseFraction < 0.25 {
-        return .waxingCrescent
+        .waxingCrescent
       } else if phaseFraction < 0.50 {
-        return .waxingGibbous
+        .waxingGibbous
       } else if phaseFraction < 0.75 {
-        return .waningGibbous
+        .waningGibbous
       } else {
-        return .waningCrescent
+        .waningCrescent
       }
     }
 

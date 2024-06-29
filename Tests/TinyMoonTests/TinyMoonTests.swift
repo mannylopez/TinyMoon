@@ -141,7 +141,7 @@ final class TinyMoonTests: XCTestCase {
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     daysTill = TinyMoon.Moon.daysUntilNewMoon(moonPhase: .waningGibbous, julianDay: julianDay, date: date, timeZone: utcTimeZone)
     XCTAssertEqual(daysTill, 1)
-    
+
     date = TinyMoon.formatDate(year: 2024, month: 07, day: 05)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     daysTill = TinyMoon.Moon.daysUntilNewMoon(moonPhase: .waningGibbous, julianDay: julianDay, date: date, timeZone: utcTimeZone)
