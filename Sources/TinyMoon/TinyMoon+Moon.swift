@@ -280,16 +280,14 @@ extension TinyMoon {
     }
 
     static func minorMoonPhase(phaseFraction: Double) -> MoonPhase {
-      if phaseFraction < 0.23 {
-        .waxingCrescent
-      } else if phaseFraction < 0.48 {
-        .waxingGibbous
-      } else if phaseFraction < 0.73 {
-        .waningGibbous
-      } else if phaseFraction < 0.98 {
-        .waningCrescent
+      if phaseFraction < 0.25 {
+        return .waxingCrescent
+      } else if phaseFraction < 0.50 {
+        return .waxingGibbous
+      } else if phaseFraction < 0.75 {
+        return .waningGibbous
       } else {
-        .newMoon
+        return .waningCrescent
       }
     }
 

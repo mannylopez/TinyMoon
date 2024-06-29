@@ -12,11 +12,26 @@ final class TinyMoonTests: XCTestCase {
     var daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay, date: date, timeZone: utcTimeZone)
     XCTAssertEqual(daysTill, 2)
 
+    date = TinyMoon.formatDate(year: 2024, month: 06, day: 21)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay, date: date, timeZone: utcTimeZone)
+    XCTAssertEqual(daysTill, 1)
+
+    date = TinyMoon.formatDate(year: 2024, month: 06, day: 22)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay, date: date, timeZone: utcTimeZone)
+    XCTAssertEqual(daysTill, 0)
+
     // Full Moon at Sep 18  02:34
     date = TinyMoon.formatDate(year: 2024, month: 09, day: 12)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay, date: date, timeZone: utcTimeZone)
     XCTAssertEqual(daysTill, 6)
+
+    date = TinyMoon.formatDate(year: 2024, month: 09, day: 17)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay, date: date, timeZone: utcTimeZone)
+    XCTAssertEqual(daysTill, 1)
 
     // Full Moon at Jan 25  17:54
     date = TinyMoon.formatDate(year: 2024, month: 01, day: 20)
@@ -24,17 +39,52 @@ final class TinyMoonTests: XCTestCase {
     daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay, date: date, timeZone: utcTimeZone)
     XCTAssertEqual(daysTill, 5)
 
+    date = TinyMoon.formatDate(year: 2024, month: 01, day: 24)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay, date: date, timeZone: utcTimeZone)
+    XCTAssertEqual(daysTill, 1)
+
+    date = TinyMoon.formatDate(year: 2024, month: 01, day: 25)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay, date: date, timeZone: utcTimeZone)
+    XCTAssertEqual(daysTill, 0)
+
     // Full Moon at Nov 15  21:28
     date = TinyMoon.formatDate(year: 2024, month: 11, day: 13)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay, date: date, timeZone: utcTimeZone)
     XCTAssertEqual(daysTill, 2)
 
+    date = TinyMoon.formatDate(year: 2024, month: 11, day: 14)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay, date: date, timeZone: utcTimeZone)
+    XCTAssertEqual(daysTill, 1)
+
+    date = TinyMoon.formatDate(year: 2024, month: 11, day: 15)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay, date: date, timeZone: utcTimeZone)
+    XCTAssertEqual(daysTill, 0)
+
     // Full Moon at Feb 24  12:30
+    date = TinyMoon.formatDate(year: 2024, month: 01, day: 25)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay, date: date, timeZone: utcTimeZone)
+    XCTAssertEqual(daysTill, 0)
+
     date = TinyMoon.formatDate(year: 2024, month: 01, day: 26)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay, date: date, timeZone: utcTimeZone)
     XCTAssertEqual(daysTill, 29)
+
+    date = TinyMoon.formatDate(year: 2024, month: 02, day: 23)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay, date: date, timeZone: utcTimeZone)
+    XCTAssertEqual(daysTill, 1)
+
+    date = TinyMoon.formatDate(year: 2024, month: 02, day: 24)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, julianDay: julianDay, date: date, timeZone: utcTimeZone)
+    XCTAssertEqual(daysTill, 0)
   }
 
   func test_moon_daysUntilNewMoon() {
@@ -55,7 +105,28 @@ final class TinyMoonTests: XCTestCase {
     daysTill = TinyMoon.Moon.daysUntilNewMoon(moonPhase: .waningGibbous, julianDay: julianDay, date: date, timeZone: utcTimeZone)
     XCTAssertEqual(daysTill, 1)
 
-    // New Moon at Jul 5  22:57
+    // New Moon at Jun 6  12:37 UTC
+    date = TinyMoon.formatDate(year: 2024, month: 06, day: 03)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilNewMoon(moonPhase: .waningGibbous, julianDay: julianDay, date: date, timeZone: utcTimeZone)
+    XCTAssertEqual(daysTill, 3)
+
+    date = TinyMoon.formatDate(year: 2024, month: 06, day: 04)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilNewMoon(moonPhase: .waningGibbous, julianDay: julianDay, date: date, timeZone: utcTimeZone)
+    XCTAssertEqual(daysTill, 2)
+
+    date = TinyMoon.formatDate(year: 2024, month: 06, day: 05)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilNewMoon(moonPhase: .waningGibbous, julianDay: julianDay, date: date, timeZone: utcTimeZone)
+    XCTAssertEqual(daysTill, 1)
+
+    date = TinyMoon.formatDate(year: 2024, month: 06, day: 06)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilNewMoon(moonPhase: .waningGibbous, julianDay: julianDay, date: date, timeZone: utcTimeZone)
+    XCTAssertEqual(daysTill, 0)
+
+    // New Moon at Jul 5  22:57 UTC
     date = TinyMoon.formatDate(year: 2024, month: 07, day: 02)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     daysTill = TinyMoon.Moon.daysUntilNewMoon(moonPhase: .waningGibbous, julianDay: julianDay, date: date, timeZone: utcTimeZone)
@@ -70,6 +141,11 @@ final class TinyMoonTests: XCTestCase {
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     daysTill = TinyMoon.Moon.daysUntilNewMoon(moonPhase: .waningGibbous, julianDay: julianDay, date: date, timeZone: utcTimeZone)
     XCTAssertEqual(daysTill, 1)
+    
+    date = TinyMoon.formatDate(year: 2024, month: 07, day: 05)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    daysTill = TinyMoon.Moon.daysUntilNewMoon(moonPhase: .waningGibbous, julianDay: julianDay, date: date, timeZone: utcTimeZone)
+    XCTAssertEqual(daysTill, 0)
 
     // New Moon at Dec 1  06:21
     date = TinyMoon.formatDate(year: 2024, month: 11, day: 24)
@@ -280,6 +356,19 @@ final class TinyMoonTests: XCTestCase {
     date = TinyMoon.formatDate(year: 2024, month: 06, day: 14, timeZone: pacificTimeZone)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: pacificTimeZone)
     XCTAssertNotEqual(moon.moonPhase, .firstQuarter)
+
+    // New Moon on
+    //  - Pacific:  Jun 6  05:37
+    //  - UTC:      Jun 6  12:37
+    date = TinyMoon.formatDate(year: 2024, month: 06, day: 06, timeZone: pacificTimeZone)
+    print(date)
+    moon = TinyMoon.calculateMoonPhase(date, timeZone: pacificTimeZone)
+    XCTAssertEqual(moon.moonPhase, .newMoon)
+
+    date = TinyMoon.formatDate(year: 2024, month: 06, day: 06, timeZone: utcTimeZone)
+    print(date)
+    moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
+    XCTAssertEqual(moon.moonPhase, .newMoon)
 
     // Full Moon on
     //  - Pacific:  Jun 21  18:07 pm

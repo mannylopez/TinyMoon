@@ -60,8 +60,9 @@ enum MoonTestHelper {
 // MARK: - MoonTestHelper + Pretty print for debugging convenience methods
 
 extension MoonTestHelper {
-  static func prettyPrintMoonCalendar(month: MonthTestHelper.Month, year: Int) {
-    let calendar = Calendar.current
+  static func prettyPrintMoonCalendar(month: MonthTestHelper.Month, year: Int, timeZone: TimeZone = utcTimeZone) {
+    var calendar = Calendar.current
+    calendar.timeZone = timeZone
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "yyyy-MM-dd"
 
@@ -79,7 +80,7 @@ extension MoonTestHelper {
     }
 
     // Prepare an array to hold all moon objects for the month
-    let moonObjects = moonObjectsForMonth(month: month, year: year)
+    let moonObjects = moonObjectsForMonth(month: month, year: year, timeZone: timeZone)
 
     // Calculate padding for the start of the month
     let padding = weekday - 1 // Calendar component weekday starts at 1 for Sunday
