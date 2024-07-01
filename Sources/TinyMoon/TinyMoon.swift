@@ -13,8 +13,8 @@ public enum TinyMoon {
   /// If no major moon phase occurs within the date's 24 hours (starting at 00:00 and ending at 23:59), the object will represent the moon phase closest to the specified date and time.
   ///
   /// - Note: Unlike `ExactMoon`, this object will prioritize major moon phases occurring at any point within a 24-hour period.
-  public static func calculateMoonPhase(_ date: Date = Date()) -> Moon {
-    Moon(date: date)
+  public static func calculateMoonPhase(_ date: Date = Date(), timeZone: TimeZone = TimeZone.current) -> Moon {
+    Moon(date: date, timeZone: timeZone)
   }
 
   /// The `ExactMoon` object for a specific date and time.
@@ -33,27 +33,42 @@ public enum TinyMoon {
 
   // MARK: Internal
 
+  enum TimeZoneOption {
+    case utc
+    case pacific
+    case tokyo
+
+    static func createTimeZone(timeZone: TimeZoneOption) -> TimeZone {
+      switch timeZone {
+      case .utc:
+        TimeZone(identifier: "UTC")!
+      case .pacific:
+        TimeZone(identifier: "America/Los_Angeles")!
+      case .tokyo:
+        TimeZone(identifier: "Asia/Tokyo")!
+      }
+    }
+  }
+
+  /// Creates a Date from the given arguments. Default is in UTC timezone.
   static func formatDate(
     year: Int,
     month: Int,
     day: Int,
     hour: Int = 00,
-    minute: Int = 00)
+    minute: Int = 00,
+    timeZone: TimeZone = TimeZoneOption.createTimeZone(timeZone: .utc))
     -> Date
   {
-    guard let date = TinyMoon.dateFormatter.date(from: "\(year)/\(month)/\(day) \(hour):\(minute)") else {
-      fatalError("Invalid date")
-    }
-    return date
-  }
+    var components = DateComponents()
+    components.year = year
+    components.month = month
+    components.day = day
+    components.hour = hour
+    components.minute = minute
+    components.timeZone = timeZone
 
-  // MARK: Private
-
-  private static var dateFormatter: DateFormatter {
-    let formatter = DateFormatter()
-    formatter.dateFormat = "yyyy/MM/dd HH:mm"
-    formatter.timeZone = TimeZone(identifier: "UTC")
-    return formatter
+    return Calendar.current.date(from: components)!
   }
 
 }
