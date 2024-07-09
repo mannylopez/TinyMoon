@@ -200,7 +200,8 @@ extension TinyMoon {
     ///
     /// ```swift
     /// let date = Date()
-    /// let (start, end) = julianStartAndEndOfDay(date: date)
+    /// let utcTimeZone = TimeZone(identifier: "UTC")!
+    /// let (start, end) = julianStartAndEndOfDay(date: date, timeZone: utcTimeZone)
     /// print(start)
     /// // 2460586.5  = October 3, 2024 at 00:00 UTC
     /// print(end)
