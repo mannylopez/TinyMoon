@@ -259,9 +259,7 @@ extension TinyMoon {
       ///  `1440` is the number of minutes in a day, and `86400` is the number of seconds in a day
       let dayFraction = (Double(hour) - 12) / 24 + Double(minute) / 1440 + Double(second) / 86400
       let julianDayWithTime = jdn + dayFraction
-      let roundedJulianDay = (julianDayWithTime * 10000).rounded() / 10000
-
-      return roundedJulianDay
+      return (julianDayWithTime * 10000).rounded() / 10000
     }
   }
 }

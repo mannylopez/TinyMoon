@@ -6,30 +6,50 @@ import Foundation
 // MARK: - MoonTestHelper
 
 enum MoonTestHelper {
+  static let utcTimeZone = TimeZone(identifier: "UTC")!
+
   /// Helper function to return a moon object for a given Date
-  static func moonObjectForDay(year: Int, month: Int, day: Int, hour: Int = 0, minute: Int = 0) -> TinyMoon.Moon {
-    let date = TinyMoon.formatDate(year: year, month: month, day: day, hour: hour, minute: minute)
-    let moon = TinyMoon.calculateMoonPhase(date)
-    return moon
+  static func moonObjectForDay(
+    year: Int,
+    month: Int,
+    day: Int,
+    hour: Int = 0,
+    minute: Int = 0,
+    timeZone: TimeZone = utcTimeZone)
+    -> TinyMoon.Moon
+  {
+    let date = TinyMoon.formatDate(year: year, month: month, day: day, hour: hour, minute: minute, timeZone: timeZone)
+    return TinyMoon.calculateMoonPhase(date, timeZone: timeZone)
   }
 
   /// Helper function to return an array of moon objects for a given range of Dates
-  static func moonObjectsForRange(year: Int, month: Int, days: ClosedRange<Int>) -> [TinyMoon.Moon] {
+  static func moonObjectsForRange(
+    year: Int,
+    month: Int,
+    days: ClosedRange<Int>,
+    timeZone: TimeZone = utcTimeZone)
+    -> [TinyMoon.Moon]
+  {
     var moons: [TinyMoon.Moon] = []
 
     moons = days.map { day in
-      moonObjectForDay(year: year, month: month, day: day)
+      moonObjectForDay(year: year, month: month, day: day, timeZone: timeZone)
     }
 
     return moons
   }
 
   /// Helper function to return a full month's moon objects
-  static func moonObjectsForMonth(month: MonthTestHelper.Month, year: Int) -> [TinyMoon.Moon] {
+  static func moonObjectsForMonth(
+    month: MonthTestHelper.Month,
+    year: Int,
+    timeZone: TimeZone = utcTimeZone)
+    -> [TinyMoon.Moon]
+  {
     var moons: [TinyMoon.Moon] = []
 
     MonthTestHelper.dayRangeInMonth(month, year: year)?.forEach { day in
-      moons.append(moonObjectForDay(year: year, month: month.rawValue, day: day))
+      moons.append(moonObjectForDay(year: year, month: month.rawValue, day: day, timeZone: timeZone))
     }
 
     return moons
@@ -40,8 +60,9 @@ enum MoonTestHelper {
 // MARK: - MoonTestHelper + Pretty print for debugging convenience methods
 
 extension MoonTestHelper {
-  static func prettyPrintMoonCalendar(month: MonthTestHelper.Month, year: Int) {
-    let calendar = Calendar.current
+  static func prettyPrintMoonCalendar(month: MonthTestHelper.Month, year: Int, timeZone: TimeZone = utcTimeZone) {
+    var calendar = Calendar.current
+    calendar.timeZone = timeZone
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "yyyy-MM-dd"
 
@@ -59,7 +80,7 @@ extension MoonTestHelper {
     }
 
     // Prepare an array to hold all moon objects for the month
-    let moonObjects = moonObjectsForMonth(month: month, year: year)
+    let moonObjects = moonObjectsForMonth(month: month, year: year, timeZone: timeZone)
 
     // Calculate padding for the start of the month
     let padding = weekday - 1 // Calendar component weekday starts at 1 for Sunday
@@ -204,8 +225,8 @@ extension MoonTestHelper {
   ///   - illuminatedFraction: 0.9014349660199269
   ///   - daysTillFullMoon: 26
   ///   - daysTillNewMoon: 11
-  static func prettyPrintMoonObjectsForMonth(month: MonthTestHelper.Month, year: Int) {
-    let moons = moonObjectsForMonth(month: month, year: year)
+  static func prettyPrintMoonObjectsForMonth(month: MonthTestHelper.Month, year: Int, timeZone: TimeZone = utcTimeZone) {
+    let moons = moonObjectsForMonth(month: month, year: year, timeZone: timeZone)
     for moon in moons {
       MoonTestHelper.prettyPrintMoonObject(moon)
     }
