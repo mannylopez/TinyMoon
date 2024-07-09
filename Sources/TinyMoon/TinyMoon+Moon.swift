@@ -26,12 +26,12 @@ extension TinyMoon {
       phaseFraction = moonPhaseData.phase
       illuminatedFraction = moonPhaseData.illuminatedFraction
 
-      moonPhase = Moon.moonPhase(julianDay: julianDay, phaseFraction: phaseFraction, date: date, timeZone: timeZone)
+      moonPhase = Moon.moonPhase(phaseFraction: phaseFraction, date: date, timeZone: timeZone)
 
       name = moonPhase.rawValue
       emoji = moonPhase.emoji
-      daysTillFullMoon = Moon.daysUntilFullMoon(moonPhase: moonPhase, julianDay: julianDay, date: date, timeZone: timeZone)
-      daysTillNewMoon = Moon.daysUntilNewMoon(moonPhase: moonPhase, julianDay: julianDay, date: date, timeZone: timeZone)
+      daysTillFullMoon = Moon.daysUntilFullMoon(moonPhase: moonPhase, date: date, timeZone: timeZone)
+      daysTillNewMoon = Moon.daysUntilNewMoon(moonPhase: moonPhase, date: date, timeZone: timeZone)
     }
 
     // MARK: Public
@@ -75,8 +75,7 @@ extension TinyMoon {
 
     static func daysUntilFullMoon(
       moonPhase: MoonPhase,
-      julianDay: Double,
-      date: Date? = nil,
+      date: Date,
       timeZone: TimeZone = TimeZone.current)
       -> Int
     {
@@ -84,22 +83,19 @@ extension TinyMoon {
         return 0
       }
       var phase: MoonPhase = moonPhase
-      var currentJulianDay = julianDay
       var currentDate = date
       var daysUntilFullMoon = 0
       var calendar = Calendar.current
       calendar.timeZone = timeZone
 
       while phase != .fullMoon {
-        if let majorMoonPhase = dayIncludesMajorMoonPhase(julianDay: currentJulianDay, date: currentDate, timeZone: timeZone) {
+        if let majorMoonPhase = dayIncludesMajorMoonPhase(date: currentDate, timeZone: timeZone) {
           phase = majorMoonPhase
-          currentJulianDay += 1
           daysUntilFullMoon += 1
-          currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate!)
+          currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate)!
         } else {
-          currentJulianDay += 1
           daysUntilFullMoon += 1
-          currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate!)
+          currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate)!
         }
       }
 
@@ -108,8 +104,7 @@ extension TinyMoon {
 
     static func daysUntilNewMoon(
       moonPhase: MoonPhase,
-      julianDay: Double,
-      date: Date? = nil,
+      date: Date,
       timeZone: TimeZone = TimeZone.current)
       -> Int
     {
@@ -117,22 +112,19 @@ extension TinyMoon {
         return 0
       }
       var phase: MoonPhase = moonPhase
-      var currentJulianDay = julianDay
       var currentDate = date
       var daysUntilNewMoon = 0
       var calendar = Calendar.current
       calendar.timeZone = timeZone
 
       while phase != .newMoon {
-        if let majorMoonPhase = dayIncludesMajorMoonPhase(julianDay: currentJulianDay, date: currentDate, timeZone: timeZone) {
+        if let majorMoonPhase = dayIncludesMajorMoonPhase(date: currentDate, timeZone: timeZone) {
           phase = majorMoonPhase
-          currentJulianDay += 1
           daysUntilNewMoon += 1
-          currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate!)
+          currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate)!
         } else {
-          currentJulianDay += 1
           daysUntilNewMoon += 1
-          currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate!)
+          currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate)!
         }
       }
 
@@ -160,13 +152,12 @@ extension TinyMoon {
     /// print(moonPhase) // Output depends on the calculated or determined moon phase
     /// ```
     static func moonPhase(
-      julianDay: Double,
       phaseFraction: Double,
-      date: Date? = nil,
+      date: Date,
       timeZone: TimeZone = TimeZone.current)
       -> MoonPhase
     {
-      if let moonPhase = Moon.dayIncludesMajorMoonPhase(julianDay: julianDay, date: date, timeZone: timeZone) {
+      if let moonPhase = Moon.dayIncludesMajorMoonPhase(date: date, timeZone: timeZone) {
         moonPhase
       } else {
         Moon.minorMoonPhase(phaseFraction: phaseFraction)
@@ -184,27 +175,19 @@ extension TinyMoon {
     ///
     /// - Note: The determination of major moon phases is based on predefined thresholds for phase fractions that correspond to the significant points in a lunar cycle
     static func dayIncludesMajorMoonPhase(
-      julianDay: Double,
-      date: Date? = nil,
+      date: Date,
       timeZone: TimeZone = TimeZone.current)
       -> MoonPhase?
     {
-      if let date {
-        var calendar = Calendar.current
-        calendar.timeZone = timeZone
-        let startOfDay = calendar.startOfDay(for: date)
-        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)
-        let startJulianDay = AstronomicalConstant.julianDay(startOfDay)
-        let endJulianDay = AstronomicalConstant.julianDay(endOfDay!)
+      var calendar = Calendar.current
+      calendar.timeZone = timeZone
+      let startOfDay = calendar.startOfDay(for: date)
+      let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)
+      let startJulianDay = AstronomicalConstant.julianDay(startOfDay)
+      let endJulianDay = AstronomicalConstant.julianDay(endOfDay!)
 
-        let moonPhaseFractionAtStart = AstronomicalConstant.getMoonPhase(julianDay: startJulianDay).phase
-        let moonPhaseFractionAtEnd = AstronomicalConstant.getMoonPhase(julianDay: endJulianDay).phase
-        return majorMoonPhaseInRange(start: moonPhaseFractionAtStart, end: moonPhaseFractionAtEnd)
-      }
-
-      let startAndEndOfJulianDay = startAndEndOfJulianDay(julianDay: julianDay)
-      let moonPhaseFractionAtStart = AstronomicalConstant.getMoonPhase(julianDay: startAndEndOfJulianDay.start).phase
-      let moonPhaseFractionAtEnd = AstronomicalConstant.getMoonPhase(julianDay: startAndEndOfJulianDay.end).phase
+      let moonPhaseFractionAtStart = AstronomicalConstant.getMoonPhase(julianDay: startJulianDay).phase
+      let moonPhaseFractionAtEnd = AstronomicalConstant.getMoonPhase(julianDay: endJulianDay).phase
       return majorMoonPhaseInRange(start: moonPhaseFractionAtStart, end: moonPhaseFractionAtEnd)
     }
 
