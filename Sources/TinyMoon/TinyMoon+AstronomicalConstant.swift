@@ -141,7 +141,7 @@ extension TinyMoon {
     /// and https://github.com/mourner/suncalc/blob/master/suncalc.js#L57
     static func solarMeanAnomaly(julianDay: Double) -> Double {
       let daysSinceJ2000 = daysSinceJ2000(from: julianDay)
-      return AstronomicalConstant.degreesToRadians(357.5291 + 0.9856002 * daysSinceJ2000)
+      return AstronomicalConstant.degreesToRadians(357.5291 + 0.98560028 * daysSinceJ2000)
     }
 
     /// The ecliptic longitude λ [lambda] shows how far the celestial body is from the vernal equinox, measured along the ecliptic
@@ -216,7 +216,7 @@ extension TinyMoon {
     /// - Parameters:
     ///   - date: Any Swift Date to calculate the Julian Day for
     ///
-    /// - Returns: The Julian Day number, rounded down to four decimal points
+    /// - Returns: The Julian Day number
     ///
     /// The Julian Day Count is a uniform count of days from a remote epoch in the past and is used for calculating the days between two events.
     ///
@@ -259,7 +259,7 @@ extension TinyMoon {
       ///  `1440` is the number of minutes in a day, and `86400` is the number of seconds in a day
       let dayFraction = (Double(hour) - 12) / 24 + Double(minute) / 1440 + Double(second) / 86400
       let julianDayWithTime = jdn + dayFraction
-      return (julianDayWithTime * 10000).rounded() / 10000
+      return (julianDayWithTime * 10000) / 10000
     }
   }
 }
