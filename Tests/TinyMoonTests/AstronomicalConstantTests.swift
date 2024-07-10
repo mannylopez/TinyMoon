@@ -22,27 +22,51 @@ final class AstronomicalConstantTests: XCTestCase {
   }
 
   func test_astronomicalConstant_julianDay() {
-    // January 6, 2000 @ 00:00:00.0
+    let pacificTimeZone = TinyMoon.TimeZoneOption.createTimeZone(timeZone: .pacific)
+
+    // January 6, 2000 @ 00:00:00
     var date = TinyMoon.formatDate(year: 2000, month: 01, day: 06)
     var julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     XCTAssertEqual(julianDay, 2451549.5000)
 
-    // January 6, 2000 @ 20:00:00.0
+    // January 6, 2000 @ 00:00: Pacific
+    // January 6, 2000 @ 08:00:00 UTC
+    date = TinyMoon.formatDate(
+      year: 2000,
+      month: 01,
+      day: 06,
+      hour: 0,
+      timeZone: pacificTimeZone)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    XCTAssertEqual(julianDay, 2451549.8333333335)
+
+    // January 5, 2000 @ 16:00: Pacific
+    // January 6, 2000 @ 00:00:00 UTC
+    date = TinyMoon.formatDate(
+      year: 2000,
+      month: 01,
+      day: 5,
+      hour: 16,
+      timeZone: pacificTimeZone)
+    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    XCTAssertEqual(julianDay, 2451549.5000)
+
+    // January 6, 2000 @ 20:00:00
     date = TinyMoon.formatDate(year: 2000, month: 01, day: 06, hour: 20, minute: 00)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     XCTAssertEqual(julianDay, 2451550.3333333335)
 
-    // August 22, 2022 @ 00:00:00.0
+    // August 22, 2022 @ 00:00:00
     date = TinyMoon.formatDate(year: 2022, month: 08, day: 22, hour: 00, minute: 00)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     XCTAssertEqual(julianDay, 2459813.5000)
 
-    // August 22, 2022 @ 04:05:00.0
+    // August 22, 2022 @ 04:05:00
     date = TinyMoon.formatDate(year: 2022, month: 08, day: 22, hour: 04, minute: 05)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     XCTAssertEqual(julianDay, 2459813.670138889)
 
-    // August 22, 2022 @ 14:05:00.0
+    // August 22, 2022 @ 14:05:00
     date = TinyMoon.formatDate(year: 2022, month: 08, day: 22, hour: 14, minute: 05)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     XCTAssertEqual(julianDay, 2459814.0868055555)
