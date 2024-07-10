@@ -141,7 +141,7 @@ extension TinyMoon {
     /// and https://github.com/mourner/suncalc/blob/master/suncalc.js#L57
     static func solarMeanAnomaly(julianDay: Double) -> Double {
       let daysSinceJ2000 = daysSinceJ2000(from: julianDay)
-      return AstronomicalConstant.degreesToRadians(357.5291 + 0.9856002 * daysSinceJ2000)
+      return AstronomicalConstant.degreesToRadians(357.5291 + 0.98560028 * daysSinceJ2000)
     }
 
     /// The ecliptic longitude λ [lambda] shows how far the celestial body is from the vernal equinox, measured along the ecliptic
@@ -192,31 +192,12 @@ extension TinyMoon {
       jd - 2451545.0
     }
 
-    /// The Julian Day Count is a uniform count of days from a remote epoch in the past and is used for calculating the days between two events.
-    /// The Julian day is calculated by combining the contributions from the years, months, and day, taking into account constant offsets and rounding down the result.
-    /// https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
-    /// - Note: This version does not use hours or minutes to compute the Julian Day, so it will only return up to one decimal point of accuracy.
-    static func lessPreciseJulianDay(year: Int, month: Int, day: Int) -> Double {
-      var newYear = year
-      var newMonth = month
-      if month <= 2 {
-        newYear = year - 1
-        newMonth = month + 12
-      }
-      let a = Int(newYear / 100)
-      let b = Int(a / 4)
-      let c = 2 - a + b
-      let e = Int(365.25 * Double(newYear + 4716))
-      let f = Int(30.6001 * Double(newMonth + 1))
-      return Double(c + day + e + f) - 1524.5
-    }
-
     /// Calculates the Julian Day (JD) for a given Date
     ///
     /// - Parameters:
     ///   - date: Any Swift Date to calculate the Julian Day for
     ///
-    /// - Returns: The Julian Day number, rounded down to four decimal points
+    /// - Returns: The Julian Day number
     ///
     /// The Julian Day Count is a uniform count of days from a remote epoch in the past and is used for calculating the days between two events.
     ///
@@ -259,7 +240,7 @@ extension TinyMoon {
       ///  `1440` is the number of minutes in a day, and `86400` is the number of seconds in a day
       let dayFraction = (Double(hour) - 12) / 24 + Double(minute) / 1440 + Double(second) / 86400
       let julianDayWithTime = jdn + dayFraction
-      return (julianDayWithTime * 10000).rounded() / 10000
+      return (julianDayWithTime * 10000) / 10000
     }
   }
 }
