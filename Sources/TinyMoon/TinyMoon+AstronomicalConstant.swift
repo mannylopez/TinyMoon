@@ -187,7 +187,7 @@ extension TinyMoon {
 
     /// The number of Julian days since 1 January 2000, 12:00 UTC
     ///
-    /// `2451545.0` is the Julian date on 1 January 2000, 12:00 UTC, aka J2000.0
+    /// `2451545.0` is the Julian date on 1 January 2000, 12:00 UTC, aka J2000
     static func daysSinceJ2000(from jd: Double) -> Double {
       jd - 2451545.0
     }
@@ -201,46 +201,15 @@ extension TinyMoon {
     ///
     /// The Julian Day Count is a uniform count of days from a remote epoch in the past and is used for calculating the days between two events.
     ///
-    /// The Julian day is calculated by combining the contributions from the years, months, and day, taking into account constant offsets and rounding down the result.
-    /// https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
-    /// - Note: Uses hour, minute, and seconds to calculate a precise Julian Day
+    /// The Julian day is calculated by combining the contributions from the years, months, and day, taking into account constant
+    ///
+    /// Formula based on https://github.com/mourner/suncalc/blob/master/suncalc.js#L29
+    /// and https://github.com/microsoft/AirSim/blob/main/AirLib/include/common/EarthCelestial.hpp#L115
+    /// - Note
+    ///   - `2440588` is the Julian day for January 1, 1970, 12:00 UTC, aka J170
+    ///   - `1000 * 60 * 60 * 24` is a day in milliseconds
     static func julianDay(_ date: Date) -> Double {
-      var calendar = Calendar.current
-      calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? calendar.timeZone
-      let components = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
-
-      guard
-        let year = components.year,
-        let month = components.month,
-        let day = components.day,
-        let hour = components.hour,
-        let minute = components.minute,
-        let second = components.second
-      else {
-        fatalError("Could not extract date components")
-      }
-
-      /// Used to adjust January and February to be part of the previous year.
-      /// `14` is used to adjust the start of the year to March. Will either be `0` or `1`.
-      let a = (14 - month) / 12
-      /// The Julian Day calculation sets year 0 as 4713 BC.
-      /// To avoid working with negative numbers, `4800` is used as an offset.
-      let y = year + 4800 - a
-      /// Adjusts the month for the Julian Day calculation, where March is considered the first month of the year.
-      let m = month + 12 * a - 3
-
-      /// Calculate Julian Day Number for the date
-      /// - `153`: A magic number used for month length adjustments.
-      /// - `365`, `4`, `100`, and `400`: These relate to the number of days in a year and the correction for leap years in the Julian and Gregorian calendars.
-      /// `32045` is the correction factor to align the result with the Julian Day Number.
-      let jdn = Double(day) + Double((153 * m + 2) / 5) + Double(y) * 365 + Double(y / 4) - Double(y / 100) + Double(y / 400) -
-        32045
-
-      /// Calculate the fraction of the day past since midnight
-      ///  `1440` is the number of minutes in a day, and `86400` is the number of seconds in a day
-      let dayFraction = (Double(hour) - 12) / 24 + Double(minute) / 1440 + Double(second) / 86400
-      let julianDayWithTime = jdn + dayFraction
-      return (julianDayWithTime * 10000) / 10000
+      (date.timeIntervalSince1970 * 1000) / (1000 * 60 * 60 * 24) - 0.5 + 2440588.0
     }
   }
 }
