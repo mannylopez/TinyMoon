@@ -52,20 +52,6 @@ final class AstronomicalConstantTests: XCTestCase {
     XCTAssertEqual(julianDay, 2459814.4993055556)
   }
 
-  func test_astronomicalConstant_lessPreciseJulianDay() {
-    // January 6, 2000 @ 00:00:00.0
-    var julianDay = TinyMoon.AstronomicalConstant.lessPreciseJulianDay(year: 2000, month: 01, day: 06)
-    XCTAssertEqual(julianDay, 2451549.5)
-
-    // December 6, 2008 @ @ 00:00:00.0
-    julianDay = TinyMoon.AstronomicalConstant.lessPreciseJulianDay(year: 2008, month: 12, day: 06)
-    XCTAssertEqual(julianDay, 2454806.5)
-
-    // August 22, 2022 @ 00:00:00.0
-    julianDay = TinyMoon.AstronomicalConstant.lessPreciseJulianDay(year: 2022, month: 08, day: 22)
-    XCTAssertEqual(julianDay, 2459813.5)
-  }
-
   func test_astronomicalConstant_daysSinceJ2000() {
     // 1
     var date = TinyMoon.formatDate(year: 2004, month: 01, day: 1)

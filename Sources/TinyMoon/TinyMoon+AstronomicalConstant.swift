@@ -192,25 +192,6 @@ extension TinyMoon {
       jd - 2451545.0
     }
 
-    /// The Julian Day Count is a uniform count of days from a remote epoch in the past and is used for calculating the days between two events.
-    /// The Julian day is calculated by combining the contributions from the years, months, and day, taking into account constant offsets and rounding down the result.
-    /// https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
-    /// - Note: This version does not use hours or minutes to compute the Julian Day, so it will only return up to one decimal point of accuracy.
-    static func lessPreciseJulianDay(year: Int, month: Int, day: Int) -> Double {
-      var newYear = year
-      var newMonth = month
-      if month <= 2 {
-        newYear = year - 1
-        newMonth = month + 12
-      }
-      let a = Int(newYear / 100)
-      let b = Int(a / 4)
-      let c = 2 - a + b
-      let e = Int(365.25 * Double(newYear + 4716))
-      let f = Int(30.6001 * Double(newMonth + 1))
-      return Double(c + day + e + f) - 1524.5
-    }
-
     /// Calculates the Julian Day (JD) for a given Date
     ///
     /// - Parameters:
