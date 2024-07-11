@@ -200,7 +200,7 @@ final class AstronomicalConstantTests: XCTestCase {
     var moonPhase = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
 
     XCTAssertEqual(moonPhase.illuminatedFraction, 0.9978873506056865)
-    XCTAssertEqual(moonPhase.phase, 0.48536418607701615)
+    XCTAssertEqual(moonPhase.phase, 0.49835304181785745)
     XCTAssertEqual(moonPhase.angle, -2.8703533722710577)
 
     // New moon
@@ -209,7 +209,7 @@ final class AstronomicalConstantTests: XCTestCase {
     moonPhase = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
 
     XCTAssertEqual(moonPhase.illuminatedFraction, 0.007424715413253902)
-    XCTAssertEqual(moonPhase.phase, 0.02746179502131707)
+    XCTAssertEqual(moonPhase.phase, 0.019184351732275336)
     XCTAssertEqual(moonPhase.angle, -1.9356676727903563)
 
     // First quarter
@@ -218,7 +218,7 @@ final class AstronomicalConstantTests: XCTestCase {
     moonPhase = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
 
     XCTAssertEqual(moonPhase.illuminatedFraction, 0.5105081080980992)
-    XCTAssertEqual(moonPhase.phase, 0.25334508096684466)
+    XCTAssertEqual(moonPhase.phase, 0.2505449551679033)
     XCTAssertEqual(moonPhase.angle, -1.2995618398922297)
 
     // Last quarter
@@ -227,7 +227,11 @@ final class AstronomicalConstantTests: XCTestCase {
     moonPhase = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
 
     XCTAssertEqual(moonPhase.illuminatedFraction, 0.5115383513011658)
-    XCTAssertEqual(moonPhase.phase, 0.7463269026530461)
+    XCTAssertEqual(moonPhase.phase, 0.7500559090154013)
     XCTAssertEqual(moonPhase.angle, 1.3632094278875226)
+  }
+
+  func test_phase() {
+    
   }
 }

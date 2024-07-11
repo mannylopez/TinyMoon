@@ -3,9 +3,10 @@ import XCTest
 
 final class TinyMoonTests: XCTestCase {
 
-  func test_moon_daysUntilFullMoon() {
-    let utcTimeZone = TinyMoon.TimeZoneOption.createTimeZone(timeZone: .utc)
+  let utcTimeZone = TinyMoon.TimeZoneOption.createTimeZone(timeZone: .utc)
+  let pacificTimeZone = TinyMoon.TimeZoneOption.createTimeZone(timeZone: .pacific)
 
+  func test_moon_daysUntilFullMoon() {
     // Full Moon at Jun 22  01:07
     var date = TinyMoon.formatDate(year: 2024, month: 06, day: 20)
     var daysTill = TinyMoon.Moon.daysUntilFullMoon(moonPhase: .newMoon, date: date, timeZone: utcTimeZone)
@@ -73,8 +74,6 @@ final class TinyMoonTests: XCTestCase {
   }
 
   func test_moon_daysUntilNewMoon() {
-    let utcTimeZone = TinyMoon.TimeZoneOption.createTimeZone(timeZone: .utc)
-
     // New Moon at May 8  03:21
     var date = TinyMoon.formatDate(year: 2024, month: 05, day: 06)
     var daysTill = TinyMoon.Moon.daysUntilNewMoon(
@@ -140,9 +139,7 @@ final class TinyMoonTests: XCTestCase {
     XCTAssertEqual(daysTill, 29)
   }
 
-  func test_moon_uniquePhases() {
-    let utcTimeZone = TinyMoon.TimeZoneOption.createTimeZone(timeZone: .utc)
-
+  func test_moon_uniquePhases_utcTimeZone() {
     var emojisByMonth = [MonthTestHelper.Month: Int]()
 
     for month in MonthTestHelper.Month.allCases {
@@ -171,8 +168,6 @@ final class TinyMoonTests: XCTestCase {
   }
 
   func test_moon_startAndEndOfJulianDay() {
-    let utcTimeZone = TinyMoon.TimeZoneOption.createTimeZone(timeZone: .utc)
-
     var date = TinyMoon.formatDate(year: 2024, month: 01, day: 11, hour: 00, timeZone: utcTimeZone)
     var (start, end) = TinyMoon.Moon.julianStartAndEndOfDay(date: date, timeZone: utcTimeZone)
     XCTAssertEqual(start, 2460320.5)
@@ -205,21 +200,24 @@ final class TinyMoonTests: XCTestCase {
   }
 
   func test_moon_majorMoonPhaseInRange() throws {
-    let utcTimeZone = TinyMoon.TimeZoneOption.createTimeZone(timeZone: .utc)
-
-    // Full Moon
-    var date = TinyMoon.formatDate(year: 2024, month: 04, day: 23, timeZone: utcTimeZone)
+    var date = TinyMoon.formatDate(year: 2024, month: 04, day: 22, timeZone: utcTimeZone)
     var (start, end) = TinyMoon.Moon.julianStartAndEndOfDay(date: date, timeZone: utcTimeZone)
     var startMoonPhaseFraction = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: start).phase
     var endMoonPhaseFraction = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: end).phase
     XCTAssertNil(TinyMoon.Moon.majorMoonPhaseInRange(start: startMoonPhaseFraction, end: endMoonPhaseFraction))
 
-    date = TinyMoon.formatDate(year: 2024, month: 04, day: 24, timeZone: utcTimeZone)
+    date = TinyMoon.formatDate(year: 2024, month: 04, day: 23, timeZone: utcTimeZone)
     (start, end) = TinyMoon.Moon.julianStartAndEndOfDay(date: date, timeZone: utcTimeZone)
     startMoonPhaseFraction = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: start).phase
     endMoonPhaseFraction = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: end).phase
     var fullMoon = try XCTUnwrap(TinyMoon.Moon.majorMoonPhaseInRange(start: startMoonPhaseFraction, end: endMoonPhaseFraction))
     XCTAssertEqual(fullMoon, .fullMoon)
+
+    date = TinyMoon.formatDate(year: 2024, month: 04, day: 24, timeZone: utcTimeZone)
+    (start, end) = TinyMoon.Moon.julianStartAndEndOfDay(date: date, timeZone: utcTimeZone)
+    startMoonPhaseFraction = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: start).phase
+    endMoonPhaseFraction = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: end).phase
+    XCTAssertNil(TinyMoon.Moon.majorMoonPhaseInRange(start: startMoonPhaseFraction, end: endMoonPhaseFraction))
 
     // Full Moon
     date = TinyMoon.formatDate(year: 2024, month: 01, day: 25, timeZone: utcTimeZone)
@@ -251,8 +249,6 @@ final class TinyMoonTests: XCTestCase {
   }
 
   func test_moon_dayIncludesMajorMoonPhase() throws {
-    let utcTimeZone = TinyMoon.TimeZoneOption.createTimeZone(timeZone: .utc)
-
     var date = TinyMoon.formatDate(year: 2024, month: 10, day: 17)
     var possibleMajorPhase = TinyMoon.Moon.dayIncludesMajorMoonPhase(
       date: date,
@@ -272,8 +268,6 @@ final class TinyMoonTests: XCTestCase {
   }
 
   func test_moon_moonPhase() {
-    let utcTimeZone = TinyMoon.TimeZoneOption.createTimeZone(timeZone: .utc)
-
     var date = TinyMoon.formatDate(year: 2024, month: 10, day: 16)
     var julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     var phaseFraction = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay).phase
@@ -387,5 +381,70 @@ final class TinyMoonTests: XCTestCase {
     date = TinyMoon.formatDate(year: 2024, month: 11, day: 15, timeZone: tokyoTimeZone)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: tokyoTimeZone)
     XCTAssertNotEqual(moon.moonPhase, .fullMoon)
+  }
+
+  // These following moon phases happen within 5 hours of midnight, so these tests aim to check that the phase is calculated correctly and lands on the correct day
+  func test_moon_marginOfError() {
+    // 4 full moon (3 PST / 1 UTC)
+    // 5 new moon (4 PST / 1 UTC)
+    // 1 last quarter (1 UTC)
+    // --------------
+    // 10 total (7 PST / 3 UTC)
+
+    // MARK: - PST margin of error tests
+    // Values from https://www.timeanddate.com/moon/phases/usa/portland-or
+
+    // Full moon on 2/24/2024 @ 04:30 PST
+    var date = TinyMoon.formatDate(year: 2024, month: 2, day: 24, hour: 4, minute: 30, timeZone: pacificTimeZone)
+    var moon = TinyMoon.calculateMoonPhase(date, timeZone: pacificTimeZone)
+    XCTAssertEqual(moon.moonPhase, .fullMoon)
+
+    // New moon on 3/10/2024 @ 01:00 PST
+    date = TinyMoon.formatDate(year: 2024, month: 3, day: 10, hour: 1, minute: 0, timeZone: pacificTimeZone)
+    moon = TinyMoon.calculateMoonPhase(date, timeZone: pacificTimeZone)
+    XCTAssertEqual(moon.moonPhase, .newMoon)
+
+    // Full moon on 3/25/2024 @ 00:00 PST
+    date = TinyMoon.formatDate(year: 2024, month: 3, day: 25, hour: 0, minute: 0, timeZone: pacificTimeZone)
+    moon = TinyMoon.calculateMoonPhase(date, timeZone: pacificTimeZone)
+    XCTAssertEqual(moon.moonPhase, .fullMoon)
+
+    // New moon on 3/10/2024 @ 01:00 PST
+    date = TinyMoon.formatDate(year: 2024, month: 3, day: 10, hour: 1, minute: 0, timeZone: pacificTimeZone)
+    moon = TinyMoon.calculateMoonPhase(date, timeZone: pacificTimeZone)
+    XCTAssertEqual(moon.moonPhase, .newMoon)
+
+    // New moon on 8/4/2024 @ 04:13 PST
+    date = TinyMoon.formatDate(year: 2024, month: 8, day: 4, hour: 4, minute: 13, timeZone: pacificTimeZone)
+    moon = TinyMoon.calculateMoonPhase(date, timeZone: pacificTimeZone)
+    XCTAssertEqual(moon.moonPhase, .newMoon)
+
+    // New moon on 11/30/2024 @ 22:21 PST
+    date = TinyMoon.formatDate(year: 2024, month: 11, day: 30, hour: 22, minute: 21, timeZone: pacificTimeZone)
+    moon = TinyMoon.calculateMoonPhase(date, timeZone: pacificTimeZone)
+    XCTAssertEqual(moon.moonPhase, .newMoon)
+
+    // Full moon on 12/15/2024 @ 01:01 PST
+    date = TinyMoon.formatDate(year: 2024, month: 12, day: 15, hour: 1, minute: 01, timeZone: pacificTimeZone)
+    moon = TinyMoon.calculateMoonPhase(date, timeZone: pacificTimeZone)
+    XCTAssertEqual(moon.moonPhase, .fullMoon)
+
+    // MARK: - UTC margin of error tests
+    // Values from https://www.timeanddate.com/moon/phases/timezone/utc
+
+    // Last Quarter moon on 4/2/2024 @ 03:14 UTC
+    date = TinyMoon.formatDate(year: 2024, month: 4, day: 2, hour: 3, minute: 14, timeZone: utcTimeZone)
+    moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
+    XCTAssertEqual(moon.moonPhase, .lastQuarter)
+
+    // Full moon on 4/23/2024 @ 23:48 UTC
+    date = TinyMoon.formatDate(year: 2024, month: 4, day: 23, hour: 23, minute: 48, timeZone: utcTimeZone)
+    moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
+    XCTAssertEqual(moon.moonPhase, .fullMoon)
+
+    // New moon on 9/3/2024 @ 01:55 UTC
+    date = TinyMoon.formatDate(year: 2024, month: 9, day: 3, hour: 1, minute: 55, timeZone: utcTimeZone)
+    moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
+    XCTAssertEqual(moon.moonPhase, .newMoon)
   }
 }

@@ -122,7 +122,7 @@ extension TinyMoon {
           cos(s.rightAscension - m.rightAscension))
 
       let illuminatedFraction = (1 + cos(inc)) / 2
-      let phase = 0.5 + 0.5 * inc * (angle < 0 ? -1 : 1) / Double.pi
+      let phase = phase(julianDay: julianDay)
 
       return (illuminatedFraction, phase, angle)
     }
@@ -211,5 +211,120 @@ extension TinyMoon {
     static func julianDay(_ date: Date) -> Double {
       (date.timeIntervalSince1970 * 1000) / (1000 * 60 * 60 * 24) - 0.5 + 2440588.0
     }
+  }
+}
+
+extension TinyMoon.AstronomicalConstant {
+  /*  Astronomical constants  */
+
+  static let epoch = 2444238.5      /* 1980 January 0.0 */
+
+  /*  Constants defining the Sun's apparent orbit  */
+
+  static let elonge = 278.833540     /* Ecliptic longitude of the Sun at epoch 1980.0 */
+  static let elongp = 282.596403     /* Ecliptic longitude of the Sun at perigee */
+  static let eccent = 0.016718       /* Eccentricity of Earth's orbit */
+
+  /*  Elements of the Moon's orbit, epoch 1980.0  */
+
+  static let mmlong = 64.975464      /* Moon's mean longitude at the epoch */
+  static let mmlongp = 349.383063    /* Mean longitude of the perigee at the epoch */
+//    static let mlnode = 151.950429     /* Mean longitude of the node at the epoch */
+  // let synmonth = 29.53058868  /* Synodic month (new Moon to new Moon) */
+
+  /*  Properties of the Earth  */
+
+  /*  Handy mathematical functions  */
+
+  static func fixangle(_ a: Double) -> Double {
+      return a - 360.0 * floor(a / 360.0)
+  }
+
+  static func torad(_ d: Double) -> Double {
+      return d * (Double.pi / 180.0)
+  }
+
+  static func todeg(_ d: Double) -> Double {
+      return d * (180.0 / Double.pi)
+  }
+
+  static func kepler(m: Double, ecc: Double) -> Double {
+      var e = torad(m)
+      let mRad = torad(m)
+      var delta: Double
+      let maxIterations = 1000  // Set a limit for maximum iterations
+      var iteration = 0
+      let epsilon = 1e-10  // Set a small threshold for convergence
+
+      repeat {
+          delta = e - ecc * sin(e) - mRad
+          e -= delta / (1.0 - ecc * cos(e))
+          iteration += 1
+          if iteration > maxIterations {
+            print("Warning: Kepler function did not converge")
+            break
+          }
+      } while abs(delta) > epsilon
+
+      return e
+  }
+
+  static func phase(julianDay: Double) -> Double {
+      /* Calculation of the Sun's position */
+
+      let Day = julianDay - epoch                     /* Date within epoch */
+      let N = fixangle((360 / 365.2422) * Day)    /* Mean anomaly of the Sun */
+      let M = fixangle(N + elonge - elongp)       /* Convert from perigee coordinates to epoch 1980.0 */
+      var Ec = kepler(m: M, ecc: eccent)          /* Solve equation of Kepler */
+      Ec = sqrt((1.0 + eccent) / (1.0 - eccent)) * tan(Ec / 2.0)
+      Ec = 2.0 * todeg(atan(Ec))                  /* True anomaly */
+      let Lambdasun = fixangle(Ec + elongp)       /* Sun's geocentric ecliptic longitude */
+
+      /* Calculation of the Moon's position */
+
+      /* Moon's mean longitude */
+      let ml = fixangle(13.1763966 * Day + mmlong)
+
+      /* Moon's mean anomaly */
+      let MM = fixangle(ml - 0.1114041 * Day - mmlongp)
+
+      /* Evection */
+      let Ev = 1.2739 * sin(torad(2.0 * (ml - Lambdasun) - MM))
+
+      /* Annual equation */
+      let Ae = 0.1858 * sin(torad(M))
+
+      /* Correction term */
+      let A3 = 0.37 * sin(torad(M))
+
+      /* Corrected anomaly */
+      let MmP = MM + Ev - Ae - A3
+
+      /* Correction for the equation of the centre */
+      let mEc = 6.2886 * sin(torad(MmP))
+
+      /* Another correction term */
+      let A4 = 0.214 * sin(torad(2.0 * MmP))
+
+      /* Corrected longitude */
+      let lP = ml + Ev + mEc - Ae + A4
+
+      /* Variation */
+      let V = 0.6583 * sin(torad(2.0 * (lP - Lambdasun)))
+
+      /* True longitude */
+      let lPP = lP + V
+
+      /* Calculation of the phase of the Moon */
+
+      /* Age of the Moon in degrees */
+      let MoonAge = lPP - Lambdasun
+
+      /* Phase of the Moon */
+      // let MoonPhase = (1.0 - cos(torad(MoonAge))) / 2.0
+
+      // return MoonPhase
+      // return synmonth * (fixangle(MoonAge) / 360.0)
+      return fixangle(MoonAge) / 360.0
   }
 }
