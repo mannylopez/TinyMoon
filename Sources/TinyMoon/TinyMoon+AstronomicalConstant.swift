@@ -92,7 +92,7 @@ extension TinyMoon {
       return (declination, rightAscension, distance)
     }
 
-    /// Get Moon phase
+    /// Get Moon phase, composed of illumination, phase, and angle
     ///
     /// - Parameters:
     ///   - julianDay: The date in Julian Days
@@ -122,7 +122,7 @@ extension TinyMoon {
           cos(s.rightAscension - m.rightAscension))
 
       let illuminatedFraction = (1 + cos(inc)) / 2
-      let phase = phase(julianDay: julianDay)
+      let phase = _phase(julianDay: julianDay)
 
       return (illuminatedFraction, phase, angle)
     }
@@ -206,7 +206,7 @@ extension TinyMoon {
     /// Formula based on https://github.com/mourner/suncalc/blob/master/suncalc.js#L29
     /// and https://github.com/microsoft/AirSim/blob/main/AirLib/include/common/EarthCelestial.hpp#L115
     /// - Note
-    ///   - `2440588` is the Julian day for January 1, 1970, 12:00 UTC, aka J170
+    ///   - `2440588` is the Julian day for January 1, 1970, 12:00 UTC, aka J1970
     ///   - `1000 * 60 * 60 * 24` is a day in milliseconds
     static func julianDay(_ date: Date) -> Double {
       (date.timeIntervalSince1970 * 1000) / (1000 * 60 * 60 * 24) - 0.5 + 2440588.0
@@ -215,42 +215,43 @@ extension TinyMoon {
 }
 
 extension TinyMoon.AstronomicalConstant {
-  /*  Astronomical constants  */
+  // Julian date on 1 January 1980, 00:00 UTC
+  static let J1980 = 2444238.5
 
-  static let epoch = 2444238.5      /* 1980 January 0.0 */
+  // MARK: - Sun constants
 
-  /*  Constants defining the Sun's apparent orbit  */
+  // Ecliptic longitude of the Sun at J1980
+  static let sunEclipticLongitudeJ1980 = 278.833540
+  // Ecliptic longitude of the Sun's perigee at J1980
+  static let sunPerigeeEclipticLongitudeJ1989 = 282.596403
+  // Eccentricity of Earth's orbit
+  static let earthOrbitEccentricity = 0.016718
 
-  static let elonge = 278.833540     /* Ecliptic longitude of the Sun at epoch 1980.0 */
-  static let elongp = 282.596403     /* Ecliptic longitude of the Sun at perigee */
-  static let eccent = 0.016718       /* Eccentricity of Earth's orbit */
+  // MARK: - Moon constants
 
-  /*  Elements of the Moon's orbit, epoch 1980.0  */
+  // Moon's mean longitude at J1980
+  static let moonMeanLongitudeJ1980 = 64.975464
+  // Longitude of the Moon's perigee at J1980
+  static let moonPerigeeLongitudeJ1980 = 349.383063
+  // Mean longitude of the node at J1980
+  static let moonNodeLongitude1980 = 151.950429
+  // Inclination of the Moon's orbit
+  static let moonOrbitInclination = 5.145396
+  // Semi-major axis of Moon's orbit in km
+  static let moonOrbitSemiMajorAxis = 384401.0
+  // Eccentricity of the Moon's orbit
+  static let moonEccentricity = 0.054900
 
-  static let mmlong = 64.975464      /* Moon's mean longitude at the epoch */
-  static let mmlongp = 349.383063    /* Mean longitude of the perigee at the epoch */
-//    static let mlnode = 151.950429     /* Mean longitude of the node at the epoch */
-  // let synmonth = 29.53058868  /* Synodic month (new Moon to new Moon) */
 
-  /*  Properties of the Earth  */
-
-  /*  Handy mathematical functions  */
+  // MARK: - Mathematical formulas
 
   static func fixangle(_ a: Double) -> Double {
       return a - 360.0 * floor(a / 360.0)
   }
 
-  static func torad(_ d: Double) -> Double {
-      return d * (Double.pi / 180.0)
-  }
-
-  static func todeg(_ d: Double) -> Double {
-      return d * (180.0 / Double.pi)
-  }
-
   static func kepler(m: Double, ecc: Double) -> Double {
-      var e = torad(m)
-      let mRad = torad(m)
+      var e = degreesToRadians(m)
+      let mRad = degreesToRadians(m)
       var delta: Double
       let maxIterations = 1000  // Set a limit for maximum iterations
       var iteration = 0
@@ -270,47 +271,46 @@ extension TinyMoon.AstronomicalConstant {
   }
 
   static func phase(julianDay: Double) -> Double {
-      /* Calculation of the Sun's position */
-
-      let Day = julianDay - epoch                     /* Date within epoch */
-      let N = fixangle((360 / 365.2422) * Day)    /* Mean anomaly of the Sun */
-      let M = fixangle(N + elonge - elongp)       /* Convert from perigee coordinates to epoch 1980.0 */
-      var Ec = kepler(m: M, ecc: eccent)          /* Solve equation of Kepler */
-      Ec = sqrt((1.0 + eccent) / (1.0 - eccent)) * tan(Ec / 2.0)
-      Ec = 2.0 * todeg(atan(Ec))                  /* True anomaly */
-      let Lambdasun = fixangle(Ec + elongp)       /* Sun's geocentric ecliptic longitude */
+      // Calculation of the Sun's position
+      let jdSinceJ1980 = julianDay - J1980
+      let N = fixangle((360 / 365.2422) * jdSinceJ1980)    /* Mean anomaly of the Sun */
+      let M = fixangle(N + sunEclipticLongitudeJ1980 - sunPerigeeEclipticLongitudeJ1989)       /* Convert from perigee coordinates to epoch 1980.0 */
+      var Ec = kepler(m: M, ecc: earthOrbitEccentricity)          /* Solve equation of Kepler */
+      Ec = sqrt((1.0 + earthOrbitEccentricity) / (1.0 - earthOrbitEccentricity)) * tan(Ec / 2.0)
+      Ec = 2.0 * radiansToDegrees(atan(Ec))                  /* True anomaly */
+      let Lambdasun = fixangle(Ec + sunPerigeeEclipticLongitudeJ1989)       /* Sun's geocentric ecliptic longitude */
 
       /* Calculation of the Moon's position */
 
       /* Moon's mean longitude */
-      let ml = fixangle(13.1763966 * Day + mmlong)
+      let ml = fixangle(13.1763966 * jdSinceJ1980 + moonMeanLongitudeJ1980)
 
       /* Moon's mean anomaly */
-      let MM = fixangle(ml - 0.1114041 * Day - mmlongp)
+      let MM = fixangle(ml - 0.1114041 * jdSinceJ1980 - moonPerigeeLongitudeJ1980)
 
       /* Evection */
-      let Ev = 1.2739 * sin(torad(2.0 * (ml - Lambdasun) - MM))
+      let Ev = 1.2739 * sin(degreesToRadians(2.0 * (ml - Lambdasun) - MM))
 
       /* Annual equation */
-      let Ae = 0.1858 * sin(torad(M))
+      let Ae = 0.1858 * sin(degreesToRadians(M))
 
       /* Correction term */
-      let A3 = 0.37 * sin(torad(M))
+      let A3 = 0.37 * sin(degreesToRadians(M))
 
       /* Corrected anomaly */
       let MmP = MM + Ev - Ae - A3
 
       /* Correction for the equation of the centre */
-      let mEc = 6.2886 * sin(torad(MmP))
+      let mEc = 6.2886 * sin(degreesToRadians(MmP))
 
       /* Another correction term */
-      let A4 = 0.214 * sin(torad(2.0 * MmP))
+      let A4 = 0.214 * sin(degreesToRadians(2.0 * MmP))
 
       /* Corrected longitude */
       let lP = ml + Ev + mEc - Ae + A4
 
       /* Variation */
-      let V = 0.6583 * sin(torad(2.0 * (lP - Lambdasun)))
+      let V = 0.6583 * sin(degreesToRadians(2.0 * (lP - Lambdasun)))
 
       /* True longitude */
       let lPP = lP + V
@@ -326,5 +326,78 @@ extension TinyMoon.AstronomicalConstant {
       // return MoonPhase
       // return synmonth * (fixangle(MoonAge) / 360.0)
       return fixangle(MoonAge) / 360.0
+  }
+
+  /// Calculates the Moon's phase, represented as a fraction
+  ///
+  /// - Parameter:
+  ///   - julianDay: The date in Julian Days
+  ///
+  /// - Returns: Phase as a percentage of a full circle (i.e., 0 to 1), where 0.0` new moon, `0.25` first quarter, `0.5` full moon, `0.75` last quarter
+  ///
+  /// Formula based on source code from https://www.fourmilab.ch/moontoolw/
+  static func _phase(julianDay: Double) -> Double {
+    // Julian days since 1 January 1980, 00:00 UTC
+    let jdSinceJ1980 = julianDay - J1980
+    // Mean anomaly of the Sun
+    let N = fixangle((360 / 365.2422) * jdSinceJ1980)
+    // Convert from perigee coordinates to J1980
+    let M = fixangle(N + sunEclipticLongitudeJ1980 - sunPerigeeEclipticLongitudeJ1989)
+    // Solve for Kepler equation
+    var Ec = kepler(m: M, ecc: earthOrbitEccentricity)
+    Ec = sqrt((1.0 + earthOrbitEccentricity) / (1.0 - earthOrbitEccentricity)) * tan(Ec / 2.0)
+    // True anomaly
+    Ec = 2.0 * radiansToDegrees(atan(Ec))
+    // Sun's geocentric ecliptic longitude
+    let lambdaSun = fixangle(Ec + sunPerigeeEclipticLongitudeJ1989)
+
+    // Calculation of the Moon's position
+    // Moon's mean longitude
+    let moonMeanLongitude = fixangle(13.1763966 * jdSinceJ1980 + moonMeanLongitudeJ1980)
+    // Moon's mean anomaly
+    let moonMeanAnomaly = fixangle(moonMeanLongitude - 0.1114041 * jdSinceJ1980 - moonPerigeeLongitudeJ1980)
+    // Moon's ascending node mean longitude
+    let moonAscendingNodeMeanLongitude = fixangle(moonNodeLongitude1980 - 0.0529539 * jdSinceJ1980)
+    // Evection
+    let evection = 1.2739 * sin(degreesToRadians(2 * (moonMeanLongitude - lambdaSun) - moonMeanAnomaly))
+    // Annual equation
+    let annualEquation = 0.1858 * sin(degreesToRadians(M))
+    // Corrected term
+    let A3 = 0.37 * sin(degreesToRadians(M))
+    // Corrected anomaly
+    let MmP = moonMeanAnomaly + evection - annualEquation - A3
+    // Correction for the equation of center
+    let mEc = 6.2886 * sin(degreesToRadians(MmP))
+    // Another correction term
+    let A4 = 0.214 * sin(degreesToRadians(2 * MmP))
+    // Corrected longitude
+    let lP = moonMeanLongitude + evection + mEc - annualEquation + A4
+    // Variation
+    let variation = 0.6583 * sin(degreesToRadians(2 * (lP - lambdaSun)))
+    // True longitude
+    let lPP = lP + variation
+    // Corrected longitude of the node
+    let NP = moonAscendingNodeMeanLongitude - 0.16 * sin(degreesToRadians(M))
+    // Y inclination coordinate
+    let y = sin(degreesToRadians(lPP - NP)) * cos(degreesToRadians(moonOrbitInclination))
+    // X inclination coordinate
+    let x = cos(degreesToRadians(lPP - NP))
+    // Ecliptic longitude
+    var lambdaMoon = radiansToDegrees(atan2(y, x))
+    lambdaMoon += NP
+    // Ecliptic latitude
+    let betaM = radiansToDegrees(asin(sin(degreesToRadians(lPP - NP)) * sin(degreesToRadians(moonOrbitInclination))))
+
+    // Calculation of the phase of the Moon
+    // Age of the Moon in degrees
+    let moonAge = lPP - lambdaSun
+    // Phase of the Moon
+    let moonPhase = (1 - cos(degreesToRadians(moonAge))) / 2
+    // Distance of moon from the center of the Earth
+    let moonDistance = (moonOrbitSemiMajorAxis * (1 - moonEccentricity * moonEccentricity)) / (1 + moonEccentricity * cos(degreesToRadians(MmP + mEc)))
+
+    // Returns the terminator phase angle as a percentage of a full circle (i.e., 0 to 1)
+    let normalizedMoonPhase = fixangle(moonAge) / 360.0
+    return normalizedMoonPhase
   }
 }
