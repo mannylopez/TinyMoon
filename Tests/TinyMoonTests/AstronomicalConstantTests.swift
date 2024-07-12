@@ -109,8 +109,4 @@ final class AstronomicalConstantTests: XCTestCase {
     XCTAssertEqual(moonPhase.illuminatedFraction, 0.49982435665155855)
     XCTAssertEqual(moonPhase.phase, 0.7500559090154013)
   }
-
-  func test_phase() {
-    
-  }
 }

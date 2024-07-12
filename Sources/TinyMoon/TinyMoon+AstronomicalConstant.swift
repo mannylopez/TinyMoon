@@ -43,18 +43,48 @@ extension TinyMoon {
     ///
     /// - Returns: MoonDetail object with moon details for the given Julian day
     static func getMoonPhase(julianDay: Double) -> TinyMoon.MoonDetail {
-      calculateMoonData(for: julianDay)
+      calculateMoonDetail(for: julianDay)
     }
+
+    /// Calculates the Julian Day (JD) for a given Date
+    ///
+    /// - Parameters:
+    ///   - date: Any Swift Date to calculate the Julian Day for
+    ///
+    /// - Returns: The Julian Day number
+    ///
+    /// The Julian Day Count is a uniform count of days from a remote epoch in the past and is used for calculating the days between two events.
+    ///
+    /// The Julian day is calculated by combining the contributions from the years, months, and day, taking into account constant
+    ///
+    /// Formula based on https://github.com/mourner/suncalc/blob/master/suncalc.js#L29
+    /// and https://github.com/microsoft/AirSim/blob/main/AirLib/include/common/EarthCelestial.hpp#L115
+    /// - Note
+    ///   - `2440588` is the Julian day for January 1, 1970, 12:00 UTC, aka J1970
+    ///   - `1000 * 60 * 60 * 24` is a day in milliseconds
+    static func julianDay(_ date: Date) -> Double {
+      (date.timeIntervalSince1970 * 1000) / (1000 * 60 * 60 * 24) - 0.5 + 2440588.0
+    }
+
+    static func degreesToRadians(_ degrees: Double) -> Double {
+      degrees * (Double.pi / 180)
+    }
+
+    static func radiansToDegrees(_ radians: Double) -> Double {
+      radians * (180 / Double.pi)
+    }
+
+    // MARK: Private
 
     /// Calculates the Moon's metadata for the given Julian day
     ///
     /// - Parameter:
     ///   - julianDay: The date in Julian Days
     ///
-    /// - Returns: MoonData object with moon details for the given Julian day
+    /// - Returns: MoonDetail object with moon details for the given Julian day
     ///
     /// Formula based on source code from https://www.fourmilab.ch/moontoolw/
-    static func calculateMoonData(for julianDay: Double) -> TinyMoon.MoonDetail {
+    private static func calculateMoonDetail(for julianDay: Double) -> TinyMoon.MoonDetail {
       // Julian days since 1 January 1980, 00:00 UTC
       let jdSinceJ1980 = julianDay - J1980
       // Mean anomaly of the Sun
@@ -124,36 +154,6 @@ extension TinyMoon {
         moonAge: moonAge,
         phase: moonPhaseTerminator)
     }
-
-    /// Calculates the Julian Day (JD) for a given Date
-    ///
-    /// - Parameters:
-    ///   - date: Any Swift Date to calculate the Julian Day for
-    ///
-    /// - Returns: The Julian Day number
-    ///
-    /// The Julian Day Count is a uniform count of days from a remote epoch in the past and is used for calculating the days between two events.
-    ///
-    /// The Julian day is calculated by combining the contributions from the years, months, and day, taking into account constant
-    ///
-    /// Formula based on https://github.com/mourner/suncalc/blob/master/suncalc.js#L29
-    /// and https://github.com/microsoft/AirSim/blob/main/AirLib/include/common/EarthCelestial.hpp#L115
-    /// - Note
-    ///   - `2440588` is the Julian day for January 1, 1970, 12:00 UTC, aka J1970
-    ///   - `1000 * 60 * 60 * 24` is a day in milliseconds
-    static func julianDay(_ date: Date) -> Double {
-      (date.timeIntervalSince1970 * 1000) / (1000 * 60 * 60 * 24) - 0.5 + 2440588.0
-    }
-
-    static func degreesToRadians(_ degrees: Double) -> Double {
-      degrees * (Double.pi / 180)
-    }
-
-    static func radiansToDegrees(_ radians: Double) -> Double {
-      radians * (180 / Double.pi)
-    }
-
-    // MARK: Private
 
     private static func convertDegreesToDaysHoursMinutes(degrees: Double) -> (days: Int, hours: Int, minutes: Int) {
       let degreesPerDay = 360.0 / synodicMonth
