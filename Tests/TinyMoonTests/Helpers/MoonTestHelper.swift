@@ -200,9 +200,9 @@ extension MoonTestHelper {
   /// *🌗 |23🌘 |24🌘 |25🌘 |26🌘 |27🌘 |28🌘 |
   /// 29🌘 | *🌑 |31🌒 |
   /// ```
-  static func prettyPrintCalendarForYear(_ year: Int) {
+  static func prettyPrintCalendarForYear(_ year: Int, timeZone: TimeZone = utcTimeZone) {
     for month in MonthTestHelper.Month.allCases {
-      MoonTestHelper.prettyPrintMoonCalendar(month: month, year: year)
+      MoonTestHelper.prettyPrintMoonCalendar(month: month, year: year, timeZone: timeZone)
     }
   }
 

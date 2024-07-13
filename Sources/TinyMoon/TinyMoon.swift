@@ -57,6 +57,7 @@ public enum TinyMoon {
     day: Int,
     hour: Int = 00,
     minute: Int = 00,
+    second: Int = 00,
     timeZone: TimeZone = TimeZoneOption.createTimeZone(timeZone: .utc))
     -> Date
   {
@@ -66,6 +67,7 @@ public enum TinyMoon {
     components.day = day
     components.hour = hour
     components.minute = minute
+    components.second = second
     components.timeZone = timeZone
 
     return Calendar.current.date(from: components)!

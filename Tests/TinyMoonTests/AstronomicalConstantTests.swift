@@ -76,158 +76,76 @@ final class AstronomicalConstantTests: XCTestCase {
     XCTAssertEqual(julianDay, 2459814.4993055556)
   }
 
-  func test_astronomicalConstant_daysSinceJ2000() {
-    // 1
-    var date = TinyMoon.formatDate(year: 2004, month: 01, day: 1)
-    var julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    XCTAssertEqual(julianDay, 2453005.5000)
-
-    var daysSinceJ2000 = TinyMoon.AstronomicalConstant.daysSinceJ2000(from: julianDay)
-    XCTAssertEqual(daysSinceJ2000, 1460.5)
-
-    // 2
-    date = TinyMoon.formatDate(year: 2022, month: 08, day: 22, hour: 23, minute: 59)
-    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    XCTAssertEqual(julianDay, 2459814.4993055556)
-
-    daysSinceJ2000 = TinyMoon.AstronomicalConstant.daysSinceJ2000(from: julianDay)
-    XCTAssertEqual(daysSinceJ2000, 8269.499305555597)
-  }
-
-  func test_astronomicalConstant_moonCoordinates() {
-    let date = TinyMoon.formatDate(year: 2004, month: 01, day: 1)
-    let julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    let moonCoordinates = TinyMoon.AstronomicalConstant.moonCoordinates(julianDay: julianDay)
-
-    // Test values taken from https://aa.quae.nl/en/reken/hemelpositie.html#4
-//    XCTAssertEqual(moonCoordinates.L, 339.683699626709)  // 22.44 degrees
-//    XCTAssertEqual(moonCoordinates.M, 335.3891934066859) // 136.39 degrees
-//    XCTAssertEqual(moonCoordinates.F, 338.8510958397388)  // 334.74 degrees
-//
-//    XCTAssertEqual(moonCoordinates.longitude, 339.7594152822631) // 0.46740869456428196793
-//    XCTAssertEqual(moonCoordinates.latitude, -0.038195520939872045) // -0.038195520939775448599
-
-    XCTAssertEqual(moonCoordinates.declination, 0.14456842408751425)
-    XCTAssertEqual(moonCoordinates.rightAscension, 0.4475918797699177)
-    XCTAssertEqual(moonCoordinates.distance, 400136.10760520655)
-  }
-
-  func test_astronomicalConstant_declination() {
-    // Test values taken from https://aa.quae.nl/en/reken/hemelpositie.html#1_7
-    let longitude = TinyMoon.AstronomicalConstant.degreesToRadians(168.737)
-    let latitude = TinyMoon.AstronomicalConstant.degreesToRadians(1.208)
-    let declination = TinyMoon.AstronomicalConstant.declination(longitude: longitude, latitude: latitude)
-
-    XCTAssertEqual(declination, TinyMoon.AstronomicalConstant.degreesToRadians(5.567), accuracy: 1e-5)
-
-    XCTAssertEqual(declination, 0.09717015472346271, accuracy: 1e-5)
-  }
-
-  func test_astronomicalConstant_rightAscension() {
-    // Test values taken from https://aa.quae.nl/en/reken/hemelpositie.html#1_7
-    let longitude = TinyMoon.AstronomicalConstant.degreesToRadians(168.737)
-    let latitude = TinyMoon.AstronomicalConstant.degreesToRadians(1.208)
-    let rightAscension = TinyMoon.AstronomicalConstant.rightAscension(longitude: longitude, latitude: latitude)
-
-    XCTAssertEqual(rightAscension, TinyMoon.AstronomicalConstant.degreesToRadians(170.20), accuracy: 0.0015)
-
-    XCTAssertEqual(rightAscension, 2.969160475404514)
-  }
-
-  func test_astronomicalConstant_solarMeanAnomaly() {
-    var date = TinyMoon.formatDate(year: 2004, month: 01, day: 1)
-    var julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    var solarMeanAnomaly = TinyMoon.AstronomicalConstant.solarMeanAnomaly(julianDay: julianDay)
-    XCTAssertEqual(solarMeanAnomaly, 31.363537143773254)
-
-    date = TinyMoon.formatDate(year: 2005, month: 02, day: 2)
-    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    solarMeanAnomaly = TinyMoon.AstronomicalConstant.solarMeanAnomaly(julianDay: julianDay)
-    XCTAssertEqual(solarMeanAnomaly, 38.20992120161531)
-
-    date = TinyMoon.formatDate(year: 2006, month: 03, day: 10)
-    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    solarMeanAnomaly = TinyMoon.AstronomicalConstant.solarMeanAnomaly(julianDay: julianDay)
-    XCTAssertEqual(solarMeanAnomaly, 45.107911169441095)
-
-    date = TinyMoon.formatDate(year: 2006, month: 03, day: 10, hour: 6)
-    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    solarMeanAnomaly = TinyMoon.AstronomicalConstant.solarMeanAnomaly(julianDay: julianDay)
-    XCTAssertEqual(solarMeanAnomaly, 45.11221166193974)
-
-    date = TinyMoon.formatDate(year: 2016, month: 04, day: 15, hour: 6)
-    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    solarMeanAnomaly = TinyMoon.AstronomicalConstant.solarMeanAnomaly(julianDay: julianDay)
-    XCTAssertEqual(solarMeanAnomaly, 108.57027897193804)
-
-    date = TinyMoon.formatDate(year: 2016, month: 04, day: 15, hour: 6, minute: 5)
-    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    solarMeanAnomaly = TinyMoon.AstronomicalConstant.solarMeanAnomaly(julianDay: julianDay)
-    XCTAssertEqual(solarMeanAnomaly, 108.57033870099696)
-
-    date = TinyMoon.formatDate(year: 2016, month: 04, day: 15, hour: 6, minute: 30)
-    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    solarMeanAnomaly = TinyMoon.AstronomicalConstant.solarMeanAnomaly(julianDay: julianDay)
-    XCTAssertEqual(solarMeanAnomaly, 108.57063734631559)
-
-    date = TinyMoon.formatDate(year: 2020, month: 10, day: 20, hour: 9, minute: 25)
-    julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    solarMeanAnomaly = TinyMoon.AstronomicalConstant.solarMeanAnomaly(julianDay: julianDay)
-    XCTAssertEqual(solarMeanAnomaly, 136.93877638455712)
-  }
-
-  func test_astronomicalConstant_eclipticLongitude() {
-    let date = TinyMoon.formatDate(year: 2004, month: 01, day: 1)
-    let julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    let solarMeanAnomaly = TinyMoon.AstronomicalConstant.solarMeanAnomaly(julianDay: julianDay)
-    let eclipticLongitude = TinyMoon.AstronomicalConstant.eclipticLongitude(solarMeanAnomaly: solarMeanAnomaly)
-    XCTAssertEqual(eclipticLongitude, 36.299935502913485)
-  }
-
-  func test_astronomicalConstant_sunCoordinates() {
-    let date = TinyMoon.formatDate(year: 2004, month: 01, day: 1)
-    let julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    let sunCoordinates = TinyMoon.AstronomicalConstant.sunCoordinates(julianDay: julianDay)
-
-    XCTAssertEqual(sunCoordinates.declination, -0.4027393891133564)
-    XCTAssertEqual(sunCoordinates.rightAscension, -1.3840823935200117)
-  }
-
-  func test_astronomicalConstant_getMoonPhase() {
+  func test_astronomicalConstant_getMoonPhase_moonDetail() {
     // Full moon
     var date = TinyMoon.formatDate(year: 2024, month: 06, day: 22)
     var julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    var moonPhase = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
+    var moonDetail = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
 
-    XCTAssertEqual(moonPhase.illuminatedFraction, 0.9978873506056865)
-    XCTAssertEqual(moonPhase.phase, 0.48536418607701615)
-    XCTAssertEqual(moonPhase.angle, -2.8703533722710577)
+    XCTAssertEqual(moonDetail.julianDay, 2460483.5)
+    XCTAssertEqual(moonDetail.daysElapsedInCycle, 14.716658695349988)
+    XCTAssertEqual(moonDetail.ageOfMoon.days, 14)
+    XCTAssertEqual(moonDetail.ageOfMoon.hours, 17)
+    XCTAssertEqual(moonDetail.ageOfMoon.minutes, 11)
+    XCTAssertEqual(moonDetail.illuminatedFraction, 0.9999732292206713)
+    XCTAssertEqual(moonDetail.distanceFromCenterOfEarth, 382758.57898868265)
+    XCTAssertEqual(moonDetail.phase, 0.49835304181785745)
 
     // New moon
     date = TinyMoon.formatDate(year: 2024, month: 07, day: 06, hour: 12, minute: 37)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    moonPhase = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
+    moonDetail = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
 
-    XCTAssertEqual(moonPhase.illuminatedFraction, 0.007424715413253902)
-    XCTAssertEqual(moonPhase.phase, 0.02746179502131707)
-    XCTAssertEqual(moonPhase.angle, -1.9356676727903563)
+    XCTAssertEqual(moonDetail.julianDay, 2460498.0256944443)
+    XCTAssertEqual(moonDetail.daysElapsedInCycle, 0.5665252000982685)
+    XCTAssertEqual(moonDetail.ageOfMoon.days, 0)
+    XCTAssertEqual(moonDetail.ageOfMoon.hours, 13)
+    XCTAssertEqual(moonDetail.ageOfMoon.minutes, 35)
+    XCTAssertEqual(moonDetail.illuminatedFraction, 0.0036280068150687517)
+    XCTAssertEqual(moonDetail.distanceFromCenterOfEarth, 390943.47575863753)
+    XCTAssertEqual(moonDetail.phase, 0.019184351732275336)
 
     // First quarter
     date = TinyMoon.formatDate(year: 2024, month: 08, day: 12, hour: 15, minute: 18)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    moonPhase = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
+    moonDetail = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
 
-    XCTAssertEqual(moonPhase.illuminatedFraction, 0.5105081080980992)
-    XCTAssertEqual(moonPhase.phase, 0.25334508096684466)
-    XCTAssertEqual(moonPhase.angle, -1.2995618398922297)
+    XCTAssertEqual(moonDetail.julianDay, 2460535.1375)
+    XCTAssertEqual(moonDetail.daysElapsedInCycle, 7.398740016912393)
+    XCTAssertEqual(moonDetail.ageOfMoon.days, 7)
+    XCTAssertEqual(moonDetail.ageOfMoon.hours, 9)
+    XCTAssertEqual(moonDetail.ageOfMoon.minutes, 34)
+    XCTAssertEqual(moonDetail.illuminatedFraction, 0.5017120238066795)
+    XCTAssertEqual(moonDetail.distanceFromCenterOfEarth, 398519.14701141417)
+    XCTAssertEqual(moonDetail.phase, 0.2505449551679033)
 
     // Last quarter
     date = TinyMoon.formatDate(year: 2024, month: 08, day: 26, hour: 09, minute: 25)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    moonPhase = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
+    moonDetail = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
 
-    XCTAssertEqual(moonPhase.illuminatedFraction, 0.5115383513011658)
-    XCTAssertEqual(moonPhase.phase, 0.7463269026530461)
-    XCTAssertEqual(moonPhase.angle, 1.3632094278875226)
+    XCTAssertEqual(moonDetail.julianDay, 2460548.892361111)
+    XCTAssertEqual(moonDetail.daysElapsedInCycle, 22.14959253613732)
+    XCTAssertEqual(moonDetail.ageOfMoon.days, 22)
+    XCTAssertEqual(moonDetail.ageOfMoon.hours, 3)
+    XCTAssertEqual(moonDetail.ageOfMoon.minutes, 35)
+    XCTAssertEqual(moonDetail.illuminatedFraction, 0.49982435665155855)
+    XCTAssertEqual(moonDetail.distanceFromCenterOfEarth, 372205.09027872747)
+    XCTAssertEqual(moonDetail.phase, 0.7500559090154013)
+  }
+
+  func test_moontool() {
+    // Test taken from https://www.fourmilab.ch/moontoolw/
+    let utcTimeZone = TinyMoon.TimeZoneOption.createTimeZone(timeZone: .utc)
+    let date = TinyMoon.formatDate(year: 1999, month: 07, day: 20, hour: 20, minute: 17, second: 40, timeZone: utcTimeZone)
+    let julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    let moonDetail = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
+    XCTAssertEqual(moonDetail.julianDay, 2451380.345601852)
+    XCTAssertEqual(moonDetail.ageOfMoon.days, 7)
+    XCTAssertEqual(moonDetail.ageOfMoon.hours, 19)
+    XCTAssertEqual(moonDetail.ageOfMoon.minutes, 30)
+    XCTAssertEqual(round(moonDetail.illuminatedFraction * 100), 55)
+    XCTAssertEqual(round(moonDetail.distanceFromCenterOfEarth), 402026)
+
   }
 }
