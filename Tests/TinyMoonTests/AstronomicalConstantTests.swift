@@ -76,38 +76,62 @@ final class AstronomicalConstantTests: XCTestCase {
     XCTAssertEqual(julianDay, 2459814.4993055556)
   }
 
-  func test_astronomicalConstant_getMoonPhase() {
+  func test_astronomicalConstant_getMoonPhase_moonDetail() {
     // Full moon
     var date = TinyMoon.formatDate(year: 2024, month: 06, day: 22)
     var julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    var moonPhase = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
+    var moonDetail = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
 
-    XCTAssertEqual(moonPhase.illuminatedFraction, 0.9999732292206713)
-    XCTAssertEqual(moonPhase.phase, 0.49835304181785745)
+    XCTAssertEqual(moonDetail.julianDay, 2460483.5)
+    XCTAssertEqual(moonDetail.daysElapsedInCycle, 14.716658695349988)
+    XCTAssertEqual(moonDetail.ageOfMoon.days, 14)
+    XCTAssertEqual(moonDetail.ageOfMoon.hours, 17)
+    XCTAssertEqual(moonDetail.ageOfMoon.minutes, 11)
+    XCTAssertEqual(moonDetail.illuminatedFraction, 0.9999732292206713)
+    XCTAssertEqual(moonDetail.distanceFromCenterOfEarth, 382758.57898868265)
+    XCTAssertEqual(moonDetail.phase, 0.49835304181785745)
 
     // New moon
     date = TinyMoon.formatDate(year: 2024, month: 07, day: 06, hour: 12, minute: 37)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    moonPhase = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
+    moonDetail = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
 
-    XCTAssertEqual(moonPhase.illuminatedFraction, 0.0036280068150687517)
-    XCTAssertEqual(moonPhase.phase, 0.019184351732275336)
+    XCTAssertEqual(moonDetail.julianDay, 2460498.0256944443)
+    XCTAssertEqual(moonDetail.daysElapsedInCycle, 0.5665252000982685)
+    XCTAssertEqual(moonDetail.ageOfMoon.days, 0)
+    XCTAssertEqual(moonDetail.ageOfMoon.hours, 13)
+    XCTAssertEqual(moonDetail.ageOfMoon.minutes, 35)
+    XCTAssertEqual(moonDetail.illuminatedFraction, 0.0036280068150687517)
+    XCTAssertEqual(moonDetail.distanceFromCenterOfEarth, 390943.47575863753)
+    XCTAssertEqual(moonDetail.phase, 0.019184351732275336)
 
     // First quarter
     date = TinyMoon.formatDate(year: 2024, month: 08, day: 12, hour: 15, minute: 18)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    moonPhase = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
+    moonDetail = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
 
-    XCTAssertEqual(moonPhase.illuminatedFraction, 0.5017120238066795)
-    XCTAssertEqual(moonPhase.phase, 0.2505449551679033)
+    XCTAssertEqual(moonDetail.julianDay, 2460535.1375)
+    XCTAssertEqual(moonDetail.daysElapsedInCycle, 7.398740016912393)
+    XCTAssertEqual(moonDetail.ageOfMoon.days, 7)
+    XCTAssertEqual(moonDetail.ageOfMoon.hours, 9)
+    XCTAssertEqual(moonDetail.ageOfMoon.minutes, 34)
+    XCTAssertEqual(moonDetail.illuminatedFraction, 0.5017120238066795)
+    XCTAssertEqual(moonDetail.distanceFromCenterOfEarth, 398519.14701141417)
+    XCTAssertEqual(moonDetail.phase, 0.2505449551679033)
 
     // Last quarter
     date = TinyMoon.formatDate(year: 2024, month: 08, day: 26, hour: 09, minute: 25)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
-    moonPhase = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
+    moonDetail = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
 
-    XCTAssertEqual(moonPhase.illuminatedFraction, 0.49982435665155855)
-    XCTAssertEqual(moonPhase.phase, 0.7500559090154013)
+    XCTAssertEqual(moonDetail.julianDay, 2460548.892361111)
+    XCTAssertEqual(moonDetail.daysElapsedInCycle, 22.14959253613732)
+    XCTAssertEqual(moonDetail.ageOfMoon.days, 22)
+    XCTAssertEqual(moonDetail.ageOfMoon.hours, 3)
+    XCTAssertEqual(moonDetail.ageOfMoon.minutes, 35)
+    XCTAssertEqual(moonDetail.illuminatedFraction, 0.49982435665155855)
+    XCTAssertEqual(moonDetail.distanceFromCenterOfEarth, 372205.09027872747)
+    XCTAssertEqual(moonDetail.phase, 0.7500559090154013)
   }
 
   func test_moontool() {
