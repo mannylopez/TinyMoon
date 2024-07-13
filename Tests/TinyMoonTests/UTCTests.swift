@@ -24,7 +24,7 @@ final class UTCTests: XCTestCase {
     let waxingCrescentEmoji = TinyMoon.MoonPhase.waxingCrescent.emoji
 
     // Returns a New Moon because it falls within this day's 24 hours
-    var date = TinyMoon.formatDate(year: 2024, month: 09, day: 03, hour: 23, minute: 00)
+    let date = TinyMoon.formatDate(year: 2024, month: 09, day: 03, hour: 23, minute: 00)
     let moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
     XCTAssertEqual(moon.moonPhase, .newMoon)
     XCTAssertEqual(moon.emoji, newMoonEmoji)
@@ -32,11 +32,9 @@ final class UTCTests: XCTestCase {
     if moon.emoji == newMoonEmoji { correct += 1 } else { incorrect += 1 }
 
     // Even though it is the same day, at this exact time, it is not a New Moon
-    date = TinyMoon.formatDate(year: 2024, month: 09, day: 03, hour: 23, minute: 00)
     let exactMoon = TinyMoon.calculateExactMoonPhase(date)
-    XCTAssertNotEqual(exactMoon.exactMoonPhase, .newMoon)
-    XCTAssertNotEqual(exactMoon.exactEmoji, newMoonEmoji)
-    XCTAssertEqual(exactMoon.exactMoonPhase.emoji, waxingCrescentEmoji)
+    XCTAssertEqual(exactMoon.exactEmoji, waxingCrescentEmoji)
+    XCTAssertEqual(exactMoon.exactMoonPhase, .waxingCrescent)
     if exactMoon.exactEmoji == waxingCrescentEmoji { correct += 1 } else { incorrect += 1 }
 
     print("Exact")
@@ -105,12 +103,12 @@ final class UTCTests: XCTestCase {
     XCTAssertEqual(moon.daysTillNewMoon, 0)
     if moon.emoji == newMoonEmoji { correct += 1 } else { incorrect += 1 }
 
-//    date = TinyMoon.formatDate(year: 2024, month: 09, day: 03)
-//    moon = TinyMoon.calculateMoonPhase(date, timeZone: timeZone)
-//    XCTAssertEqual(moon.moonPhase, .newMoon)
-//    XCTAssertEqual(moon.emoji, newMoonEmoji)
-//    XCTAssertEqual(moon.daysTillNewMoon, 0)
-//    if moon.emoji == newMoonEmoji { correct += 1 } else { incorrect += 1 }
+    date = TinyMoon.formatDate(year: 2024, month: 09, day: 03)
+    moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
+    XCTAssertEqual(moon.moonPhase, .newMoon)
+    XCTAssertEqual(moon.emoji, newMoonEmoji)
+    XCTAssertEqual(moon.daysTillNewMoon, 0)
+    if moon.emoji == newMoonEmoji { correct += 1 } else { incorrect += 1 }
 
     date = TinyMoon.formatDate(year: 2024, month: 10, day: 02)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
@@ -236,14 +234,13 @@ final class UTCTests: XCTestCase {
     let waxingGibbousEmoji = TinyMoon.MoonPhase.waxingGibbous.emoji
 
     // At this exact time, the phase is Waxing Gibbous
-    var date = TinyMoon.formatDate(year: 2024, month: 08, day: 19, hour: 00, minute: 00)
+    let date = TinyMoon.formatDate(year: 2024, month: 08, day: 19, hour: 00, minute: 00)
     let exactMoon = TinyMoon.calculateExactMoonPhase(date)
     XCTAssertEqual(exactMoon.exactMoonPhase, .waxingGibbous)
     XCTAssertEqual(exactMoon.exactEmoji, waxingGibbousEmoji)
     if exactMoon.exactEmoji == waxingGibbousEmoji { correct += 1 } else { incorrect += 1 }
 
     // Although it is the same date and time, since a major phase (Full Moon) occurs within this day's 24 hours, this returns Full Moon
-    date = TinyMoon.formatDate(year: 2024, month: 08, day: 19, hour: 00, minute: 00)
     let moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
     XCTAssertEqual(moon.moonPhase, .fullMoon)
     XCTAssertEqual(moon.emoji, fullMoonEmoji)
@@ -281,12 +278,12 @@ final class UTCTests: XCTestCase {
     XCTAssertEqual(moon.daysTillFullMoon, 0)
     if moon.emoji == fullMoonEmoji { correct += 1 } else { incorrect += 1 }
 
-//    date = TinyMoon.formatDate(year: 2024, month: 04, day: 23)
-//    moon = TinyMoon.calculateMoonPhase(date, timeZone: timeZone)
-//    XCTAssertEqual(moon.moonPhase, .fullMoon)
-//    XCTAssertEqual(moon.emoji, fullMoonEmoji)
-//    XCTAssertEqual(moon.daysTillFullMoon, 0)
-//    if moon.emoji == fullMoonEmoji { correct += 1 } else { incorrect += 1 }
+    date = TinyMoon.formatDate(year: 2024, month: 04, day: 23)
+    moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
+    XCTAssertEqual(moon.moonPhase, .fullMoon)
+    XCTAssertEqual(moon.emoji, fullMoonEmoji)
+    XCTAssertEqual(moon.daysTillFullMoon, 0)
+    if moon.emoji == fullMoonEmoji { correct += 1 } else { incorrect += 1 }
 
     date = TinyMoon.formatDate(year: 2024, month: 05, day: 23)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
@@ -373,11 +370,11 @@ final class UTCTests: XCTestCase {
     XCTAssertEqual(moon.emoji, lastQuarterEmoji)
     if moon.emoji == lastQuarterEmoji { correct += 1 } else { incorrect += 1 }
 
-//    date = TinyMoon.formatDate(year: 2024, month: 04, day: 02)
-//    moon = TinyMoon.calculateMoonPhase(date, timeZone: timeZone)
-//    XCTAssertEqual(moon.moonPhase, .lastQuarter)
-//    XCTAssertEqual(moon.emoji, lastQuarterEmoji)
-//    if moon.emoji == lastQuarterEmoji { correct += 1 } else { incorrect += 1 }
+    date = TinyMoon.formatDate(year: 2024, month: 04, day: 02)
+    moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
+    XCTAssertEqual(moon.moonPhase, .lastQuarter)
+    XCTAssertEqual(moon.emoji, lastQuarterEmoji)
+    if moon.emoji == lastQuarterEmoji { correct += 1 } else { incorrect += 1 }
 
     date = TinyMoon.formatDate(year: 2024, month: 05, day: 01)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
