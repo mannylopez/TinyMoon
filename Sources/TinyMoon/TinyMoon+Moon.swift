@@ -22,9 +22,9 @@ extension TinyMoon {
     init(date: Date, timeZone: TimeZone = TimeZone.current) {
       self.date = date
       let julianDay = AstronomicalConstant.julianDay(date)
-      let moonPhaseData = AstronomicalConstant.getMoonPhase(julianDay: julianDay)
-      phaseFraction = moonPhaseData.phase
-      illuminatedFraction = moonPhaseData.illuminatedFraction
+      moonDetail = AstronomicalConstant.getMoonPhase(julianDay: julianDay)
+      phaseFraction = moonDetail.phase
+      illuminatedFraction = moonDetail.illuminatedFraction
 
       moonPhase = Moon.moonPhase(phaseFraction: phaseFraction, date: date, timeZone: timeZone)
 
@@ -52,6 +52,7 @@ extension TinyMoon {
     public var daysTillFullMoon: Int
     /// Returns `0` if the current `date` is a new moon
     public var daysTillNewMoon: Int
+    public var moonDetail: TinyMoon.MoonDetail
 
     public var fullMoonName: String? {
       if isFullMoon() {
