@@ -153,6 +153,12 @@ extension TinyMoon {
         phase: moonPhaseTerminator)
     }
 
+    /// Converts an angle in degrees to a tuple of days, hours, and minutes.
+    ///
+    /// This function normalizes the given angle to the range [0, 360) degrees, then converts it into the equivalent number of days, hours, and minutes based on the synodic month.
+    ///
+    /// - Parameter degrees: The angle to be converted, in degrees.
+    /// - Returns: A tuple containing the equivalent days, hours, and minutes.
     private static func convertDegreesToDaysHoursMinutes(degrees: Double) -> (days: Int, hours: Int, minutes: Int) {
       let normalizedDegrees = fixangle(degrees)
       let degreesPerDay = 360.0 / synodicMonth
