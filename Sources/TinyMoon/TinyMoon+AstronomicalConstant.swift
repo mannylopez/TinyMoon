@@ -135,29 +135,28 @@ extension TinyMoon {
       let illuminatedFraction = (1 - cos(degreesToRadians(moonAgeInDegrees))) / 2
 
       // Distance of moon from the center of the Earth
-      let moonDistance = (moonOrbitSemiMajorAxis * (1 - moonEccentricity * moonEccentricity)) /
+      let distanceFromCenterOfEarth = (moonOrbitSemiMajorAxis * (1 - moonEccentricity * moonEccentricity)) /
         (1 + moonEccentricity * cos(degreesToRadians(MmP + mEc)))
 
-      // Moon age
-      // AKA days into the cycle
-      let moonAge = synodicMonth * (fixangle(moonAgeInDegrees) / 360.0)
+      // Days into the synodic cycle
+      let daysElapsedInCycle = synodicMonth * (fixangle(moonAgeInDegrees) / 360.0)
 
       // Returns the terminator phase angle as a percentage of a full circle (i.e., 0 to 1)
       let moonPhaseTerminator = fixangle(moonAgeInDegrees) / 360.0
 
       return TinyMoon.MoonDetail(
         julianDay: julianDay,
-        moonAgeinDegrees: moonAgeInDegrees,
+        daysElapsedInCycle: daysElapsedInCycle,
         ageOfMoon: (days, hour, minutes),
         illuminatedFraction: illuminatedFraction,
-        moonDistance: moonDistance,
-        moonAge: moonAge,
+        distanceFromCenterOfEarth: distanceFromCenterOfEarth,
         phase: moonPhaseTerminator)
     }
 
     private static func convertDegreesToDaysHoursMinutes(degrees: Double) -> (days: Int, hours: Int, minutes: Int) {
+      let normalizedDegrees = fixangle(degrees)
       let degreesPerDay = 360.0 / synodicMonth
-      let totalDays = degrees / degreesPerDay
+      let totalDays = normalizedDegrees / degreesPerDay
 
       let days = Int(totalDays)
       let fractionalDay = totalDays - Double(days)

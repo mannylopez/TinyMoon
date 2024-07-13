@@ -21,7 +21,7 @@ final class UTCTests: XCTestCase {
     var incorrect = 0.0
 
     let newMoonEmoji = TinyMoon.MoonPhase.newMoon.emoji
-    let waningCrescentEmoji = TinyMoon.MoonPhase.waningCrescent.emoji
+    let waxingCrescentEmoji = TinyMoon.MoonPhase.waxingCrescent.emoji
 
     // Returns a New Moon because it falls within this day's 24 hours
     var date = TinyMoon.formatDate(year: 2024, month: 09, day: 03, hour: 23, minute: 00)
@@ -36,7 +36,8 @@ final class UTCTests: XCTestCase {
     let exactMoon = TinyMoon.calculateExactMoonPhase(date)
     XCTAssertNotEqual(exactMoon.exactMoonPhase, .newMoon)
     XCTAssertNotEqual(exactMoon.exactEmoji, newMoonEmoji)
-    if exactMoon.exactEmoji == waningCrescentEmoji { correct += 1 } else { incorrect += 1 }
+    XCTAssertEqual(exactMoon.exactMoonPhase.emoji, waxingCrescentEmoji)
+    if exactMoon.exactEmoji == waxingCrescentEmoji { correct += 1 } else { incorrect += 1 }
 
     print("Exact")
     printResults(.newMoon, correct: correct, incorrect: incorrect)

@@ -109,4 +109,19 @@ final class AstronomicalConstantTests: XCTestCase {
     XCTAssertEqual(moonPhase.illuminatedFraction, 0.49982435665155855)
     XCTAssertEqual(moonPhase.phase, 0.7500559090154013)
   }
+
+  func test_moontool() {
+    // Test taken from https://www.fourmilab.ch/moontoolw/
+    let utcTimeZone = TinyMoon.TimeZoneOption.createTimeZone(timeZone: .utc)
+    let date = TinyMoon.formatDate(year: 1999, month: 07, day: 20, hour: 20, minute: 17, second: 40, timeZone: utcTimeZone)
+    let julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
+    let moonDetail = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
+    XCTAssertEqual(moonDetail.julianDay, 2451380.345601852)
+    XCTAssertEqual(moonDetail.ageOfMoon.days, 7)
+    XCTAssertEqual(moonDetail.ageOfMoon.hours, 19)
+    XCTAssertEqual(moonDetail.ageOfMoon.minutes, 30)
+    XCTAssertEqual(round(moonDetail.illuminatedFraction * 100), 55)
+    XCTAssertEqual(round(moonDetail.distanceFromCenterOfEarth), 402026)
+
+  }
 }
