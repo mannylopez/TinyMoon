@@ -173,10 +173,29 @@ extension TinyMoon {
 
     // MARK: - Mathematical formulas
 
+    /// Normalizes an angle to the range 0 to 360 degrees.
+    ///
+    /// This function ensures that any given angle is converted to its equivalent value within the range of 0 to 360 degrees.
+    ///
+    /// - Parameter a: The angle to be normalized, in degrees.
+    /// - Returns: The normalized angle, within the range [0, 360) degrees.
+    ///
+    /// Formula based on source code from https://www.fourmilab.ch/moontoolw/
     private static func fixangle(_ a: Double) -> Double {
       a - 360.0 * floor(a / 360.0)
     }
 
+    /// Solves Kepler's equation for the eccentric anomaly.
+    ///
+    /// This function iteratively solves Kepler's equation to find the eccentric anomaly `e` for a given mean anomaly `m` and eccentricity `ecc`.
+    /// The solution is obtained using the Newton-Raphson method.
+    ///
+    /// - Parameters:
+    ///   - m: The mean anomaly, in degrees.
+    ///   - ecc: The eccentricity of the orbit.
+    /// - Returns: The eccentric anomaly, in radians.
+    ///
+    /// Formula based on source code from https://www.fourmilab.ch/moontoolw/
     private static func kepler(m: Double, ecc: Double) -> Double {
       var e = degreesToRadians(m)
       let mRad = degreesToRadians(m)
@@ -197,8 +216,6 @@ extension TinyMoon {
 
       return e
     }
-
-
   }
 }
 
