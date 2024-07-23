@@ -22,16 +22,16 @@ final class AstronomicalConstantTests: XCTestCase {
   }
 
   func test_astronomicalConstant_julianDay() {
-    let pacificTimeZone = TinyMoon.TimeZoneOption.createTimeZone(timeZone: .pacific)
+    let pacificTimeZone = TimeTestHelper.TimeZoneOption.createTimeZone(timeZone: .pacific)
 
     // January 6, 2000 @ 00:00:00
-    var date = TinyMoon.formatDate(year: 2000, month: 01, day: 06)
+    var date = TimeTestHelper.formatDate(year: 2000, month: 01, day: 06)
     var julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     XCTAssertEqual(julianDay, 2451549.5000)
 
     // January 6, 2000 @ 00:00: Pacific
     // January 6, 2000 @ 08:00:00 UTC
-    date = TinyMoon.formatDate(
+    date = TimeTestHelper.formatDate(
       year: 2000,
       month: 01,
       day: 06,
@@ -42,7 +42,7 @@ final class AstronomicalConstantTests: XCTestCase {
 
     // January 5, 2000 @ 16:00: Pacific
     // January 6, 2000 @ 00:00:00 UTC
-    date = TinyMoon.formatDate(
+    date = TimeTestHelper.formatDate(
       year: 2000,
       month: 01,
       day: 5,
@@ -52,33 +52,33 @@ final class AstronomicalConstantTests: XCTestCase {
     XCTAssertEqual(julianDay, 2451549.5000)
 
     // January 6, 2000 @ 20:00:00
-    date = TinyMoon.formatDate(year: 2000, month: 01, day: 06, hour: 20, minute: 00)
+    date = TimeTestHelper.formatDate(year: 2000, month: 01, day: 06, hour: 20, minute: 00)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     XCTAssertEqual(julianDay, 2451550.3333333335)
 
     // August 22, 2022 @ 00:00:00
-    date = TinyMoon.formatDate(year: 2022, month: 08, day: 22, hour: 00, minute: 00)
+    date = TimeTestHelper.formatDate(year: 2022, month: 08, day: 22, hour: 00, minute: 00)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     XCTAssertEqual(julianDay, 2459813.5000)
 
     // August 22, 2022 @ 04:05:00
-    date = TinyMoon.formatDate(year: 2022, month: 08, day: 22, hour: 04, minute: 05)
+    date = TimeTestHelper.formatDate(year: 2022, month: 08, day: 22, hour: 04, minute: 05)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     XCTAssertEqual(julianDay, 2459813.670138889)
 
     // August 22, 2022 @ 14:05:00
-    date = TinyMoon.formatDate(year: 2022, month: 08, day: 22, hour: 14, minute: 05)
+    date = TimeTestHelper.formatDate(year: 2022, month: 08, day: 22, hour: 14, minute: 05)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     XCTAssertEqual(julianDay, 2459814.0868055555)
 
-    date = TinyMoon.formatDate(year: 2022, month: 08, day: 22, hour: 23, minute: 59)
+    date = TimeTestHelper.formatDate(year: 2022, month: 08, day: 22, hour: 23, minute: 59)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     XCTAssertEqual(julianDay, 2459814.4993055556)
   }
 
   func test_astronomicalConstant_getMoonPhase_moonDetail() {
     // Full moon
-    var date = TinyMoon.formatDate(year: 2024, month: 06, day: 22)
+    var date = TimeTestHelper.formatDate(year: 2024, month: 06, day: 22)
     var julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     var moonDetail = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
 
@@ -92,7 +92,7 @@ final class AstronomicalConstantTests: XCTestCase {
     XCTAssertEqual(moonDetail.phase, 0.49835304181785745)
 
     // New moon
-    date = TinyMoon.formatDate(year: 2024, month: 07, day: 06, hour: 12, minute: 37)
+    date = TimeTestHelper.formatDate(year: 2024, month: 07, day: 06, hour: 12, minute: 37)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     moonDetail = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
 
@@ -106,7 +106,7 @@ final class AstronomicalConstantTests: XCTestCase {
     XCTAssertEqual(moonDetail.phase, 0.019184351732275336)
 
     // First quarter
-    date = TinyMoon.formatDate(year: 2024, month: 08, day: 12, hour: 15, minute: 18)
+    date = TimeTestHelper.formatDate(year: 2024, month: 08, day: 12, hour: 15, minute: 18)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     moonDetail = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
 
@@ -120,7 +120,7 @@ final class AstronomicalConstantTests: XCTestCase {
     XCTAssertEqual(moonDetail.phase, 0.2505449551679033)
 
     // Last quarter
-    date = TinyMoon.formatDate(year: 2024, month: 08, day: 26, hour: 09, minute: 25)
+    date = TimeTestHelper.formatDate(year: 2024, month: 08, day: 26, hour: 09, minute: 25)
     julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     moonDetail = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
 
@@ -136,8 +136,8 @@ final class AstronomicalConstantTests: XCTestCase {
 
   func test_moontool() {
     // Test taken from https://www.fourmilab.ch/moontoolw/
-    let utcTimeZone = TinyMoon.TimeZoneOption.createTimeZone(timeZone: .utc)
-    let date = TinyMoon.formatDate(year: 1999, month: 07, day: 20, hour: 20, minute: 17, second: 40, timeZone: utcTimeZone)
+    let utcTimeZone = TimeTestHelper.TimeZoneOption.createTimeZone(timeZone: .utc)
+    let date = TimeTestHelper.formatDate(year: 1999, month: 07, day: 20, hour: 20, minute: 17, second: 40, timeZone: utcTimeZone)
     let julianDay = TinyMoon.AstronomicalConstant.julianDay(date)
     let moonDetail = TinyMoon.AstronomicalConstant.getMoonPhase(julianDay: julianDay)
     XCTAssertEqual(moonDetail.julianDay, 2451380.345601852)
