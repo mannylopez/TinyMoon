@@ -18,7 +18,7 @@ enum MoonTestHelper {
     timeZone: TimeZone = utcTimeZone)
     -> TinyMoon.Moon
   {
-    let date = TinyMoon.formatDate(year: year, month: month, day: day, hour: hour, minute: minute, timeZone: timeZone)
+    let date = TimeTestHelper.formatDate(year: year, month: month, day: day, hour: hour, minute: minute, timeZone: timeZone)
     return TinyMoon.calculateMoonPhase(date, timeZone: timeZone)
   }
 
