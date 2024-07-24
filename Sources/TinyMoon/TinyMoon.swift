@@ -21,10 +21,9 @@ public enum TinyMoon {
   ///
   /// `ExactMoon` focuses on the exact lunar phase at the given moment, unlike `Moon`, which may prioritize major moon phases occurring at any point within a 24-hour period.
   ///
-  /// For example, given that the full moon occurs on `August 19, 2024 at 13:25 UTC` and the date we query for is `August 19, 2024 at 00:00 UTC`, this object will return `.waxingGibbous` because that is a more accurate representation of the moon phase at `00:00 UTC` time.
+  /// For example, given that the full moon occurs on `August 19, 2024 at 13:25 UTC` and the date we query for is `August 19, 2024 at 00:00 UTC`, this object will return `.waxingGibbous` because that is a more accurate representation of the moon phase at `00:00 UTC` time. `Moon` would return `.fullMoon` since a Full Moon happens during that day.
   public static func calculateExactMoonPhase(_ date: Date = Date()) -> ExactMoon {
-    let moon = Moon(date: date)
-    return ExactMoon(date: date, phaseFraction: moon.phaseFraction)
+    ExactMoon(date: date)
   }
 
 }
