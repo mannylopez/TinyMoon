@@ -33,9 +33,9 @@ final class UTCTests: XCTestCase {
 
     // Even though it is the same day, at this exact time, it is not a New Moon
     let exactMoon = TinyMoon.calculateExactMoonPhase(date)
-    XCTAssertEqual(exactMoon.exactEmoji, waxingCrescentEmoji)
-    XCTAssertEqual(exactMoon.exactMoonPhase, .waxingCrescent)
-    if exactMoon.exactEmoji == waxingCrescentEmoji { correct += 1 } else { incorrect += 1 }
+    XCTAssertEqual(exactMoon.emoji, waxingCrescentEmoji)
+    XCTAssertEqual(exactMoon.moonPhase, .waxingCrescent)
+    if exactMoon.emoji == waxingCrescentEmoji { correct += 1 } else { incorrect += 1 }
 
     print("Exact")
     printResults(.newMoon, correct: correct, incorrect: incorrect)
@@ -236,9 +236,9 @@ final class UTCTests: XCTestCase {
     // At this exact time, the phase is Waxing Gibbous
     let date = TimeTestHelper.formatDate(year: 2024, month: 08, day: 19, hour: 00, minute: 00)
     let exactMoon = TinyMoon.calculateExactMoonPhase(date)
-    XCTAssertEqual(exactMoon.exactMoonPhase, .waxingGibbous)
-    XCTAssertEqual(exactMoon.exactEmoji, waxingGibbousEmoji)
-    if exactMoon.exactEmoji == waxingGibbousEmoji { correct += 1 } else { incorrect += 1 }
+    XCTAssertEqual(exactMoon.moonPhase, .waxingGibbous)
+    XCTAssertEqual(exactMoon.emoji, waxingGibbousEmoji)
+    if exactMoon.emoji == waxingGibbousEmoji { correct += 1 } else { incorrect += 1 }
 
     // Although it is the same date and time, since a major phase (Full Moon) occurs within this day's 24 hours, this returns Full Moon
     let moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
