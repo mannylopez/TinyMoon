@@ -1,14 +1,13 @@
+![Tiny Moon icon](images/TinyMoonIcon_256x256.png)
 # Tiny Moon
 
-__A tiny Swift Package to calculate the moon phase for any given date__
+A tiny Swift Package to calculate the moon phase for any given date
 
 Compatible with iOS and MacOS
 
-![Tiny Moon icon](images/TinyMoonIcon_256x256.png)
+## Description
 
-### Description
-
-### Installation
+## Installation
 1. Open your existing Xcode project or create a new one
 2. Open the Swift Packages Manager
 	- In the project navigator, select your project file to open the project settings.
@@ -22,8 +21,8 @@ Compatible with iOS and MacOS
 
 ![Xcode package dialog box](images/XcodePackageDialogBox.png)
 
-### Usage
-Now that Tiny Moon is added to your project, you can import it in your Swift files using the import statement:
+## Usage
+Now that Tiny Moon is added to your project, you can import it in your Swift files using the import statement.
 
 To use Tiny Moon, simply pass in the the `Date` for which you'd like to know the Moon phase for, or if none is passed in, then your system's current `Date` will be used.
 
