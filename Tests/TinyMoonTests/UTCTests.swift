@@ -29,12 +29,16 @@ final class UTCTests: XCTestCase {
     XCTAssertEqual(moon.moonPhase, .newMoon)
     XCTAssertEqual(moon.emoji, newMoonEmoji)
     XCTAssertEqual(moon.daysTillNewMoon, 0)
+    XCTAssertEqual(moon.illuminatedFraction, 0.006961603271078809)
+    XCTAssertEqual(moon.phaseFraction, 0.02658948655549188)
     if moon.emoji == newMoonEmoji { correct += 1 } else { incorrect += 1 }
 
     // Even though it is the same day, at this exact time, it is not a New Moon
     let exactMoon = TinyMoon.calculateExactMoonPhase(date)
     XCTAssertEqual(exactMoon.emoji, waxingCrescentEmoji)
     XCTAssertEqual(exactMoon.moonPhase, .waxingCrescent)
+    XCTAssertEqual(exactMoon.illuminatedFraction, 0.006961603271078809)
+    XCTAssertEqual(exactMoon.phaseFraction, 0.02658948655549188)
     if exactMoon.emoji == waxingCrescentEmoji { correct += 1 } else { incorrect += 1 }
 
     print("Exact")
@@ -238,6 +242,8 @@ final class UTCTests: XCTestCase {
     let exactMoon = TinyMoon.calculateExactMoonPhase(date)
     XCTAssertEqual(exactMoon.moonPhase, .waxingGibbous)
     XCTAssertEqual(exactMoon.emoji, waxingGibbousEmoji)
+    XCTAssertEqual(exactMoon.illuminatedFraction, 0.9911480207511427)
+    XCTAssertEqual(exactMoon.phaseFraction, 0.47000746748499334)
     if exactMoon.emoji == waxingGibbousEmoji { correct += 1 } else { incorrect += 1 }
 
     // Although it is the same date and time, since a major phase (Full Moon) occurs within this day's 24 hours, this returns Full Moon
@@ -245,6 +251,8 @@ final class UTCTests: XCTestCase {
     XCTAssertEqual(moon.moonPhase, .fullMoon)
     XCTAssertEqual(moon.emoji, fullMoonEmoji)
     XCTAssertEqual(moon.daysTillFullMoon, 0)
+    XCTAssertEqual(moon.illuminatedFraction, 0.9911480207511427)
+    XCTAssertEqual(moon.phaseFraction, 0.47000746748499334)
     if moon.emoji == fullMoonEmoji { correct += 1 } else { incorrect += 1 }
 
     print("Exact")
