@@ -139,7 +139,7 @@ Values for `phaseFraction` and corresponding emoji
 | 0.5 | Full Moon | 🌕 |
 || Waning Gibbous | 🌖 |
 | 0.75 | Last Quarter | 🌗 |
-|| Last Waning Crescent | 🌘 |
+|| Waning Crescent | 🌘 |
 
 ## Demos
 The following are built with this Tiny Moon Swift Package
