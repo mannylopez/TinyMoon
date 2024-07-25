@@ -108,7 +108,7 @@ print(moon.name)	// Waxing Gibbous
 print(moon.emoji)	// 🌔
 ```
 
-`ExactMoon` will return `.waxingGibbous` because that is a more accurate representation of the moon phase at `00:00 UTC` time. `Moon` will return `.fullMoon` since a Full Moon happens during that day.
+`ExactMoon` will return `.waxingGibbous` because that is a more accurate representation of the moon phase at `02:00 UTC` time. `Moon` will return `.fullMoon` since a Full Moon happens during that day.
 
 #### Moon properties
 
