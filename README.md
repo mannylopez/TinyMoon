@@ -1,7 +1,7 @@
 ![Tiny Moon icon](images/TinyMoonIcon_256x256.png)
-# Tiny Moon
+# Tiny Moon Swift Package
 
-A tiny Swift Package to calculate the moon phase for any given date
+A tiny Swift Package to calculate the moon phase for any given date. Works completely offline.
 
 Compatible with iOS and MacOS
 
@@ -22,20 +22,26 @@ Compatible with iOS and MacOS
 ![Xcode package dialog box](images/XcodePackageDialogBox.png)
 
 ## Usage
-Now that Tiny Moon is added to your project, you can import it in your Swift files using the import statement.
-
-To use Tiny Moon, simply pass in the the `Date` for which you'd like to know the Moon phase for, or if none is passed in, then your system's current `Date` will be used.
+Now that Tiny Moon is added to your project, import it and simply pass in the the `Date` for which you'd like to know the Moon phase for. If no date is passed in, then your system's current `Date` will be used.
 
 ```swift
 import SwiftUI
 import TinyMoon
 
 struct SimpleMoonView: View {
+
   private let moon = TinyMoon.calculateMoonPhase()
+
   var body: some View {
-    Text(moon.emoji)
-    Text(moon.name)
-    Text("\(moon.illuminatedFraction)")
+    VStack(spacing: 16) {
+      Text(moon.date.toString())
+      Text(moon.emoji)
+      Text(moon.name)
+      Text("Illumination: \(moon.illuminatedFraction)")
+      Text("\(moon.ageOfMoon.days) days, \(moon.ageOfMoon.hours) hours, \(moon.ageOfMoon.minutes) minutes")
+      Text("Full Moon in \(moon.daysTillFullMoon) days")
+      Text("New Moon in \(moon.daysTillNewMoon) days")
+    }
   }
 }
 
