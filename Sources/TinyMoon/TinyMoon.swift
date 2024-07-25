@@ -2,7 +2,7 @@ import Foundation
 
 public enum TinyMoon {
 
-  /// The `Moon` object for a specific date, prioritizing major phases (new moon, first quarter, full moon, last quarter) .
+  /// The `Moon` object for a specific date, prioritizing major phases (new moon, first quarter, full moon, last quarter).
   ///
   /// Use this object when you need a general understanding of the moon's phase for a day, especially when emphasizing the major phases is important for your application's context.
   ///

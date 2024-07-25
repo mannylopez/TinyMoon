@@ -29,6 +29,8 @@ let moon = TinyMoon.calculateMoonPhase()
 ## Usage
 Now that Tiny Moon is added to your project, import it and simply pass in the the `Date` and `TimeZone` for which you'd like to know the Moon phase for. If no date is passed in, then your system's current `Date` will be used.
 
+*An example app using Tiny Moon*
+
 ```swift
 import SwiftUI
 import TinyMoon
@@ -66,17 +68,19 @@ From there, you can access func's `calculateMoonPhase` and `calculateExactMoonPh
 
 ```swift
 public enum TinyMoon {
-	public static func calculateMoonPhase(
-		_ date: Date = Date(), 
-		timeZone: TimeZone = TimeZone.current) -> Moon 
-	{
-	  Moon(date: date, timeZone: timeZone)
-	}
+  public static func calculateMoonPhase(
+    _ date: Date = Date(),
+    timeZone: TimeZone = TimeZone.current)
+    -> Moon
+  {
+    Moon(date: date, timeZone: timeZone)
+  }
 
-	public static func calculateExactMoonPhase(_ date: Date = Date()) -> ExactMoon {
-	  ExactMoon(date: date)
-	}
+  public static func calculateExactMoonPhase(_ date: Date = Date()) -> ExactMoon {
+    ExactMoon(date: date)
+  }
 }
+
 ```
 
 #### `Moon` vs `ExactMoon`
@@ -95,7 +99,7 @@ let isoFormatter = ISO8601DateFormatter()
 isoFormatter.timeZone = TimeZone(secondsFromGMT: 0)
 let date = isoFormatter.date(from: "2024-08-19T02:00:00Z")!
 
-let moon = TinyMoon.calculateMoonPhase(date, timeZone: isoFormatter.timeZone) // If you don't specify a TimeZone, it will default to the systems TimeZone
+let moon = TinyMoon.calculateMoonPhase(date, timeZone: isoFormatter.timeZone) // If you don't specify a TimeZone, it will default to the system's TimeZone
 print(moon.name)	// Full Moon
 print(moon.emoji)	// 🌕
 
@@ -114,15 +118,28 @@ print(moon.emoji)	// 🌔
 | name | String | String representation of MoonPhase case |
 | emoji | String | Emoji for moon phase |
 | date | Date | Date passed in for the Moon object |
-| julianDay | Double | Continuous count of day since the beginning of Julian period. Used in astronomical calculations (wikipedia)[https://en.wikipedia.org/wiki/Julian_day] |
+| julianDay | Double | Continuous count of day since the beginning of Julian period. Used in astronomical calculations ([wikipedia](https://en.wikipedia.org/wiki/Julian_day)) |
 | daysTillFullMoon | Int | Returns `0` if the current `date` is a full moon |
 | daysTillNewMoon | Int | Returns `0` if the current `date` is a new moon |
 | daysElapsedInCycle | Double | Number of days elapsed into the synodic cycle, represented as a fraction |
 | ageOfMoon | (days: Int, hours: Int, minutes: Int) | Age of the moon in days, minutes, hours |
-| illuminatedFraction | Double | Illuminated portion of the Moon, where 0.0 = new and 0.99 = full |
-| phaseFraction | Double | Phase of the Moon, represented as a fraction. Varies between `0.0` to `0.99`, where `0.0` is new moon, `0.25` is first quarter, `0.5` is full moon, and `0.75` is last quarter |
+| illuminatedFraction | Double | Illuminated portion of the Moon, where 0.0 = new and 1.00 = full |
+| phaseFraction | Double | Phase of the Moon, represented as a fraction. See table below. |
 | distanceFromCenterOfEarth | Double | Distance of moon from the center of the Earth, in kilometers |
 | fullMoonName | String? | Returns the coloquial full moon name |
+
+Values for `phaseFraction` and corresponding emoji
+
+| phaseFraction | Name | Emoji |
+| -- | -- | -- |
+| 0.0 | New Moon | 🌑 |
+|| Waxing Crescent | 🌒 |
+| 0.25 | First Quarter | 🌓 |
+|| Waxing Gibbous | 🌔 |
+| 0.5 | Full Moon | 🌕 |
+|| Waning Gibbous | 🌖 |
+| 0.75 | Last Quarter | 🌗 |
+|| Last Waning Crescent | 🌘 |
 
 ## Demos
 The following are built with this Tiny Moon Swift Package
