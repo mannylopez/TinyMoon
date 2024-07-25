@@ -2,7 +2,7 @@
 
 import Foundation
 
-// MARK: - TinyMoon + Moon
+// MARK: - TinyMoon.Moon
 
 extension TinyMoon {
 
@@ -21,10 +21,13 @@ extension TinyMoon {
 
     init(date: Date, timeZone: TimeZone = TimeZone.current) {
       self.date = date
-      let julianDay = AstronomicalConstant.julianDay(date)
-      moonDetail = AstronomicalConstant.getMoonPhase(julianDay: julianDay)
+      julianDay = AstronomicalConstant.julianDay(date)
+      let moonDetail = AstronomicalConstant.getMoonPhase(julianDay: julianDay)
+      daysElapsedInCycle = moonDetail.daysElapsedInCycle
       phaseFraction = moonDetail.phase
+      ageOfMoon = moonDetail.ageOfMoon
       illuminatedFraction = moonDetail.illuminatedFraction
+      distanceFromCenterOfEarth = moonDetail.distanceFromCenterOfEarth
 
       moonPhase = Moon.moonPhase(phaseFraction: phaseFraction, date: date, timeZone: timeZone)
 
@@ -36,23 +39,31 @@ extension TinyMoon {
 
     // MARK: Public
 
-    /// Represents where the phase is in the current synodic cycle. Varies between `0.0` to `0.99`.
-    ///
-    /// `0.0` new moon, `0.25` first quarter, `0.5` full moon, `0.75` last
-    public let phaseFraction: Double
-    /// Illuminated fraction of Moon's disk, between `0.0` and `1.0`.
-    ///
-    /// `0` indicates a new moon and `1.0` indicates a full moon.
-    public let illuminatedFraction: Double
     public let moonPhase: MoonPhase
     public let name: String
     public let emoji: String
     public let date: Date
+    public let julianDay: Double
     /// Returns `0` if the current `date` is a full moon
     public var daysTillFullMoon: Int
     /// Returns `0` if the current `date` is a new moon
     public var daysTillNewMoon: Int
-    public var moonDetail: TinyMoon.MoonDetail
+    /// Number of days elapsed into the synodic cycle, represented as a fraction
+    public let daysElapsedInCycle: Double
+    /// Age of the moon in days, minutes, hours
+    public let ageOfMoon: (days: Int, hours: Int, minutes: Int)
+    /// Illuminated portion of the Moon, where 0.0 = new and 0.99 = full
+    public let illuminatedFraction: Double
+    /// Distance of moon from the center of the Earth, in kilometers
+    public let distanceFromCenterOfEarth: Double
+    /// Phase of the Moon, represented as a fraction
+    ///
+    /// Varies between `0.0` to `0.99`.
+    /// `0.0` new moon,
+    /// `0.25` first quarter,
+    /// `0.5` full moon,
+    /// `0.75` last quarter
+    public let phaseFraction: Double
 
     public var fullMoonName: String? {
       if isFullMoon() {
@@ -298,5 +309,31 @@ extension TinyMoon {
       }
     }
 
+  }
+}
+
+// MARK: - TinyMoon.Moon + Equatable
+
+extension TinyMoon.Moon: Equatable {
+  public static func == (lhs: TinyMoon.Moon, rhs: TinyMoon.Moon) -> Bool {
+    lhs.julianDay == rhs.julianDay
+      && lhs.daysElapsedInCycle == rhs.daysElapsedInCycle
+      && lhs.ageOfMoon.days == rhs.ageOfMoon.days
+      && lhs.ageOfMoon.hours == rhs.ageOfMoon.hours
+      && lhs.ageOfMoon.minutes == rhs.ageOfMoon.minutes
+      && lhs.illuminatedFraction == rhs.illuminatedFraction
+      && lhs.distanceFromCenterOfEarth == rhs.distanceFromCenterOfEarth
+      && lhs.phaseFraction == rhs.phaseFraction
+  }
+
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(julianDay)
+    hasher.combine(daysElapsedInCycle)
+    hasher.combine(ageOfMoon.days)
+    hasher.combine(ageOfMoon.hours)
+    hasher.combine(ageOfMoon.minutes)
+    hasher.combine(illuminatedFraction)
+    hasher.combine(distanceFromCenterOfEarth)
+    hasher.combine(phaseFraction)
   }
 }
