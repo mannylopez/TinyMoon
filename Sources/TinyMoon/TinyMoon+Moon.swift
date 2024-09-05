@@ -21,6 +21,7 @@ extension TinyMoon {
 
     init(date: Date, timeZone: TimeZone = TimeZone.current) {
       self.date = date
+      self.timeZone = timeZone
       julianDay = AstronomicalConstant.julianDay(date)
       let moonDetail = AstronomicalConstant.getMoonPhase(julianDay: julianDay)
       daysElapsedInCycle = moonDetail.daysElapsedInCycle
@@ -67,7 +68,8 @@ extension TinyMoon {
 
     public var fullMoonName: String? {
       if isFullMoon() {
-        let calendar = Calendar.current
+        var calendar = Calendar.current
+        calendar.timeZone = timeZone
         let components = calendar.dateComponents([.month], from: date)
         if let month = components.month {
           return fullMoonName(month: month)
@@ -142,7 +144,6 @@ extension TinyMoon {
 
       return daysUntilNewMoon - 1
     }
-
 
     /// Determines the moon phase for a given date, considering both major and minor moon phases.
     ///
@@ -291,6 +292,8 @@ extension TinyMoon {
 
     // MARK: Private
 
+    private let timeZone: TimeZone
+
     private func fullMoonName(month: Int) -> String? {
       switch month {
       case 1: "Wolf Moon"
@@ -315,7 +318,7 @@ extension TinyMoon {
 // MARK: - TinyMoon.Moon + Equatable
 
 extension TinyMoon.Moon: Equatable {
-  public static func == (lhs: TinyMoon.Moon, rhs: TinyMoon.Moon) -> Bool {
+  public static func ==(lhs: TinyMoon.Moon, rhs: TinyMoon.Moon) -> Bool {
     lhs.julianDay == rhs.julianDay
       && lhs.daysElapsedInCycle == rhs.daysElapsedInCycle
       && lhs.ageOfMoon.days == rhs.ageOfMoon.days
