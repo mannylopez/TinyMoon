@@ -8,6 +8,7 @@ enum TimeTestHelper {
     case utc
     case pacific
     case tokyo
+    case eastern
 
     static func createTimeZone(timeZone: TimeZoneOption) -> TimeZone {
       switch timeZone {
@@ -17,6 +18,8 @@ enum TimeTestHelper {
         TimeZone(identifier: "America/Los_Angeles")!
       case .tokyo:
         TimeZone(identifier: "Asia/Tokyo")!
+      case .eastern:
+        TimeZone(identifier: "America/New_York")!
       }
     }
   }

@@ -253,6 +253,7 @@ final class UTCTests: XCTestCase {
     XCTAssertEqual(moon.daysTillFullMoon, 0)
     XCTAssertEqual(moon.illuminatedFraction, 0.9911480207511427)
     XCTAssertEqual(moon.phaseFraction, 0.47000746748499334)
+    XCTAssertEqual(moon.fullMoonName, "Sturgeon Moon")
     if moon.emoji == fullMoonEmoji { correct += 1 } else { incorrect += 1 }
 
     print("Exact")
@@ -270,6 +271,7 @@ final class UTCTests: XCTestCase {
     XCTAssertEqual(moon.moonPhase, .fullMoon)
     XCTAssertEqual(moon.emoji, fullMoonEmoji)
     XCTAssertEqual(moon.daysTillFullMoon, 0)
+    XCTAssertEqual(moon.fullMoonName, "Wolf Moon")
     if moon.emoji == fullMoonEmoji { correct += 1 } else { incorrect += 1 }
 
     date = TimeTestHelper.formatDate(year: 2024, month: 02, day: 24)
@@ -277,6 +279,7 @@ final class UTCTests: XCTestCase {
     XCTAssertEqual(moon.moonPhase, .fullMoon)
     XCTAssertEqual(moon.emoji, fullMoonEmoji)
     XCTAssertEqual(moon.daysTillFullMoon, 0)
+    XCTAssertEqual(moon.fullMoonName, "Snow Moon")
     if moon.emoji == fullMoonEmoji { correct += 1 } else { incorrect += 1 }
 
     date = TimeTestHelper.formatDate(year: 2024, month: 03, day: 25)
@@ -284,6 +287,7 @@ final class UTCTests: XCTestCase {
     XCTAssertEqual(moon.moonPhase, .fullMoon)
     XCTAssertEqual(moon.emoji, fullMoonEmoji)
     XCTAssertEqual(moon.daysTillFullMoon, 0)
+    XCTAssertEqual(moon.fullMoonName, "Worm Moon")
     if moon.emoji == fullMoonEmoji { correct += 1 } else { incorrect += 1 }
 
     date = TimeTestHelper.formatDate(year: 2024, month: 04, day: 23)
@@ -291,6 +295,7 @@ final class UTCTests: XCTestCase {
     XCTAssertEqual(moon.moonPhase, .fullMoon)
     XCTAssertEqual(moon.emoji, fullMoonEmoji)
     XCTAssertEqual(moon.daysTillFullMoon, 0)
+    XCTAssertEqual(moon.fullMoonName, "Pink Moon")
     if moon.emoji == fullMoonEmoji { correct += 1 } else { incorrect += 1 }
 
     date = TimeTestHelper.formatDate(year: 2024, month: 05, day: 23)
@@ -298,6 +303,7 @@ final class UTCTests: XCTestCase {
     XCTAssertEqual(moon.moonPhase, .fullMoon)
     XCTAssertEqual(moon.emoji, fullMoonEmoji)
     XCTAssertEqual(moon.daysTillFullMoon, 0)
+    XCTAssertEqual(moon.fullMoonName, "Flower Moon")
     if moon.emoji == fullMoonEmoji { correct += 1 } else { incorrect += 1 }
 
     date = TimeTestHelper.formatDate(year: 2024, month: 06, day: 22)
@@ -305,6 +311,7 @@ final class UTCTests: XCTestCase {
     XCTAssertEqual(moon.moonPhase, .fullMoon)
     XCTAssertEqual(moon.emoji, fullMoonEmoji)
     XCTAssertEqual(moon.daysTillFullMoon, 0)
+    XCTAssertEqual(moon.fullMoonName, "Strawberry Moon")
     if moon.emoji == fullMoonEmoji { correct += 1 } else { incorrect += 1 }
 
     date = TimeTestHelper.formatDate(year: 2024, month: 07, day: 21)
@@ -312,6 +319,7 @@ final class UTCTests: XCTestCase {
     XCTAssertEqual(moon.moonPhase, .fullMoon)
     XCTAssertEqual(moon.emoji, fullMoonEmoji)
     XCTAssertEqual(moon.daysTillFullMoon, 0)
+    XCTAssertEqual(moon.fullMoonName, "Buck Moon")
     if moon.emoji == fullMoonEmoji { correct += 1 } else { incorrect += 1 }
 
     date = TimeTestHelper.formatDate(year: 2024, month: 08, day: 19)
@@ -319,6 +327,7 @@ final class UTCTests: XCTestCase {
     XCTAssertEqual(moon.moonPhase, .fullMoon)
     XCTAssertEqual(moon.emoji, fullMoonEmoji)
     XCTAssertEqual(moon.daysTillFullMoon, 0)
+    XCTAssertEqual(moon.fullMoonName, "Sturgeon Moon")
     if moon.emoji == fullMoonEmoji { correct += 1 } else { incorrect += 1 }
 
     date = TimeTestHelper.formatDate(year: 2024, month: 09, day: 18)
@@ -326,6 +335,7 @@ final class UTCTests: XCTestCase {
     XCTAssertEqual(moon.moonPhase, .fullMoon)
     XCTAssertEqual(moon.emoji, fullMoonEmoji)
     XCTAssertEqual(moon.daysTillFullMoon, 0)
+    XCTAssertEqual(moon.fullMoonName, "Harvest Moon")
     if moon.emoji == fullMoonEmoji { correct += 1 } else { incorrect += 1 }
 
     date = TimeTestHelper.formatDate(year: 2024, month: 10, day: 17)
@@ -333,6 +343,7 @@ final class UTCTests: XCTestCase {
     XCTAssertEqual(moon.moonPhase, .fullMoon)
     XCTAssertEqual(moon.emoji, fullMoonEmoji)
     XCTAssertEqual(moon.daysTillFullMoon, 0)
+    XCTAssertEqual(moon.fullMoonName, "Hunter's Moon")
     if moon.emoji == fullMoonEmoji { correct += 1 } else { incorrect += 1 }
 
     date = TimeTestHelper.formatDate(year: 2024, month: 11, day: 15)
@@ -340,6 +351,7 @@ final class UTCTests: XCTestCase {
     XCTAssertEqual(moon.moonPhase, .fullMoon)
     XCTAssertEqual(moon.emoji, fullMoonEmoji)
     XCTAssertEqual(moon.daysTillFullMoon, 0)
+    XCTAssertEqual(moon.fullMoonName, "Beaver Moon")
     if moon.emoji == fullMoonEmoji { correct += 1 } else { incorrect += 1 }
 
     date = TimeTestHelper.formatDate(year: 2024, month: 12, day: 15)
@@ -347,6 +359,7 @@ final class UTCTests: XCTestCase {
     XCTAssertEqual(moon.moonPhase, .fullMoon)
     XCTAssertEqual(moon.emoji, fullMoonEmoji)
     XCTAssertEqual(moon.daysTillFullMoon, 0)
+    XCTAssertEqual(moon.fullMoonName, "Cold Moon")
     if moon.emoji == fullMoonEmoji { correct += 1 } else { incorrect += 1 }
 
     printResults(.fullMoon, correct: correct, incorrect: incorrect)

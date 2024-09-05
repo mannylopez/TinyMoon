@@ -330,18 +330,22 @@ final class TinyMoonTests: XCTestCase {
     date = TimeTestHelper.formatDate(year: 2024, month: 06, day: 21, timeZone: pacificTimeZone)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: pacificTimeZone)
     XCTAssertEqual(moon.moonPhase, .fullMoon)
+    XCTAssertEqual(moon.fullMoonName, "Strawberry Moon")
 
     date = TimeTestHelper.formatDate(year: 2024, month: 06, day: 22, timeZone: utcTimeZone)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
     XCTAssertEqual(moon.moonPhase, .fullMoon)
+    XCTAssertEqual(moon.fullMoonName, "Strawberry Moon")
 
     date = TimeTestHelper.formatDate(year: 2024, month: 06, day: 22, timeZone: pacificTimeZone)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: pacificTimeZone)
     XCTAssertNotEqual(moon.moonPhase, .fullMoon)
+    XCTAssertNil(moon.fullMoonName)
 
     date = TimeTestHelper.formatDate(year: 2024, month: 06, day: 21, timeZone: utcTimeZone)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
     XCTAssertNotEqual(moon.moonPhase, .fullMoon)
+    XCTAssertNil(moon.fullMoonName)
 
 
     // Full Moon on
@@ -350,18 +354,22 @@ final class TinyMoonTests: XCTestCase {
     date = TimeTestHelper.formatDate(year: 2024, month: 08, day: 19, timeZone: utcTimeZone)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
     XCTAssertEqual(moon.moonPhase, .fullMoon)
+    XCTAssertEqual(moon.fullMoonName, "Sturgeon Moon")
 
     date = TimeTestHelper.formatDate(year: 2024, month: 08, day: 20, timeZone: tokyoTimeZone)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: tokyoTimeZone)
     XCTAssertEqual(moon.moonPhase, .fullMoon)
+    XCTAssertEqual(moon.fullMoonName, "Sturgeon Moon")
 
     date = TimeTestHelper.formatDate(year: 2024, month: 08, day: 19, timeZone: tokyoTimeZone)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: tokyoTimeZone)
     XCTAssertNotEqual(moon.moonPhase, .fullMoon)
+    XCTAssertNil(moon.fullMoonName)
 
     date = TimeTestHelper.formatDate(year: 2024, month: 08, day: 20, timeZone: utcTimeZone)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
     XCTAssertNotEqual(moon.moonPhase, .fullMoon)
+    XCTAssertNil(moon.fullMoonName)
 
     // Full Moon on
     //  - UTC:  Nov 15 21:28
@@ -369,18 +377,22 @@ final class TinyMoonTests: XCTestCase {
     date = TimeTestHelper.formatDate(year: 2024, month: 11, day: 15, timeZone: utcTimeZone)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
     XCTAssertEqual(moon.moonPhase, .fullMoon)
+    XCTAssertEqual(moon.fullMoonName, "Beaver Moon")
 
     date = TimeTestHelper.formatDate(year: 2024, month: 11, day: 16, timeZone: tokyoTimeZone)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: tokyoTimeZone)
     XCTAssertEqual(moon.moonPhase, .fullMoon)
+    XCTAssertEqual(moon.fullMoonName, "Beaver Moon")
 
     date = TimeTestHelper.formatDate(year: 2024, month: 11, day: 16, timeZone: utcTimeZone)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
     XCTAssertNotEqual(moon.moonPhase, .fullMoon)
+    XCTAssertNil(moon.fullMoonName)
 
     date = TimeTestHelper.formatDate(year: 2024, month: 11, day: 15, timeZone: tokyoTimeZone)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: tokyoTimeZone)
     XCTAssertNotEqual(moon.moonPhase, .fullMoon)
+    XCTAssertNil(moon.fullMoonName)
   }
 
   // These following moon phases happen within 5 hours of midnight, so these tests aim to check that the phase is calculated correctly and lands on the correct day
@@ -398,6 +410,7 @@ final class TinyMoonTests: XCTestCase {
     var date = TimeTestHelper.formatDate(year: 2024, month: 2, day: 24, hour: 4, minute: 30, timeZone: pacificTimeZone)
     var moon = TinyMoon.calculateMoonPhase(date, timeZone: pacificTimeZone)
     XCTAssertEqual(moon.moonPhase, .fullMoon)
+    XCTAssertEqual(moon.fullMoonName, "Snow Moon")
 
     // New moon on 3/10/2024 @ 01:00 PST
     date = TimeTestHelper.formatDate(year: 2024, month: 3, day: 10, hour: 1, minute: 0, timeZone: pacificTimeZone)
@@ -408,6 +421,7 @@ final class TinyMoonTests: XCTestCase {
     date = TimeTestHelper.formatDate(year: 2024, month: 3, day: 25, hour: 0, minute: 0, timeZone: pacificTimeZone)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: pacificTimeZone)
     XCTAssertEqual(moon.moonPhase, .fullMoon)
+    XCTAssertEqual(moon.fullMoonName, "Worm Moon")
 
     // New moon on 3/10/2024 @ 01:00 PST
     date = TimeTestHelper.formatDate(year: 2024, month: 3, day: 10, hour: 1, minute: 0, timeZone: pacificTimeZone)
@@ -428,6 +442,7 @@ final class TinyMoonTests: XCTestCase {
     date = TimeTestHelper.formatDate(year: 2024, month: 12, day: 15, hour: 1, minute: 01, timeZone: pacificTimeZone)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: pacificTimeZone)
     XCTAssertEqual(moon.moonPhase, .fullMoon)
+    XCTAssertEqual(moon.fullMoonName, "Cold Moon")
 
     // MARK: - UTC margin of error tests
     // Values from https://www.timeanddate.com/moon/phases/timezone/utc
@@ -441,6 +456,7 @@ final class TinyMoonTests: XCTestCase {
     date = TimeTestHelper.formatDate(year: 2024, month: 4, day: 23, hour: 23, minute: 48, timeZone: utcTimeZone)
     moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
     XCTAssertEqual(moon.moonPhase, .fullMoon)
+    XCTAssertEqual(moon.fullMoonName, "Pink Moon")
 
     // New moon on 9/3/2024 @ 01:55 UTC
     date = TimeTestHelper.formatDate(year: 2024, month: 9, day: 3, hour: 1, minute: 55, timeZone: utcTimeZone)
