@@ -4,7 +4,7 @@ import Foundation
 
 enum TimeTestHelper {
 
-  enum TimeZoneOption {
+  enum TimeZoneOption: CaseIterable {
     case utc
     case pacific
     case tokyo
