@@ -463,4 +463,26 @@ final class TinyMoonTests: XCTestCase {
     moon = TinyMoon.calculateMoonPhase(date, timeZone: utcTimeZone)
     XCTAssertEqual(moon.moonPhase, .newMoon)
   }
+
+  func test_debug() {
+//    MoonTestHelper.prettyPrintMoonPhasesForYear(2024)
+    let years = [2032, 2031, 2030, 2029, 2028, 2027, 2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016]
+    let timezone = TimeTestHelper.TimeZoneOption.createTimeZone(timeZone: .utc)
+    for year in years {
+      let moonsInYear = MonthTestHelper.Month.allCases.map { month in
+        MoonTestHelper.moonObjectsForMonth(month: month, year: year, timeZone: timezone)
+      }
+      for month in moonsInYear {
+        for moon in month {
+          switch moon.moonPhase {
+          case .fullMoon:
+            XCTAssertNotNil(moon.fullMoonName)
+            print(moon.emoji, moon.date, moon.moonPhase, moon.fullMoonName!) // Assert will fail as well
+          default:
+            continue
+          }
+        }
+      }
+    }
+  }
 }

@@ -68,8 +68,8 @@ extension TinyMoon {
 
     public var fullMoonName: String? {
       if isFullMoon() {
-        var calendar = Calendar.current
-        calendar.timeZone = timeZone
+        let calendar = Calendar.current
+//        calendar.timeZone = timeZone
         let components = calendar.dateComponents([.month], from: date)
         if let month = components.month {
           return fullMoonName(month: month)
